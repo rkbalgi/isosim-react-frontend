@@ -47,35 +47,44 @@ class NavBar extends React.Component {
     }
 
     return (
-        <div align="left">
+        <React.Fragment>
+          <div align="center"
+               style={{
+                 alignItems: "center",
+                 alignSelf: "center",
+                 verticalAlign: "middle",
+                 backgroundColor: "#AB68FF",
+                 height: "80px"
+               }}>
 
-          <table>
+            <table style={{fontFamily: 'ptserif-regular'}}>
 
-            <tr>
-              <td>Spec</td>
-              <td style={{width: "100px"}}></td>
-              <td>{this.specsDropDown()}</td>
-            </tr>
+              <tr>
+                <td>Message Specification</td>
+                <td style={{width: "100px"}}></td>
+                <td>{this.specsDropDown()}</td>
+              </tr>
 
-            <tr>
-              <td>Message</td>
-              <td style={{width: "100px"}}></td>
-              <td>{this.messagesDropDown()}</td>
-            </tr>
+              <tr>
+                <td>Message</td>
+                <td style={{width: "100px"}}></td>
+                <td>{this.messagesDropDown()}</td>
+              </tr>
 
-          </table>
+            </table>
 
-
-          {
-            this.state.loaded && this.state.currentSpec !== "Select" ?
-                <MessageStructure ref={this.msgTemplateRef}
-                                  specs={this.state.specs}
-                                  spec={this.state.currentSpec}
-                                  msg={msg}/>
-                : <div>""</div>
-          }
-
-        </div>
+          </div>
+          <div align="center">
+            {
+              this.state.loaded && this.state.currentSpec !== "Select" ?
+                  <MessageStructure ref={this.msgTemplateRef}
+                                    specs={this.state.specs}
+                                    spec={this.state.currentSpec}
+                                    msg={msg}/>
+                  : <div></div>
+            }
+          </div>
+        </React.Fragment>
 
     );
   }
@@ -111,9 +120,11 @@ class NavBar extends React.Component {
     }
   }
 
+  // builds a combo box for specifications
   specsDropDown() {
     return (
-        <select key={"all_specs"} id={"all_specs"} onChange={this.specChanged}>
+        <select style={{fontFamily: "ptserif-regular", width: "200px",}}
+                onChange={this.specChanged}>
           <option key={"Select"} value={"Select"}>Select</option>
           {
             this.state.specs.map((s) => {
@@ -124,24 +135,7 @@ class NavBar extends React.Component {
         </select>);
   }
 
-  getCurrentSpec() {
-    return this.state.specs.find((s, i) => {
-      if (s.Name === this.state.currentSpec) {
-        return s;
-      }
-      return null;
-    });
-  }
-
-  getSpecByName(name) {
-    return this.state.specs.find((s, i) => {
-      if (s.Name === name) {
-        return s;
-      }
-      return null;
-    });
-  }
-
+  // builds and returns a combo box for messages for the current spec
   messagesDropDown() {
 
     let spec;
@@ -150,20 +144,17 @@ class NavBar extends React.Component {
       spec = this.getCurrentSpec();
     }
 
+    // no spec loaded
     if (this.state.currentSpec === "Select") {
-      return (
-          <select>
-
-          </select>
-      );
+      return (<select></select>);
     } else {
 
       return (
 
           <select value={this.state.currentSpecMsg}
+                  style={{fontFamily: "ptserif-regular", width: "150px"}}
                   onChange={this.messageChanged}>
             {
-
               spec.Messages.map(msg => {
                 return <option value={msg.Name}>{msg.Name}</option>
               })
@@ -176,6 +167,27 @@ class NavBar extends React.Component {
     }
 
   }
+
+  // returns the currently loaded spec (if there is one) else null
+  getCurrentSpec() {
+    return this.state.specs.find((s, i) => {
+      if (s.Name === this.state.currentSpec) {
+        return s;
+      }
+      return null;
+    });
+  }
+
+  // returns specification given its name
+  getSpecByName(name) {
+    return this.state.specs.find((s, i) => {
+      if (s.Name === name) {
+        return s;
+      }
+      return null;
+    });
+  }
+
 }
 
 export default NavBar
