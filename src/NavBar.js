@@ -59,6 +59,7 @@ class NavBar extends React.Component {
 
             <table style={{fontFamily: 'ptserif-regular'}}>
 
+              <tbody>
               <tr>
                 <td>Message Specification</td>
                 <td style={{width: "100px"}}></td>
@@ -70,14 +71,15 @@ class NavBar extends React.Component {
                 <td style={{width: "100px"}}></td>
                 <td>{this.messagesDropDown()}</td>
               </tr>
-
+              </tbody>
             </table>
 
           </div>
           <div align="center">
             {
               this.state.loaded && this.state.currentSpec !== "Select" ?
-                  <MessageStructure ref={this.msgTemplateRef}
+                  <MessageStructure key={this.state.currentSpec + "_" + msg}
+                                    ref={this.msgTemplateRef}
                                     specs={this.state.specs}
                                     spec={this.state.currentSpec}
                                     msg={msg}/>
@@ -101,9 +103,9 @@ class NavBar extends React.Component {
       console.log("calling update - specChanged");
       let spec = this.getSpecByName(event.target.value);
       //console.log("current spec ", event.target.value);
-      if (this.msgTemplateRef.current) {
+      /*if (this.msgTemplateRef.current) {
         this.msgTemplateRef.current.update(spec.Name, spec.Messages[0].Name);
-      }
+      }*/
     }
   }
 
@@ -113,10 +115,10 @@ class NavBar extends React.Component {
     if (this.state.loaded && this.state.currentSpec !== "Select") {
       console.log("calling update - msgChanged");
 
-      if (this.msgTemplateRef.current) {
+      /*if (this.msgTemplateRef.current) {
         this.msgTemplateRef.current.update(this.state.currentSpec,
             event.target.value);
-      }
+      }*/
     }
   }
 
@@ -156,7 +158,8 @@ class NavBar extends React.Component {
                   onChange={this.messageChanged}>
             {
               spec.Messages.map(msg => {
-                return <option value={msg.Name}>{msg.Name}</option>
+                return <option key={msg.Id}
+                               value={msg.Name}>{msg.Name}</option>
               })
             }
 

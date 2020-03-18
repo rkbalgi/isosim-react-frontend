@@ -12,8 +12,6 @@ export default class MessageStructure extends React.Component {
     console.log("$msg_structure$", this.props.specs, this.props.spec,
         this.props.msg);
 
-    //this.props = props;
-
     this.state = {
       msgTemplate: null,
       loaded: false,
@@ -23,15 +21,36 @@ export default class MessageStructure extends React.Component {
     };
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
     this.appendFieldContent = this.appendFieldContent.bind(this);
-    //this.buildMessageTemplateContent = this.buildMessageTemplateContent.bind(
-    //   this);
+    this.sendToHost = this.sendToHost.bind(this);
+    this.addFieldContent = this.addFieldContent.bind(this);
+  }
+
+  addFieldContent(field, content) {
+
+    let fData = this.state.isoMsg.get(field.Id);
+    if (fData.state.selected) {
+      content.push({Id: field.Id, Value: fData.state.fieldValue});
+    }
+    field.Children.forEach(cf => {
+      if (fData.state.selected) {
+        this.addFieldContent(cf, content);
+      }
+    });
+
+  }
+
+  sendToHost() {
+
+    let content = [];
+    this.state.msgTemplate.Fields.forEach(f => {
+      this.addFieldContent(f, content);
+    });
+    console.log(content)
 
   }
 
   onFieldUpdate(e) {
-    //this.setState({spec: spec, msg: msg});
     console.log("field updated =>" + e.fieldName)
-    //this.getMessageTemplate(spec, msg);
   }
 
   componentDidMount() {
@@ -58,43 +77,39 @@ export default class MessageStructure extends React.Component {
     axios.get(url).then(
         res => {
           console.log(res.data);
+          let isoMsg = new Map();
+          isoMsg.set("msg_template", res.data);
           this.setState(
-              {spec: spec, msg: msg, msgTemplate: res.data, loaded: true});
+              {
+                spec: spec,
+                msg: msg,
+                msgTemplate: res.data,
+                loaded: true,
+                isoMsg: isoMsg
+              });
+
+          console.log("MsgTemplate = ", this.state.msgTemplate);
+
           //this.forceUpdate()
         }).catch(err => console.log(err))
   }
 
-  buildMessageTemplateContent() {
-
-    if (this.state.msgTemplate !== null) {
-      this.state.msgTemplate.Fields.map(field => {
-        return <tr>
-          <td>
-            <div>{field.Name}</div>
-          </td>
-        </tr>
-      })
-    }
-
-  }
-
   appendFieldContent(content, field, isoMsg, level) {
-    content.push(<IsoField field={field} onFieldUpdate={this.onFieldUpdate}/>);
+    content.push(<IsoField key={field.Id} field={field} isoMsg={isoMsg}
+                           onFieldUpdate={this.onFieldUpdate}/>);
   }
 
   render() {
 
     let content = [];
     if (this.state.loaded === true) {
-
-      let isoMsg = new Map();
-      isoMsg.set("msg_template", this.state.msgTemplate);
       this.state.msgTemplate.Fields.map(field => {
-        this.appendFieldContent(content, field, isoMsg, 1)
+        this.appendFieldContent(content, field, this.state.isoMsg, 1)
       })
     }
 
     return (
+
         <div style={{
           fontFamily: 'ptserif-regular',
           fontSize: '12px',
@@ -103,7 +118,22 @@ export default class MessageStructure extends React.Component {
           alignSelf: 'center',
           fill: 'aqua'
         }}>
+          <div align="center"
+               style={{
+                 height: "50px",
+                 verticalAlign: "baseline",
+                 alignItems: "center",
+                 margin: "10px"
+               }}>
+
+            <Button size={"sm"}>Parse Raw</Button>{' '}
+            <Button size={"sm"}>Load Message</Button>{' '}
+            <Button size={"sm"}>Save Message</Button>{' '}
+            <Button size={"sm"} onClick={this.sendToHost}>Send</Button>
+
+          </div>
           <table border="0">
+            <thead>
             <tr style={{
               fontFamily: "ptserif-regular",
               backgroundColor: "#EAFF13",
@@ -116,23 +146,13 @@ export default class MessageStructure extends React.Component {
               </td>
               <td align={"center"}>Field Data</td>
             </tr>
+            </thead>
+            <tbody>
             {content}
+            </tbody>
           </table>
-          <div style={{height: "10px"}}></div>
-          <div align="center"
-               style={{
-                 height: "200px",
-                 verticalAlign: "baseline",
-                 alignItems: "center",
-                 margin: "10px"
-               }}>
+          <div style={{height: "10px"}}>{' '}</div>
 
-            <Button size={"sm"}>Parse Raw</Button>{' '}
-            <Button size={"sm"}>Load Message</Button>{' '}
-            <Button size={"sm"}>Save Message</Button>{' '}
-            <Button size={"sm"}>Send</Button>
-
-          </div>
         </div>
 
     );
