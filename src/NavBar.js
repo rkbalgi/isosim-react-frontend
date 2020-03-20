@@ -1,6 +1,8 @@
 import React from 'react';
 import axios from 'axios'
 import MessageStructure from './MessageStructure.js'
+import {Button, Modal} from "react-bootstrap";
+import appProps from "./Properties";
 
 class NavBar extends React.Component {
 
@@ -11,7 +13,9 @@ class NavBar extends React.Component {
       currentSpec: "Select",
       currentSpecMsg: "",
       showMsgTemplate: false,
-      loaded: false
+      loaded: false,
+      errDialogVisible: false,
+      errorMessage: ''
     };
     this.specChanged = this.specChanged.bind(this);
     this.messageChanged = this.messageChanged.bind(this);
@@ -19,9 +23,17 @@ class NavBar extends React.Component {
 
   }
 
+  closeErrorDialog() {
+    this.setState({errDialogVisible: false})
+  }
+
+  showErrorDialog() {
+    this.setState({errDialogVisible: true});
+  }
+
   componentDidMount() {
 
-    axios.get('http://localhost:8080/iso/v0/specs').then(res => {
+    axios.get(appProps.allSpecsUrl).then(res => {
       console.log(res.data);
       this.setState({specs: res.data, loaded: true});
     }).catch(
@@ -48,6 +60,20 @@ class NavBar extends React.Component {
 
     return (
         <React.Fragment>
+
+          <Modal show={this.state.errDialogVisible}
+                 onHide={this.closeErrorDialog}>
+            <Modal.Header closeButton>
+              <Modal.Title>Error</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>{this.state.errorMessage}</Modal.Body>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={this.closeErrorDialog}>
+                Close
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
           <div align="center"
                style={{
                  verticalAlign: "baseline",

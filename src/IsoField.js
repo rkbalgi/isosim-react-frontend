@@ -1,4 +1,6 @@
 import React from "react";
+import ExpandedText from './ExpandedText.js'
+import {Button} from "react-bootstrap";
 
 // IsoField represents a single field from a ISO8583 specification
 export default class IsoField extends React.Component {
@@ -12,6 +14,9 @@ export default class IsoField extends React.Component {
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
     this.appendFieldContent = this.appendFieldContent.bind(this);
     this.setSelected = this.setSelected.bind(this);
+    this.setNewValue = this.setNewValue.bind(this);
+    this.showExpanded = this.showExpanded.bind(this);
+    this.closeExpanded = this.closeExpanded.bind(this);
 
     //if the field is Message Type, MTI or Bitmap - it should stay selected
     //because they're mandatory fields in ISO
@@ -24,7 +29,8 @@ export default class IsoField extends React.Component {
       this.state = {
         selected: true,
         id2Value: this.props.id2Value,
-        fieldValue: this.props.id2Value.get(this.props.field.Id)
+        fieldValue: this.props.id2Value.get(this.props.field.Id),
+        showExpanded: false
       };
     } else {
       let defaultFieldValue = "";
@@ -35,12 +41,32 @@ export default class IsoField extends React.Component {
           defaultFieldValue = Array(128).fill('0').reduce((p = "", c) => p + c);
         }
 
-        this.state = {selected: true, fieldValue: defaultFieldValue};
+        this.state = {
+          selected: true,
+          fieldValue: defaultFieldValue,
+          showExpanded: false
+        };
       } else {
-        this.state = {selected: false, fieldValue: defaultFieldValue};
+        this.state = {
+          selected: false,
+          fieldValue: defaultFieldValue,
+          showExpanded: false
+        };
       }
       this.props.isoMsg.set(this.props.field.Id, this);
     }
+  }
+
+  showExpanded() {
+    this.setState({showExpanded: true});
+  }
+
+  closeExpanded() {
+    this.setState({showExpanded: false});
+  }
+
+  setNewValue(newValue) {
+    this.setState({fieldValue: newValue, showExpanded: false});
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -240,9 +266,31 @@ export default class IsoField extends React.Component {
             {/*fieldSpecColumnContent*/}
 
             {/* field value column */}
-            <td><input type="text" value={this.state.fieldValue}
-                       style={{fontFamily: "courier new"}}
-                       onChange={this.fieldValueChanged}/>
+            <td>
+              <input type="text" value={this.state.fieldValue}
+                     style={{fontFamily: "courier new"}}
+                     onChange={this.fieldValueChanged}
+                     ondblclick={this.showExpanded}/>
+              <Button size={"sm"} style={{
+                float: 'right',
+                fontSize: '10px',
+                marginRight: '10px'
+              }}
+                      onClick={this.showExpanded}> + </Button>{' '}
+              <Button size={"sm"} style={{
+                float: 'right',
+                fontSize: '10px'
+              }}
+                      onClick={this.closeExpanded}> - </Button>
+
+            </td>
+
+          </tr>
+          <tr>
+            <td colspan="3">
+              <ExpandedText show={this.state.showExpanded}
+                            value={this.state.fieldValue}
+                            onClose={this.setNewValue}/>
             </td>
           </tr>
           {children}

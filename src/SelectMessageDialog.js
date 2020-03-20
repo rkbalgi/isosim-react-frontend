@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import {Button, Modal} from "react-bootstrap";
+import appProps from "./Properties";
 
 export default class SelectMessageDialog extends React.Component {
 
@@ -20,7 +21,7 @@ export default class SelectMessageDialog extends React.Component {
     //console.log("smd: componentDidUpdate", this.state);
     if (this.props.show === true && prevState.show === false) {
 
-      axios.get('http://localhost:8080/iso/v0/loadmsg', {
+      axios.get(appProps.loadMsgUrl, {
         params: {
           specId: this.props.specId,
           msgId: this.props.msgId,

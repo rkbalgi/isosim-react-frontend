@@ -43,7 +43,15 @@ export default class MessageStructure extends React.Component {
     this.processError = this.processError.bind(this);
     this.showLoadMessagesDialog = this.showLoadMessagesDialog.bind(this);
     this.closeLoadMsgDialog = this.closeLoadMsgDialog.bind(this);
+    this.showUnImplementedError = this.showUnImplementedError.bind(this);
 
+  }
+
+  showUnImplementedError() {
+    this.setState({
+      errorMessage: 'This functionality has not been implemented. Please try the old version of application.',
+      errDialogVisible: true
+    })
   }
 
   closeLoadMsgDialog(selectedMsg) {
@@ -174,7 +182,7 @@ export default class MessageStructure extends React.Component {
       return null;
     });
 
-    let url = 'http://localhost:8080/iso/v0/template/' + spec.Id + "/" + msg.Id;
+    let url = appProps.templateUrl + '/' + spec.Id + "/" + msg.Id;
     console.log(url);
     axios.get(url).then(
         res => {
@@ -214,7 +222,6 @@ export default class MessageStructure extends React.Component {
         <div style={{
           fontFamily: 'ptserif-regular',
           fontSize: '12px',
-          width: '800px',
           alignContent: 'center',
           alignSelf: 'center',
           fill: 'aqua'
@@ -239,20 +246,22 @@ export default class MessageStructure extends React.Component {
                                closeLoadMsgDialog={this.closeLoadMsgDialog}
           />
 
-          <div align="left"
-               style={{
-                 height: "100px",
-                 verticalAlign: "baseline",
-                 alignItems: "center",
-                 margin: "10px"
-               }}>
+          <div
+              style={{
+                height: "100px",
+                verticalAlign: "baseline",
+                alignItems: "center",
+                margin: "10px"
+              }}>
 
 
             <table
                 style={{
                   fontFamily: 'ptserif-regular',
                   fontSize: '14px',
-                  alignSelf: 'left'
+                  alignSelf: 'center',
+                  borderBottom: 'solid',
+                  backgroundColor: '#4cffff'
                 }}>
               <tr>
                 <td><label style={{width: '60px'}}>Server Ip </label>{'   '}
@@ -282,10 +291,12 @@ export default class MessageStructure extends React.Component {
 
               <tr>
                 <td>
-                  <Button size={"sm"}>Parse Raw</Button>{' '}
+                  <Button size={"sm"} onClick={this.showUnImplementedError}>Parse
+                    Raw</Button>{' '}
                   <Button size={"sm"} onClick={this.showLoadMessagesDialog}>Load
                     Message</Button>{' '}
-                  <Button size={"sm"}>Save Message</Button>{' '}
+                  <Button size={"sm"} onClick={this.showUnImplementedError}>Save
+                    Message</Button>{' '}
                   <Button size={"sm"} onClick={this.sendToHost}>Send</Button>
 
 
@@ -309,6 +320,15 @@ export default class MessageStructure extends React.Component {
                   <tr style={{
                     fontFamily: "ptserif-regular",
                     backgroundColor: "#EAFF13",
+                    fontSize: "15px",
+                    borderBottom: 'solid',
+                    borderColor: 'blue'
+                  }}>
+                    <td colspan="3" align={"center"}>{"Request Segment"}</td>
+                  </tr>
+                  <tr style={{
+                    fontFamily: "ptserif-regular",
+                    backgroundColor: "#EAFF13",
                     fontSize: "14px",
                   }}>
                     <td align={"center"}>Selection</td>
@@ -316,7 +336,8 @@ export default class MessageStructure extends React.Component {
                     {/*<td align={"center"}
                         style={{minWidth: "50px", maxWidth: "200px"}}>Field Spec
                     </td>*/}
-                    <td align={"center"}>Field Data</td>
+                    <td align={"center"} style={{width: '220px'}}>Field Data
+                    </td>
                   </tr>
                   </thead>
                   <tbody>
@@ -325,7 +346,7 @@ export default class MessageStructure extends React.Component {
                 </table>
 
               </td>
-              <td></td>
+              <td>{' '}</td>
 
               <td>
                 <ResponseSegment show={this.state.showResponse}
