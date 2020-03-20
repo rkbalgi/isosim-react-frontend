@@ -50,14 +50,16 @@ class NavBar extends React.Component {
         <React.Fragment>
           <div align="center"
                style={{
-                 alignItems: "center",
-                 alignSelf: "center",
-                 verticalAlign: "middle",
+                 verticalAlign: "baseline",
                  backgroundColor: "#AB68FF",
                  height: "80px"
                }}>
 
-            <table style={{fontFamily: 'ptserif-regular'}}>
+            <table style={{
+              fontFamily: 'ptserif-regular',
+              left: '50%',
+              top: '50%',
+            }}>
 
               <tbody>
               <tr>
@@ -83,7 +85,7 @@ class NavBar extends React.Component {
                                     specs={this.state.specs}
                                     spec={this.state.currentSpec}
                                     msg={msg}/>
-                  : <div></div>
+                  : null
             }
           </div>
         </React.Fragment>

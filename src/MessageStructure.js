@@ -4,6 +4,8 @@ import axios from "axios";
 import IsoField from './IsoField.js'
 import SelectMessageDialog from './SelectMessageDialog.js'
 import {Button, Modal} from 'react-bootstrap';
+import appProps from './Properties.js'
+import ResponseSegment from "./ResponseSegment";
 
 export default class MessageStructure extends React.Component {
 
@@ -24,14 +26,15 @@ export default class MessageStructure extends React.Component {
       mliType: "2I",
       errDialogVisible: false,
       errorMessage: '',
-      showLoadMessagesDialog: false
+      showLoadMessagesDialog: false,
+      showResponse: false,
+      responseData: null
     };
 
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
     this.appendFieldContent = this.appendFieldContent.bind(this);
     this.sendToHost = this.sendToHost.bind(this);
     this.addFieldContent = this.addFieldContent.bind(this);
-
     this.serverIpChanged = this.serverIpChanged.bind(this);
     this.serverPortChanged = this.serverPortChanged.bind(this);
     this.mliTypeChanged = this.mliTypeChanged.bind(this);
@@ -46,7 +49,27 @@ export default class MessageStructure extends React.Component {
   closeLoadMsgDialog(selectedMsg) {
     this.setState({showLoadMessagesDialog: false});
     console.log("selected msg = ", selectedMsg);
-    //TODO:: now make another ajax call, let the msg and display it
+
+    if (selectedMsg != null) {
+      axios.get(appProps.loadMsgUrl, {
+        params: {
+          specId: this.state.spec.Id,
+          msgId: this.state.msg.Id,
+          dsName: selectedMsg
+        }
+      }).then(res => {
+            console.log("saved msg data", res.data);
+            res.data.forEach(fd => {
+              let fieldComponent = this.state.isoMsg.get(fd.Id);
+              fieldComponent.setState({selected: true, fieldValue: fd.Value});
+            });
+          }
+      ).catch(e => {
+            console.log(e);
+            this.processError(e)
+          }
+      )
+    }
 
   }
 
@@ -103,8 +126,10 @@ export default class MessageStructure extends React.Component {
         + this.state.msg.Id + "&"
         + "msg="
         + JSON.stringify(content);
-    axios.post('http://localhost:8080/iso/v0/send', postData).then(res => {
+    axios.post(appProps.sendMsgUrl, postData).then(res => {
       console.log("Response from server", res);
+      this.setState({showResponse: true, responseData: res.data});
+
     }).catch(
         e => {
           console.log("error = ", e);
@@ -166,8 +191,6 @@ export default class MessageStructure extends React.Component {
               });
 
           console.log("MsgTemplate = ", this.state.msgTemplate);
-
-          //this.forceUpdate()
         }).catch(
         err => this.setState({errorMessage: err, errDialogVisible: true}))
   }
@@ -216,7 +239,7 @@ export default class MessageStructure extends React.Component {
                                closeLoadMsgDialog={this.closeLoadMsgDialog}
           />
 
-          <div align="center"
+          <div align="left"
                style={{
                  height: "100px",
                  verticalAlign: "baseline",
@@ -226,7 +249,11 @@ export default class MessageStructure extends React.Component {
 
 
             <table
-                style={{fontFamily: 'ptserif-regular', fontSize: '14px'}}>
+                style={{
+                  fontFamily: 'ptserif-regular',
+                  fontSize: '14px',
+                  alignSelf: 'left'
+                }}>
               <tr>
                 <td><label style={{width: '60px'}}>Server Ip </label>{'   '}
                   <input type="text" value={this.state.targetServerIp}
@@ -267,28 +294,51 @@ export default class MessageStructure extends React.Component {
 
 
             </table>
-
-
           </div>
-          <table border="0">
+
+          {/* outer table for request and response */}
+          <table>
+
             <thead>
-            <tr style={{
-              fontFamily: "ptserif-regular",
-              backgroundColor: "#EAFF13",
-              fontSize: "14px",
-            }}>
-              <td align={"center"}>Selection</td>
-              <td align={"center"}>Field</td>
-              <td align={"center"}
-                  style={{minWidth: "50px", maxWidth: "100px"}}>Field Spec
-              </td>
-              <td align={"center"}>Field Data</td>
-            </tr>
             </thead>
             <tbody>
-            {content}
+            <tr>
+              <td>
+                <table border="0">
+                  <thead>
+                  <tr style={{
+                    fontFamily: "ptserif-regular",
+                    backgroundColor: "#EAFF13",
+                    fontSize: "14px",
+                  }}>
+                    <td align={"center"}>Selection</td>
+                    <td align={"center"}>Field</td>
+                    {/*<td align={"center"}
+                        style={{minWidth: "50px", maxWidth: "200px"}}>Field Spec
+                    </td>*/}
+                    <td align={"center"}>Field Data</td>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {content}
+                  </tbody>
+                </table>
+
+              </td>
+              <td></td>
+
+              <td>
+                <ResponseSegment show={this.state.showResponse}
+                                 data={this.state.responseData}
+                                 msgTemplate={this.state.msgTemplate}/>
+              </td>
+
+            </tr>
             </tbody>
+
           </table>
+
+
           <div style={{height: "10px"}}>{' '}</div>
 
         </div>

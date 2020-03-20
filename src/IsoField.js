@@ -13,25 +13,43 @@ export default class IsoField extends React.Component {
     this.appendFieldContent = this.appendFieldContent.bind(this);
     this.setSelected = this.setSelected.bind(this);
 
-    this.selectable = true;
     //if the field is Message Type, MTI or Bitmap - it should stay selected
     //because they're mandatory fields in ISO
 
-    let defaultFieldValue = "";
+    this.selectable = true;
 
-    if (["Message Type", "MTI", "Bitmap"].includes(this.props.field.Name)) {
+    //readOnly is true when displaying a response segment
+    if (this.props.readOnly) {
       this.selectable = false;
-      if (this.props.field.Name === "Bitmap") {
-        defaultFieldValue = Array(128).fill('0').reduce((p = "", c) => p + c);
-      }
-
-      this.state = {selected: true, fieldValue: defaultFieldValue};
+      this.state = {
+        selected: true,
+        id2Value: this.props.id2Value,
+        fieldValue: this.props.id2Value.get(this.props.field.Id)
+      };
     } else {
-      this.state = {selected: false, fieldValue: defaultFieldValue};
+      let defaultFieldValue = "";
+      if (["Message Type", "MTI", "Bitmap"].includes(
+          this.props.field.Name)) {
+        this.selectable = false;
+        if (this.props.field.Name === "Bitmap") {
+          defaultFieldValue = Array(128).fill('0').reduce((p = "", c) => p + c);
+        }
+
+        this.state = {selected: true, fieldValue: defaultFieldValue};
+      } else {
+        this.state = {selected: false, fieldValue: defaultFieldValue};
+      }
+      this.props.isoMsg.set(this.props.field.Id, this);
     }
+  }
 
-    this.props.isoMsg.set(this.props.field.Id, this);
-
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (prevProps.id2Value !== this.props.id2Value) {
+      this.setState({
+        fieldValue: this.props.id2Value.get(this.props.field.Id),
+        id2Value: this.props.id2Value
+      });
+    }
   }
 
   onFieldUpdate(event) {
@@ -134,16 +152,17 @@ export default class IsoField extends React.Component {
     this.props.onFieldUpdate(obj)
   }
 
-  appendFieldContent(content, field, parentField) {
+  appendFieldContent(content, field, parentField, id2Value) {
 
-    console.log("laying out - " + field.Name + " => " + parentField.Name);
-    content.push(<IsoField key={field.Id} field={field}
+    let key = field.Id;
+    if (this.props.readOnly) {
+      key = 'response_seg_' + field.Id;
+    }
+    //console.log("laying out - " + field.Name + " => " + parentField.Name);
+    content.push(<IsoField key={key} field={field} id2Value={id2Value}
+                           readOnly={this.props.readOnly}
                            parentField={parentField} isoMsg={this.props.isoMsg}
                            onFieldUpdate={this.onFieldUpdate}/>);
-
-    /* field.Children.forEach(
-         c => this.appendFieldContent(content, c, field));
- */
   }
 
   render() {
@@ -199,7 +218,8 @@ export default class IsoField extends React.Component {
     let children = [];
 
     this.props.field.Children.forEach(
-        c => this.appendFieldContent(children, c, this.props.field));
+        c => this.appendFieldContent(children, c, this.props.field,
+            this.state.id2Value));
 
     return (
         <React.Fragment>
@@ -209,7 +229,7 @@ export default class IsoField extends React.Component {
 
             {/* field name column*/}
             <td style={{
-              width: "200px",
+              width: "100px",
               fontFamily: "ptserif-regular",
               fontSize: "13px"
             }}>
@@ -217,7 +237,7 @@ export default class IsoField extends React.Component {
             </td>
 
             {/* field specification column */}
-            {fieldSpecColumnContent}
+            {/*fieldSpecColumnContent*/}
 
             {/* field value column */}
             <td><input type="text" value={this.state.fieldValue}
