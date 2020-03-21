@@ -4,7 +4,7 @@ import NavBar from './NavBar.js'
 
 function App() {
   return (
-      <div>
+      <div style={{backgroundColor:'#fbfff0'}}>
         <h1 style={{fontFamily: "shadows-into-light"}}>ISO WebSim - ISO8583 Web
           Simulator</h1>
         <a style={{fontFamily: 'ptserif-regular', fontSize: '12px'}}

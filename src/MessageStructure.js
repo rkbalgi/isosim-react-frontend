@@ -367,7 +367,7 @@ export default class MessageStructure extends React.Component {
                   <thead>
                   <tr style={{
                     fontFamily: "ptserif-regular",
-                    backgroundColor: "#EAFF13",
+                    backgroundColor: "#0e82ff",
                     fontSize: "15px",
                     borderBottom: 'solid',
                     borderColor: 'blue'
@@ -376,7 +376,7 @@ export default class MessageStructure extends React.Component {
                   </tr>
                   <tr style={{
                     fontFamily: "ptserif-regular",
-                    backgroundColor: "#EAFF13",
+                    backgroundColor: "#0e82ff",
                     fontSize: "14px",
                   }}>
                     <td align={"center"}>Selection</td>
@@ -388,7 +388,7 @@ export default class MessageStructure extends React.Component {
                     </td>
                   </tr>
                   </thead>
-                  <tbody>
+                  <tbody style={{backgroundColor:'#11ddff'}}>
                   {content}
                   </tbody>
                 </table>

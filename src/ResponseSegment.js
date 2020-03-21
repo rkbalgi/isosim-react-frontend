@@ -57,7 +57,7 @@ export default class ResponseSegment extends React.Component {
                   <thead>
                   <tr style={{
                     fontFamily: "ptserif-regular",
-                    backgroundColor: "#b0afff",
+                    backgroundColor: "#3effba",
                     fontSize: "15px",
                     borderBottom: 'solid',
                     borderColor: 'blue'
@@ -66,7 +66,7 @@ export default class ResponseSegment extends React.Component {
                   </tr>
                   <tr style={{
                     fontFamily: "ptserif-regular",
-                    backgroundColor: "#b0afff",
+                    backgroundColor: "#3effba",
                     fontSize: "14px",
                   }}>
                     <td align={"center"}>Selection</td>
@@ -77,7 +77,7 @@ export default class ResponseSegment extends React.Component {
                     <td align={"center"} style={{width: '220px'}}>Field Data</td>
                   </tr>
                   </thead>
-                  <tbody>
+                  <tbody style={{backgroundColor:'#c9a564'}}>
                   {content}
                   </tbody>
                 </table>
