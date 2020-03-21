@@ -90,13 +90,13 @@ class NavBar extends React.Component {
               <tbody>
               <tr>
                 <td>Message Specification</td>
-                <td style={{width: "100px"}}></td>
+                <td style={{width: "100px"}}/>
                 <td>{this.specsDropDown()}</td>
               </tr>
 
               <tr>
                 <td>Message</td>
-                <td style={{width: "100px"}}></td>
+                <td style={{width: "100px"}}/>
                 <td>{this.messagesDropDown()}</td>
               </tr>
               </tbody>
@@ -130,10 +130,6 @@ class NavBar extends React.Component {
     if (this.state.loaded && event.target.value !== "Select") {
       console.log("calling update - specChanged");
       let spec = this.getSpecByName(event.target.value);
-      //console.log("current spec ", event.target.value);
-      /*if (this.msgTemplateRef.current) {
-        this.msgTemplateRef.current.update(spec.Name, spec.Messages[0].Name);
-      }*/
     }
   }
 
@@ -143,10 +139,6 @@ class NavBar extends React.Component {
     if (this.state.loaded && this.state.currentSpec !== "Select") {
       console.log("calling update - msgChanged");
 
-      /*if (this.msgTemplateRef.current) {
-        this.msgTemplateRef.current.update(this.state.currentSpec,
-            event.target.value);
-      }*/
     }
   }
 
@@ -176,7 +168,7 @@ class NavBar extends React.Component {
 
     // no spec loaded
     if (this.state.currentSpec === "Select") {
-      return (<select></select>);
+      return (<select/>);
     } else {
 
       return (

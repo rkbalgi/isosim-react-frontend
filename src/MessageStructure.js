@@ -6,6 +6,7 @@ import SelectMessageDialog from './SelectMessageDialog.js'
 import {Button, Modal} from 'react-bootstrap';
 import appProps from './Properties.js'
 import ResponseSegment from "./ResponseSegment";
+import ParseMessageDialog from "./ParseMessageDialog";
 
 export default class MessageStructure extends React.Component {
 
@@ -27,6 +28,7 @@ export default class MessageStructure extends React.Component {
       errDialogVisible: false,
       errorMessage: '',
       showLoadMessagesDialog: false,
+      showTraceInputDialog: false,
       showResponse: false,
       responseData: null
     };
@@ -44,7 +46,33 @@ export default class MessageStructure extends React.Component {
     this.showLoadMessagesDialog = this.showLoadMessagesDialog.bind(this);
     this.closeLoadMsgDialog = this.closeLoadMsgDialog.bind(this);
     this.showUnImplementedError = this.showUnImplementedError.bind(this);
+    this.setTrace = this.setTrace.bind(this);
+    this.showTraceInputsDialog = this.showTraceInputsDialog.bind(this);
 
+  }
+
+  // this method receives the trace as a callback from ParseMessageDialog component
+  setTrace(trace) {
+    if (trace != null) {
+      console.log("trace  = ", trace);
+      // now parse this via a API call
+
+      axios.post(appProps.parseTraceUrl + '/' + this.state.spec.Id + '/'
+          + this.state.msg.Id, trace).then(res => {
+            console.log("parsed msg data", res.data);
+            res.data.forEach(fd => {
+              let fieldComponent = this.state.isoMsg.get(fd.Id);
+              fieldComponent.setState({selected: true, fieldValue: fd.Value});
+            });
+          }
+      ).catch(e => {
+            console.log(e);
+            this.processError(e)
+          }
+      )
+
+    }
+    this.setState({showTraceInputDialog: false})
   }
 
   showUnImplementedError() {
@@ -79,6 +107,10 @@ export default class MessageStructure extends React.Component {
       )
     }
 
+  }
+
+  showTraceInputsDialog() {
+    this.setState({showTraceInputDialog: true})
   }
 
   showLoadMessagesDialog() {
@@ -127,6 +159,9 @@ export default class MessageStructure extends React.Component {
     });
     console.log(content);
 
+    //lets not hide and then show the response segment again
+    this.setState({showResponse: false, responseData: []});
+
     let postData = 'host=' +
         this.state.targetServerIp + '&' + 'port=' + this.state.targetServerPort
         + '&' + 'mli=' + this.state.mliType
@@ -147,6 +182,16 @@ export default class MessageStructure extends React.Component {
   }
 
   processError(e) {
+
+    if (!e.response) {
+      console.log(e);
+      this.setState({
+        errorMessage: 'Error: Unable to reach API server',
+        errDialogVisible: true
+      });
+      return
+    }
+
     if (e.response.status === 400) {
       this.setState(
           {errorMessage: e.response.data, errDialogVisible: true});
@@ -246,6 +291,9 @@ export default class MessageStructure extends React.Component {
                                closeLoadMsgDialog={this.closeLoadMsgDialog}
           />
 
+          <ParseMessageDialog show={this.state.showTraceInputDialog}
+                              setTrace={this.setTrace}/>
+
           <div
               style={{
                 height: "100px",
@@ -291,7 +339,7 @@ export default class MessageStructure extends React.Component {
 
               <tr>
                 <td>
-                  <Button size={"sm"} onClick={this.showUnImplementedError}>Parse
+                  <Button size={"sm"} onClick={this.showTraceInputsDialog}>Parse
                     Raw</Button>{' '}
                   <Button size={"sm"} onClick={this.showLoadMessagesDialog}>Load
                     Message</Button>{' '}
