@@ -7,6 +7,7 @@ class AppProps {
     this.allSpecsUrl = this.baseUrl + '/iso/v0/specs';
     this.templateUrl = this.baseUrl + '/iso/v0/template';
     this.parseTraceUrl = this.baseUrl + '/iso/v0/parse';
+    this.saveMsgUrl = this.baseUrl + '/iso/v0/save';
   }
 
 }

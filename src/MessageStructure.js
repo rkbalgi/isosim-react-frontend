@@ -7,6 +7,7 @@ import {Button, Modal} from 'react-bootstrap';
 import appProps from './Properties.js'
 import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "./ParseMessageDialog";
+import SaveMessageDialog from "./SaveMessageDialog";
 
 export default class MessageStructure extends React.Component {
 
@@ -29,6 +30,7 @@ export default class MessageStructure extends React.Component {
       errorMessage: '',
       showLoadMessagesDialog: false,
       showTraceInputDialog: false,
+      showSaveMsgDialog: false,
       showResponse: false,
       responseData: null
     };
@@ -48,6 +50,11 @@ export default class MessageStructure extends React.Component {
     this.showUnImplementedError = this.showUnImplementedError.bind(this);
     this.setTrace = this.setTrace.bind(this);
     this.showTraceInputsDialog = this.showTraceInputsDialog.bind(this);
+    this.showSaveMsgDialog = this.showSaveMsgDialog.bind(this);
+
+    this.msgSaveSuccess = this.msgSaveSuccess.bind(this);
+    this.msgSaveFailed = this.msgSaveFailed.bind(this);
+    this.msgSaveCancelled = this.msgSaveCancelled.bind(this);
 
   }
 
@@ -107,6 +114,22 @@ export default class MessageStructure extends React.Component {
       )
     }
 
+  }
+
+  msgSaveSuccess(msgName) {
+    console.log("saved as ", msgName)
+  }
+
+  msgSaveFailed(e) {
+    console.log("msgSave Failed", e)
+  }
+
+  msgSaveCancelled() {
+    console.log("save cancelled")
+  }
+
+  showSaveMsgDialog() {
+    this.setState({showSaveMsgDialog: true})
   }
 
   showTraceInputsDialog() {
@@ -294,6 +317,12 @@ export default class MessageStructure extends React.Component {
           <ParseMessageDialog show={this.state.showTraceInputDialog}
                               setTrace={this.setTrace}/>
 
+          <SaveMessageDialog show={this.state.showSaveMsgDialog}
+                             msgName={"<dataset-name>"}
+                             msgSaveSuccess={this.msgSaveSuccess}
+                             msgSaveFailed={this.msgSaveFailed}
+                             msgSaveCancelled={this.msgSaveCancelled}/>
+
           <div
               style={{
                 height: "100px",
@@ -343,7 +372,7 @@ export default class MessageStructure extends React.Component {
                     Raw</Button>{' '}
                   <Button size={"sm"} onClick={this.showLoadMessagesDialog}>Load
                     Message</Button>{' '}
-                  <Button size={"sm"} onClick={this.showUnImplementedError}>Save
+                  <Button size={"sm"} onClick={this.showSaveMsgDialog}>Save
                     Message</Button>{' '}
                   <Button size={"sm"} onClick={this.sendToHost}>Send</Button>
 
@@ -388,7 +417,7 @@ export default class MessageStructure extends React.Component {
                     </td>
                   </tr>
                   </thead>
-                  <tbody style={{backgroundColor:'#11ddff'}}>
+                  <tbody>
                   {content}
                   </tbody>
                 </table>

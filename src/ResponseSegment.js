@@ -77,7 +77,7 @@ export default class ResponseSegment extends React.Component {
                     <td align={"center"} style={{width: '220px'}}>Field Data</td>
                   </tr>
                   </thead>
-                  <tbody style={{backgroundColor:'#c9a564'}}>
+                  <tbody>
                   {content}
                   </tbody>
                 </table>

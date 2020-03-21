@@ -77,7 +77,7 @@ class NavBar extends React.Component {
           <div align="center"
                style={{
                  verticalAlign: "baseline",
-                 backgroundColor: "#AB68FF",
+                 backgroundColor: "#ffbe00",
                  height: "80px"
                }}>
 

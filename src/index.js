@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 //ReactDOM.render(<NavBar />, document.getElementById('nav_bar'));
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App style={{backgroundColor:'blue'}}/>, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
