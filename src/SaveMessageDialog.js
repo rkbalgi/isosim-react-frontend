@@ -14,7 +14,7 @@ export default class SaveMessageDialog extends React.Component {
   }
 
   msgNameChanged(event) {
-    this.setState({msgName: event.target.value});
+    this.setState({errorMessage: '', msgName: event.target.value});
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -28,14 +28,16 @@ export default class SaveMessageDialog extends React.Component {
 
   closeDialogSuccess() {
 
-    axios.post(appProps.saveMsgUrl, {
-      params: {
-        specId: this.props.specId,
-        msgId: this.props.msgId,
-        dataSetName: this.state.msgName,
-        msg: this.props.data
-      }
-    }).then(res => {
+    if (!this.state.msgName || this.state.msgName === "" || !this.props.data) {
+      this.setState({errorMessage: 'Please specify a message!'});
+      return;
+    }
+
+    let postData = 'specId=' + this.props.specId + '&msgId=' + this.props.msgId
+        + '&dataSetName=' + this.state.msgName + '&msg=' + JSON.stringify(
+            this.props.data);
+   // console.log(postData);
+    axios.post(appProps.saveMsgUrl, postData).then(res => {
       console.log(res);
       this.props.msgSaveSuccess(this.state.msgName);
       this.setState({show: false});
@@ -55,11 +57,20 @@ export default class SaveMessageDialog extends React.Component {
 
   render() {
 
-    let content;
+    let content, errorContent;
 
     if (this.state.show) {
+
+      console.log("before sending", this.props);
+
       if (this.state.errorMessage) {
-        content = <div>{this.state.errorMessage}</div>
+        errorContent =
+            <div style={{color: 'red'}}>{this.state.errorMessage}</div>
+      }
+
+      if (!this.props.msgId || !this.props.specId) {
+        content =
+            <div>{"Error: Please load a spec/msg, set data before attempting to save"}</div>
       } else {
         content =
             <React.Fragment>
@@ -67,6 +78,7 @@ export default class SaveMessageDialog extends React.Component {
                 Name </label>{'  '}
               <input type={"text"} key={"msg_name_save"}
                      value={this.state.msgName} onChange={this.msgNameChanged}/>
+              {errorContent}
             </React.Fragment>
       }
     }
@@ -75,7 +87,7 @@ export default class SaveMessageDialog extends React.Component {
         <Modal show={this.state.show}
                onHide={this.closeDialogFail}>
           <Modal.Header closeButton>
-            <Modal.Title>Load Saved Message</Modal.Title>
+            <Modal.Title>Save Message</Modal.Title>
           </Modal.Header>
           <Modal.Body>{content}</Modal.Body>
           <Modal.Footer>

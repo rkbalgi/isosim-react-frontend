@@ -34,13 +34,12 @@ export default class ResponseSegment extends React.Component {
 
   render() {
 
-    console.log("Rendering again...");
     let content = [];
     if (this.state.show) {
 
       let idToField = new Map();
       this.state.data.forEach(f => {
-        console.log("setting  .. ", f.Id, f.Value);
+        //console.log("setting  .. ", f.Id, f.Value);
         idToField.set(f.Id, f.Value);
       });
 
@@ -74,7 +73,8 @@ export default class ResponseSegment extends React.Component {
                     {/*<td align={"center"}
                         style={{minWidth: "50px", maxWidth: "200px"}}>Field Spec
                     </td>*/}
-                    <td align={"center"} style={{width: '220px'}}>Field Data</td>
+                    <td align={"center"} style={{width: '220px'}}>Field Data
+                    </td>
                   </tr>
                   </thead>
                   <tbody>

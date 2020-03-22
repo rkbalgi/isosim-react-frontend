@@ -27,7 +27,7 @@ export default class SelectMessageDialog extends React.Component {
           msgId: this.props.msgId,
         }
       }).then(res => {
-        console.log(res);
+       // console.log(res);
         this.setState(
             {savedMsgs: res.data, selectedMsg: res.data[0], show: true});
 

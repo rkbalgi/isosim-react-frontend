@@ -26,6 +26,7 @@ export default class MessageStructure extends React.Component {
       targetServerIp: '127.0.0.1',
       targetServerPort: '6666',
       mliType: "2I",
+      currentDataSet: '',
       errDialogVisible: false,
       errorMessage: '',
       showLoadMessagesDialog: false,
@@ -55,6 +56,7 @@ export default class MessageStructure extends React.Component {
     this.msgSaveSuccess = this.msgSaveSuccess.bind(this);
     this.msgSaveFailed = this.msgSaveFailed.bind(this);
     this.msgSaveCancelled = this.msgSaveCancelled.bind(this);
+    this.showInfoDialog = this.showInfoDialog.bind(this);
 
   }
 
@@ -90,7 +92,7 @@ export default class MessageStructure extends React.Component {
   }
 
   closeLoadMsgDialog(selectedMsg) {
-    this.setState({showLoadMessagesDialog: false});
+    this.setState({showLoadMessagesDialog: false, currentDataSet: selectedMsg});
     console.log("selected msg = ", selectedMsg);
 
     if (selectedMsg != null) {
@@ -101,7 +103,7 @@ export default class MessageStructure extends React.Component {
           dsName: selectedMsg
         }
       }).then(res => {
-            console.log("saved msg data", res.data);
+            //console.log("saved msg data", res.data);
             res.data.forEach(fd => {
               let fieldComponent = this.state.isoMsg.get(fd.Id);
               fieldComponent.setState({selected: true, fieldValue: fd.Value});
@@ -116,20 +118,32 @@ export default class MessageStructure extends React.Component {
 
   }
 
+  showInfoDialog(msg) {
+    this.setState({errDialogVisible: true, errorMessage: msg})
+  }
+
   msgSaveSuccess(msgName) {
-    console.log("saved as ", msgName)
+    this.showInfoDialog(`Message ${msgName} saved successfully.`);
+    this.setState({showSaveMsgDialog: false});
   }
 
   msgSaveFailed(e) {
-    console.log("msgSave Failed", e)
+    this.processError(e);
+    this.setState({showSaveMsgDialog: false});
   }
 
   msgSaveCancelled() {
-    console.log("save cancelled")
+    this.setState({showSaveMsgDialog: false});
   }
 
   showSaveMsgDialog() {
-    this.setState({showSaveMsgDialog: true})
+
+    // build the data and then
+    let content = [];
+    this.state.msgTemplate.Fields.forEach(f => {
+      this.addFieldContent(f, content);
+    });
+    this.setState({saveData: content, showSaveMsgDialog: true})
   }
 
   showTraceInputsDialog() {
@@ -311,14 +325,16 @@ export default class MessageStructure extends React.Component {
           <SelectMessageDialog show={this.state.showLoadMessagesDialog}
                                specId={this.state.spec.Id}
                                msgId={this.state.msg.Id}
-                               closeLoadMsgDialog={this.closeLoadMsgDialog}
-          />
+                               closeLoadMsgDialog={this.closeLoadMsgDialog}/>
 
           <ParseMessageDialog show={this.state.showTraceInputDialog}
                               setTrace={this.setTrace}/>
 
           <SaveMessageDialog show={this.state.showSaveMsgDialog}
-                             msgName={"<dataset-name>"}
+                             msgId={this.state.msg.Id}
+                             specId={this.state.spec.Id}
+                             data={this.state.saveData}
+                             msgName={this.state.currentDataSet}
                              msgSaveSuccess={this.msgSaveSuccess}
                              msgSaveFailed={this.msgSaveFailed}
                              msgSaveCancelled={this.msgSaveCancelled}/>
@@ -396,7 +412,7 @@ export default class MessageStructure extends React.Component {
                   <thead>
                   <tr style={{
                     fontFamily: "ptserif-regular",
-                    backgroundColor: "#0e82ff",
+                    backgroundColor: "#ff8f5b",
                     fontSize: "15px",
                     borderBottom: 'solid',
                     borderColor: 'blue'
@@ -405,7 +421,7 @@ export default class MessageStructure extends React.Component {
                   </tr>
                   <tr style={{
                     fontFamily: "ptserif-regular",
-                    backgroundColor: "#0e82ff",
+                    backgroundColor: "#ff8f5b",
                     fontSize: "14px",
                   }}>
                     <td align={"center"}>Selection</td>
