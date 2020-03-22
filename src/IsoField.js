@@ -1,6 +1,8 @@
 import React from "react";
 import ExpandedText from './ExpandedText.js'
 import {Button} from "react-bootstrap";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from 'react-bootstrap/Tooltip'
 
 // IsoField represents a single field from a ISO8583 specification
 export default class IsoField extends React.Component {
@@ -17,12 +19,12 @@ export default class IsoField extends React.Component {
     this.setNewValue = this.setNewValue.bind(this);
     this.showExpanded = this.showExpanded.bind(this);
     this.closeExpanded = this.closeExpanded.bind(this);
+    //this.showToolTip = this.showToolTip.bind(this);
 
     //if the field is Message Type, MTI or Bitmap - it should stay selected
     //because they're mandatory fields in ISO
 
     this.selectable = true;
-
     //readOnly is true when displaying a response segment
     if (this.props.readOnly) {
       this.selectable = false;
@@ -184,7 +186,6 @@ export default class IsoField extends React.Component {
     if (this.props.readOnly) {
       key = 'response_seg_' + field.Id;
     }
-    //console.log("laying out - " + field.Name + " => " + parentField.Name);
     content.push(<IsoField key={key} field={field} id2Value={id2Value}
                            readOnly={this.props.readOnly}
                            parentField={parentField} isoMsg={this.props.isoMsg}
@@ -210,7 +211,11 @@ export default class IsoField extends React.Component {
     }
 
     let fieldSpecColumnContent;
+    let fieldInfo = "Type: " + this.props.field.Type + ' / ';
     if (this.props.field.Type === 'Fixed') {
+      fieldInfo += "Length: " + this.props.field.FixedSize + ' / '
+          + 'Encoding: '
+          + this.props.field.DataEncoding;
       fieldSpecColumnContent = <React.Fragment>
         <td>
           <div className={"class_small_div"}>F</div>
@@ -220,6 +225,9 @@ export default class IsoField extends React.Component {
         </td>
       </React.Fragment>;
     } else if (this.props.field.Type === 'Variable') {
+      fieldInfo += "Length Indicator: " + this.props.field.LengthIndicatorSize
+          + ' / ' + 'Length Encoding: ' + this.props.field.LengthEncoding
+          + ' / ' + 'Data Encoding: ' + this.props.field.DataEncoding;
       fieldSpecColumnContent = <React.Fragment>
         <td>
           <div className={"class_small_div"}>V</div>
@@ -254,13 +262,19 @@ export default class IsoField extends React.Component {
             {selectionColumnContent}
 
             {/* field name column*/}
-            <td style={{
-              width: "100px",
-              fontFamily: "ptserif-regular",
-              fontSize: "13px"
-            }}>
-              {this.props.field.Name}
-            </td>
+
+            <OverlayTrigger overlay={(
+                <Tooltip id="hi"
+                         style={{fontSize: '10px'}}>{fieldInfo}</Tooltip>)}
+                            placement="top">
+              <td style={{
+                width: "100px",
+                fontFamily: "ptserif-regular",
+                fontSize: "13px"
+              }}>
+                {this.props.field.Name}
+              </td>
+            </OverlayTrigger>
 
             {/* field specification column */}
             {/*fieldSpecColumnContent*/}

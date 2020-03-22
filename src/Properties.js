@@ -2,6 +2,7 @@ class AppProps {
 
   constructor() {
     this.baseUrl = 'http://localhost:8080';
+    //this.baseUrl = '';
     this.sendMsgUrl = this.baseUrl + '/iso/v0/send';
     this.loadMsgUrl = this.baseUrl + '/iso/v0/loadmsg';
     this.allSpecsUrl = this.baseUrl + '/iso/v0/specs';
