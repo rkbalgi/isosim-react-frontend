@@ -269,8 +269,8 @@ export default class IsoField extends React.Component {
                             placement="top">
               <td style={{
                 width: "100px",
-                fontFamily: "ptserif-regular",
-                fontSize: "13px"
+                fontFamily: "lato-regular",
+                fontSize: "14px"
               }}>
                 {this.props.field.Name}
               </td>

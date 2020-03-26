@@ -47,7 +47,7 @@ export default class ParseMessageDialog extends React.Component {
         content =
             <React.Fragment>
               <label
-                  style={{fontFamily: "ptserif-regular"}}> Trace </label>{'  '}
+                  style={{fontFamily: "lato-regular"}}> Trace </label>{'  '}
 
               <textarea key={"trace_input"} value={this.state.traceMsg}
                         onChange={this.traceChanged}

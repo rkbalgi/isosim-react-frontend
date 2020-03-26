@@ -302,7 +302,7 @@ export default class MessageStructure extends React.Component {
     return (
 
         <div style={{
-          fontFamily: 'ptserif-regular',
+          fontFamily: 'lato-regular',
           fontSize: '12px',
           alignContent: 'center',
           alignSelf: 'center',
@@ -350,7 +350,7 @@ export default class MessageStructure extends React.Component {
 
             <table
                 style={{
-                  fontFamily: 'ptserif-regular',
+                  fontFamily: 'lato-regular',
                   fontSize: '14px',
                   alignSelf: 'center',
                   borderBottom: 'solid',
@@ -411,7 +411,7 @@ export default class MessageStructure extends React.Component {
                 <table border="0">
                   <thead>
                   <tr style={{
-                    fontFamily: "ptserif-regular",
+                    fontFamily: "lato-regular",
                     backgroundColor: "#ff8f5b",
                     fontSize: "15px",
                     borderBottom: 'solid',
@@ -420,7 +420,7 @@ export default class MessageStructure extends React.Component {
                     <td colspan="3" align={"center"}>{"Request Segment"}</td>
                   </tr>
                   <tr style={{
-                    fontFamily: "ptserif-regular",
+                    fontFamily: "lato-regular",
                     backgroundColor: "#ff8f5b",
                     fontSize: "14px",
                   }}>

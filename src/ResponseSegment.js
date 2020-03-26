@@ -55,7 +55,7 @@ export default class ResponseSegment extends React.Component {
                 <table border="0">
                   <thead>
                   <tr style={{
-                    fontFamily: "ptserif-regular",
+                    fontFamily: "lato-regular",
                     backgroundColor: "#3effba",
                     fontSize: "15px",
                     borderBottom: 'solid',
@@ -64,7 +64,7 @@ export default class ResponseSegment extends React.Component {
                     <td colSpan="3" align={"center"}>{"Response Segment"}</td>
                   </tr>
                   <tr style={{
-                    fontFamily: "ptserif-regular",
+                    fontFamily: "lato-regular",
                     backgroundColor: "#3effba",
                     fontSize: "14px",
                   }}>

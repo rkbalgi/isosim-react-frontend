@@ -62,9 +62,9 @@ export default class SelectMessageDialog extends React.Component {
       } else {
         content =
             <React.Fragment>
-              <label style={{fontFamily: "ptserif-regular"}}> Saved
+              <label style={{fontFamily: "lato-regular"}}> Saved
                 Message </label>{'  '}
-              <select style={{fontFamily: "ptserif-regular", width: "200px"}}
+              <select style={{fontFamily: "lato-regular", width: "200px"}}
                       value={this.state.selectedMsg}
                       onChange={this.selectedMsgChanged}>
                 {this.state.savedMsgs.map((sm) => {

@@ -18,12 +18,17 @@ code {
 }
 
 @font-face {
+  font-family: "lato-regular";
+  src: url("./fonts/Lato-Regular.ttf");
+}
+
+@font-face {
   font-family: "ptserif-regular";
   src: url("./fonts/PTSerif-Regular.ttf");
 }
 
 .class_btn {
-  font-family: 'ptserif-regular', serif;
+  font-family: 'lato-regular', serif;
   font-size: 12px;
 }
 

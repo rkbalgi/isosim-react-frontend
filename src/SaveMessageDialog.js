@@ -74,7 +74,7 @@ export default class SaveMessageDialog extends React.Component {
       } else {
         content =
             <React.Fragment>
-              <label style={{fontFamily: "ptserif-regular"}}> Message
+              <label style={{fontFamily: "lato-regular"}}> Message
                 Name </label>{'  '}
               <input type={"text"} key={"msg_name_save"}
                      value={this.state.msgName} onChange={this.msgNameChanged}/>

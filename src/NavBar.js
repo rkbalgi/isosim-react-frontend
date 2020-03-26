@@ -82,7 +82,8 @@ class NavBar extends React.Component {
                }}>
 
             <table style={{
-              fontFamily: 'ptserif-regular',
+              fontFamily: 'lato-regular',
+              fontSize: '16px',
               left: '50%',
               top: '50%',
             }}>
@@ -145,7 +146,7 @@ class NavBar extends React.Component {
   // builds a combo box for specifications
   specsDropDown() {
     return (
-        <select style={{fontFamily: "ptserif-regular", width: "200px",}}
+        <select style={{fontFamily: "lato-regular", width: "200px",}}
                 onChange={this.specChanged}>
           <option key={"Select"} value={"Select"}>Select</option>
           {
@@ -174,7 +175,7 @@ class NavBar extends React.Component {
       return (
 
           <select value={this.state.currentSpecMsg}
-                  style={{fontFamily: "ptserif-regular", width: "150px"}}
+                  style={{fontFamily: "lato-regular", width: "150px"}}
                   onChange={this.messageChanged}>
             {
               spec.Messages.map(msg => {
