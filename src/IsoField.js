@@ -289,7 +289,7 @@ export default class IsoField extends React.Component {
             <td>
               <input type="text" value={this.state.fieldValue}
                      style={{fontFamily: "courier new"}}
-                     onChange={this.fieldValueChanged}
+                     onChange={this.fieldValueChanged} disabled={this.props.readOnly}
                      ondblclick={this.showExpanded}/>
               <Button size={"sm"} style={{
                 float: 'right',
@@ -310,6 +310,7 @@ export default class IsoField extends React.Component {
             <td colspan="3">
               <ExpandedText show={this.state.showExpanded}
                             value={this.state.fieldValue}
+                            readOnly={this.props.readOnly}
                             onClose={this.setNewValue}/>
             </td>
           </tr>

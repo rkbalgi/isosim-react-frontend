@@ -39,7 +39,6 @@ export default class ResponseSegment extends React.Component {
 
       let idToField = new Map();
       this.state.data.forEach(f => {
-        //console.log("setting  .. ", f.Id, f.Value);
         idToField.set(f.Id, f.Value);
       });
 

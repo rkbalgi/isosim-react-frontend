@@ -46,7 +46,7 @@ export default class ExpandedText extends React.Component {
               minHeight: '80px',
               maxHeight: '200px'
             }}
-            onChange={this.valueChanged} value={this.state.value}/>
+            onChange={this.valueChanged} disabled={this.props.readOnly} value={this.state.value}/>
 
                 <div style={{height: '25px'}}>
                   <Button size={"sm"} style={{
