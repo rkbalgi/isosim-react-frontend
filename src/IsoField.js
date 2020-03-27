@@ -211,7 +211,13 @@ export default class IsoField extends React.Component {
     }
 
     let fieldSpecColumnContent;
-    let fieldInfo = "Type: " + this.props.field.Type + ' / ';
+    let positionInParent = "";
+    if (this.props.field.ParentId > 0) {
+      positionInParent = "\u2937" + this.props.field.Position + " ";
+    }
+
+    let fieldInfo = positionInParent + " Type: " + this.props.field.Type
+        + ' / ';
     if (this.props.field.Type === 'Fixed') {
       fieldInfo += "Length: " + this.props.field.FixedSize + ' / '
           + 'Encoding: '
