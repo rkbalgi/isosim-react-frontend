@@ -8,6 +8,7 @@ import appProps from './Properties.js'
 import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "./ParseMessageDialog";
 import SaveMessageDialog from "./SaveMessageDialog";
+import fieldValidator from './FieldValidator'
 
 export default class MessageStructure extends React.Component {
 
@@ -174,27 +175,39 @@ export default class MessageStructure extends React.Component {
     this.setState({targetServerPort: e.target.value});
   }
 
-  addFieldContent(field, content) {
+  addFieldContent(field, content, validationErrors) {
 
     let fData = this.state.isoMsg.get(field.Id);
     if (fData.state.selected) {
+      fieldValidator.validate(field, fData.state.fieldValue, validationErrors);
       content.push({Id: field.Id, Value: fData.state.fieldValue});
     }
+
     field.Children.forEach(cf => {
       if (fData.state.selected) {
-        this.addFieldContent(cf, content);
+        this.addFieldContent(cf, content, validationErrors);
       }
     });
 
   }
 
+  //sends the message (as JSON) to the API server to be sent to the ISO host
   sendToHost() {
 
     let content = [];
+    let validationErrors = [];
     this.state.msgTemplate.Fields.forEach(f => {
-      this.addFieldContent(f, content);
+      this.addFieldContent(f, content, validationErrors);
     });
-    console.log(content);
+    console.log("After gathering data = ", content, validationErrors);
+
+    if (validationErrors.length > 0) {
+      let errMsg = "";
+      validationErrors.forEach(e => errMsg += e + "\n");
+      this.setState({errorMessage: errMsg});
+      this.showErrorDialog();
+      return
+    }
 
     //lets not hide and then show the response segment again
     this.setState({showResponse: false, responseData: []});
@@ -314,7 +327,11 @@ export default class MessageStructure extends React.Component {
             <Modal.Header closeButton>
               <Modal.Title>Error</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{this.state.errorMessage}</Modal.Body>
+            <Modal.Body><pre style={{
+              font: "Lato",
+              fontSize: "14px"
+            }}>{this.state.errorMessage}</pre>
+            </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={this.closeErrorDialog}>
                 Close
