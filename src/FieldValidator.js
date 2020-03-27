@@ -7,6 +7,7 @@ class FieldValidator {
   validate(field, fieldData, errors) {
 
     console.log("validate", field, fieldData, errors);
+    let validationFailed = false;
 
     if (field.Type === "Fixed") {
 
@@ -14,11 +15,14 @@ class FieldValidator {
         if (fieldData.length !== field.FixedSize) {
           errors.push(
               `\u2b55 "${field.Name}" should have a fixed size of ${field.FixedSize} but has ${fieldData.length}`);
+          validationFailed = true;
         }
       } else {
         if (fieldData.length !== 2 * field.FixedSize) {
           errors.push(
-              `\u2b55 "${field.Name}" should have a fixed size of ${field.FixedSize} but has ${fieldData.length/2}`);
+              `\u2b55 "${field.Name}" should have a fixed size of ${field.FixedSize} but has ${fieldData.length
+              / 2}`);
+          validationFailed = true;
         }
       }
 
@@ -28,19 +32,23 @@ class FieldValidator {
       if (fieldData.length % 2 !== 0) {
         errors.push(
             `\u2b55 "${field.Name}" should have even number of characters!`);
+        validationFailed = true;
       }
 
       if (field.DataEncoding === 'BINARY' && !fieldData.match(
           "^[0-9,a-f,A-F]+$")) {
         errors.push(`\u2b55 "${field.Name}" supports only hex i.e 0-9,a-z,A-Z`);
+        validationFailed = true;
       }
       if (field.DataEncoding === 'BCD' && !fieldData.match("^[0-9]+$")) {
         errors.push(`\u2b55 "${field.Name}" supports only bcd i.e 0-9`);
+        validationFailed = true;
       }
 
     }
 
     //TODO:: other checks like content etc
+    return validationFailed;
 
   }
 

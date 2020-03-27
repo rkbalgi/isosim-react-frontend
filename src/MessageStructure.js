@@ -179,7 +179,12 @@ export default class MessageStructure extends React.Component {
 
     let fData = this.state.isoMsg.get(field.Id);
     if (fData.state.selected) {
-      fieldValidator.validate(field, fData.state.fieldValue, validationErrors);
+      if (fieldValidator.validate(field, fData.state.fieldValue,
+          validationErrors)) {
+        fData.setError(true);
+      }else{
+        fData.setError(false);
+      }
       content.push({Id: field.Id, Value: fData.state.fieldValue});
     }
 
@@ -199,7 +204,7 @@ export default class MessageStructure extends React.Component {
     this.state.msgTemplate.Fields.forEach(f => {
       this.addFieldContent(f, content, validationErrors);
     });
-    console.log("After gathering data = ", content, validationErrors);
+    //console.log("After gathering data = ", content, validationErrors);
 
     if (validationErrors.length > 0) {
       let errMsg = "";
