@@ -60,7 +60,7 @@ export default class MessageStructure extends React.Component {
 
   }
 
-  // this method receives the trace as a callback from ParseMessageDialog component
+  // Receives the trace as a callback from ParseMessageDialog component
   setTrace(trace) {
     if (trace != null) {
       console.log("trace  = ", trace);
@@ -400,58 +400,43 @@ export default class MessageStructure extends React.Component {
             </table>
           </div>
 
-          {/* outer table for request and response */}
-          <table>
+          <div style={{align: "center", width: "70%"}}>
 
-            <thead>
-            </thead>
-            <tbody>
-            <tr>
-              <td>
-                <table border="0">
-                  <thead>
-                  <tr style={{
-                    fontFamily: "lato-regular",
-                    backgroundColor: "#ff8f5b",
-                    fontSize: "15px",
-                    borderBottom: 'solid',
-                    borderColor: 'blue'
-                  }}>
-                    <td colspan="3" align={"center"}>{"Request Segment"}</td>
-                  </tr>
-                  <tr style={{
-                    fontFamily: "lato-regular",
-                    backgroundColor: "#ff8f5b",
-                    fontSize: "14px",
-                  }}>
-                    <td align={"center"}>Selection</td>
-                    <td align={"center"}>Field</td>
-                    {/*<td align={"center"}
-                        style={{minWidth: "50px", maxWidth: "200px"}}>Field Spec
-                    </td>*/}
-                    <td align={"center"} style={{width: '220px'}}>Field Data
-                    </td>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {content}
-                  </tbody>
-                </table>
+            <div style={{float: "left"}}>
+              <table border="0">
+                <thead>
+                <tr style={{
+                  fontFamily: "lato-regular",
+                  backgroundColor: "#ff8f5b",
+                  fontSize: "15px",
+                  borderBottom: 'solid',
+                  borderColor: 'blue'
+                }}>
+                  <td colspan="3" align={"center"}>{"Request Segment"}</td>
+                </tr>
+                <tr style={{
+                  fontFamily: "lato-regular",
+                  backgroundColor: "#ff8f5b",
+                  fontSize: "14px",
+                }}>
+                  <td align={"center"}>Selection</td>
+                  <td align={"center"}>Field</td>
+                  <td align={"center"} style={{width: '220px'}}>Field Data
+                  </td>
+                </tr>
+                </thead>
+                <tbody>
+                {content}
+                </tbody>
+              </table>
+            </div>
 
-              </td>
-              <td>{' '}</td>
-
-              <td>
-                <ResponseSegment show={this.state.showResponse}
-                                 data={this.state.responseData}
-                                 msgTemplate={this.state.msgTemplate}/>
-              </td>
-
-            </tr>
-            </tbody>
-
-          </table>
-
+            <div style={{float: "right"}}>
+              <ResponseSegment show={this.state.showResponse}
+                               data={this.state.responseData}
+                               msgTemplate={this.state.msgTemplate}/>
+            </div>
+          </div>
 
           <div style={{height: "10px"}}>{' '}</div>
 
