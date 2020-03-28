@@ -197,7 +197,7 @@ export default class IsoField extends React.Component {
     this.props.onFieldUpdate(obj)
   }
 
-  appendFieldContent(content, field, parentField, id2Value) {
+  appendFieldContent(content, field, parentField, id2Value, level) {
 
     let key = field.Id;
     if (this.props.readOnly) {
@@ -206,6 +206,7 @@ export default class IsoField extends React.Component {
     content.push(<IsoField key={key} field={field} id2Value={id2Value}
                            readOnly={this.props.readOnly}
                            parentField={parentField} isoMsg={this.props.isoMsg}
+                           level={level}
                            onFieldUpdate={this.onFieldUpdate}/>);
   }
 
@@ -250,7 +251,12 @@ export default class IsoField extends React.Component {
 
     this.props.field.Children.forEach(
         c => this.appendFieldContent(children, c, this.props.field,
-            this.state.id2Value));
+            this.state.id2Value, this.props.level + 1));
+
+    let levelIndicator = "";
+    for (let i = 0; i < this.props.level; i++) {
+      levelIndicator += '\u2193';
+    }
 
     return (
         <React.Fragment>
@@ -269,7 +275,8 @@ export default class IsoField extends React.Component {
                 fontFamily: "lato-regular",
                 fontSize: "14px"
               }}>
-                {this.props.field.Name}
+                <span
+                    style={{color: 'blue'}}>{levelIndicator+' '}</span>{this.props.field.Name}
               </td>
             </OverlayTrigger>
 

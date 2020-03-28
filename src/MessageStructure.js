@@ -182,7 +182,7 @@ export default class MessageStructure extends React.Component {
       if (fieldValidator.validate(field, fData.state.fieldValue,
           validationErrors)) {
         fData.setError(true);
-      }else{
+      } else {
         fData.setError(false);
       }
       content.push({Id: field.Id, Value: fData.state.fieldValue});
@@ -305,6 +305,7 @@ export default class MessageStructure extends React.Component {
 
   appendFieldContent(content, field, isoMsg, level) {
     content.push(<IsoField key={field.Id} field={field} isoMsg={isoMsg}
+                           level={level}
                            onFieldUpdate={this.onFieldUpdate}/>);
   }
 
@@ -313,7 +314,7 @@ export default class MessageStructure extends React.Component {
     let content = [];
     if (this.state.loaded === true) {
       this.state.msgTemplate.Fields.map(field => {
-        this.appendFieldContent(content, field, this.state.isoMsg, 1)
+        this.appendFieldContent(content, field, this.state.isoMsg, 0)
       })
     }
 
@@ -442,7 +443,7 @@ export default class MessageStructure extends React.Component {
                   fontSize: "14px",
                 }}>
                   <td align={"center"}>Selection</td>
-                  <td align={"center"}>Field</td>
+                  <td align={"center"} style={{width: '220px'}}> Field</td>
                   <td align={"center"} style={{width: '220px'}}>Field Data
                   </td>
                 </tr>
