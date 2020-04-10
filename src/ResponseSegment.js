@@ -12,10 +12,10 @@ export default class ResponseSegment extends React.Component {
     }
   }
 
-  appendFieldContent(content, field, idToField) {
+  appendFieldContent(content, field, idToField, level) {
     content.push(<IsoField key={'response_seg_' + field.Id} field={field}
                            id2Value={idToField}
-                           readOnly={true}
+                           readOnly={true} level={level}
                            onFieldUpdate={this.onFieldUpdate}/>);
   }
 
@@ -39,12 +39,11 @@ export default class ResponseSegment extends React.Component {
 
       let idToField = new Map();
       this.state.data.forEach(f => {
-        //console.log("setting  .. ", f.Id, f.Value);
         idToField.set(f.Id, f.Value);
       });
 
       this.state.msgTemplate.Fields.map(field => {
-        this.appendFieldContent(content, field, idToField)
+        this.appendFieldContent(content, field, idToField, 0)
       });
 
       console.log(content);
@@ -69,10 +68,7 @@ export default class ResponseSegment extends React.Component {
                     fontSize: "14px",
                   }}>
                     <td align={"center"}>Selection</td>
-                    <td align={"center"}>Field</td>
-                    {/*<td align={"center"}
-                        style={{minWidth: "50px", maxWidth: "200px"}}>Field Spec
-                    </td>*/}
+                    <td align={"center"} style={{width: '220px'}}>Field</td>
                     <td align={"center"} style={{width: '220px'}}>Field Data
                     </td>
                   </tr>

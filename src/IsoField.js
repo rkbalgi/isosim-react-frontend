@@ -9,17 +9,17 @@ export default class IsoField extends React.Component {
 
   constructor(props) {
     super(props);
-    //this.state = {fieldValue: "", selected: false};
+
     this.fieldValueChanged = this.fieldValueChanged.bind(this);
     this.fieldSelectionChanged = this.fieldSelectionChanged.bind(this);
-    //this.msgFromChildField = this.msgFromChildField.bind(this);
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
     this.appendFieldContent = this.appendFieldContent.bind(this);
     this.setSelected = this.setSelected.bind(this);
     this.setNewValue = this.setNewValue.bind(this);
     this.showExpanded = this.showExpanded.bind(this);
     this.closeExpanded = this.closeExpanded.bind(this);
-    //this.showToolTip = this.showToolTip.bind(this);
+    this.getBgColor = this.getBgColor.bind(this);
+    this.setError = this.setError.bind(this);
 
     //if the field is Message Type, MTI or Bitmap - it should stay selected
     //because they're mandatory fields in ISO
@@ -29,6 +29,8 @@ export default class IsoField extends React.Component {
     if (this.props.readOnly) {
       this.selectable = false;
       this.state = {
+        bgColor: 'white',
+        hasError: false,
         selected: true,
         id2Value: this.props.id2Value,
         fieldValue: this.props.id2Value.get(this.props.field.Id),
@@ -44,19 +46,36 @@ export default class IsoField extends React.Component {
         }
 
         this.state = {
+          bgColor: "white",
+          hasError: false,
           selected: true,
           fieldValue: defaultFieldValue,
           showExpanded: false
         };
       } else {
         this.state = {
+          bgColor: "white",
           selected: false,
+          hasError: false,
           fieldValue: defaultFieldValue,
           showExpanded: false
         };
       }
       this.props.isoMsg.set(this.props.field.Id, this);
     }
+  }
+
+  getBgColor() {
+    if (this.state.hasError) {
+      return "red";
+    } else {
+      return "white";
+    }
+
+  }
+
+  setError(hasError) {
+    this.setState({hasError: hasError});
   }
 
   showExpanded() {
@@ -83,8 +102,6 @@ export default class IsoField extends React.Component {
   onFieldUpdate(event) {
     console.log(
         `${this.props.field.Name}: Child field ${event.fieldName} has been updated. ChangeType: ${event.ChangeType}`);
-
-    //this.props.field != null &&
 
     if (this.props.field.Type === 'Bitmapped') {
       // get the position of the field
@@ -180,7 +197,7 @@ export default class IsoField extends React.Component {
     this.props.onFieldUpdate(obj)
   }
 
-  appendFieldContent(content, field, parentField, id2Value) {
+  appendFieldContent(content, field, parentField, id2Value, level) {
 
     let key = field.Id;
     if (this.props.readOnly) {
@@ -189,6 +206,7 @@ export default class IsoField extends React.Component {
     content.push(<IsoField key={key} field={field} id2Value={id2Value}
                            readOnly={this.props.readOnly}
                            parentField={parentField} isoMsg={this.props.isoMsg}
+                           level={level}
                            onFieldUpdate={this.onFieldUpdate}/>);
   }
 
@@ -211,49 +229,34 @@ export default class IsoField extends React.Component {
     }
 
     let fieldSpecColumnContent;
-    let fieldInfo = "Type: " + this.props.field.Type + ' / ';
+    let positionInParent = "";
+    if (this.props.field.ParentId > 0) {
+      positionInParent = "\u2937" + this.props.field.Position + " ";
+    }
+
+    let fieldInfo = positionInParent + " Type: " + this.props.field.Type
+        + ' / ';
     if (this.props.field.Type === 'Fixed') {
       fieldInfo += "Length: " + this.props.field.FixedSize + ' / '
           + 'Encoding: '
           + this.props.field.DataEncoding;
-      fieldSpecColumnContent = <React.Fragment>
-        <td>
-          <div className={"class_small_div"}>F</div>
-          <div className={"class_small_div"}>{this.props.field.FixedSize}</div>
-          <div
-              className={"class_small_div"}>{this.props.field.DataEncoding.toLowerCase()}</div>
-        </td>
-      </React.Fragment>;
     } else if (this.props.field.Type === 'Variable') {
       fieldInfo += "Length Indicator: " + this.props.field.LengthIndicatorSize
           + ' / ' + 'Length Encoding: ' + this.props.field.LengthEncoding
           + ' / ' + 'Data Encoding: ' + this.props.field.DataEncoding;
-      fieldSpecColumnContent = <React.Fragment>
-        <td>
-          <div className={"class_small_div"}>V</div>
-          <div
-              className={"class_small_div"}>{this.props.field.LengthIndicatorSize}</div>
-          <div
-              className={"class_small_div"}>{this.props.field.LengthEncoding.toLowerCase()}</div>
-          <div
-              className={"class_small_div"}>{this.props.field.DataEncoding.toLowerCase()}</div>
-
-        </td>
-      </React.Fragment>;
     } else if (this.props.field.Type === 'Bitmapped') {
-
-      fieldSpecColumnContent = <React.Fragment>
-        <td>
-          <div className={"class_small_div"}>B</div>
-        </td>
-      </React.Fragment>;
     }
 
     let children = [];
 
     this.props.field.Children.forEach(
         c => this.appendFieldContent(children, c, this.props.field,
-            this.state.id2Value));
+            this.state.id2Value, this.props.level + 1));
+
+    let levelIndicator = "";
+    for (let i = 0; i < this.props.level; i++) {
+      levelIndicator += '\u2193';
+    }
 
     return (
         <React.Fragment>
@@ -272,7 +275,8 @@ export default class IsoField extends React.Component {
                 fontFamily: "lato-regular",
                 fontSize: "14px"
               }}>
-                {this.props.field.Name}
+                <span
+                    style={{color: 'blue'}}>{levelIndicator+' '}</span>{this.props.field.Name}
               </td>
             </OverlayTrigger>
 
@@ -282,8 +286,12 @@ export default class IsoField extends React.Component {
             {/* field value column */}
             <td>
               <input type="text" value={this.state.fieldValue}
-                     style={{fontFamily: "courier new"}}
+                     style={{
+                       fontFamily: "courier new",
+                       backgroundColor: this.getBgColor()
+                     }}
                      onChange={this.fieldValueChanged}
+                     disabled={this.props.readOnly}
                      ondblclick={this.showExpanded}/>
               <Button size={"sm"} style={{
                 float: 'right',
@@ -301,9 +309,10 @@ export default class IsoField extends React.Component {
 
           </tr>
           <tr>
-            <td colspan="3">
+            <td colSpan="3">
               <ExpandedText show={this.state.showExpanded}
                             value={this.state.fieldValue}
+                            readOnly={this.props.readOnly}
                             onClose={this.setNewValue}/>
             </td>
           </tr>

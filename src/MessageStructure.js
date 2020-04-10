@@ -8,6 +8,7 @@ import appProps from './Properties.js'
 import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "./ParseMessageDialog";
 import SaveMessageDialog from "./SaveMessageDialog";
+import fieldValidator from './FieldValidator'
 
 export default class MessageStructure extends React.Component {
 
@@ -60,7 +61,7 @@ export default class MessageStructure extends React.Component {
 
   }
 
-  // this method receives the trace as a callback from ParseMessageDialog component
+  // Receives the trace as a callback from ParseMessageDialog component
   setTrace(trace) {
     if (trace != null) {
       console.log("trace  = ", trace);
@@ -174,27 +175,44 @@ export default class MessageStructure extends React.Component {
     this.setState({targetServerPort: e.target.value});
   }
 
-  addFieldContent(field, content) {
+  addFieldContent(field, content, validationErrors) {
 
     let fData = this.state.isoMsg.get(field.Id);
     if (fData.state.selected) {
+      if (fieldValidator.validate(field, fData.state.fieldValue,
+          validationErrors)) {
+        fData.setError(true);
+      } else {
+        fData.setError(false);
+      }
       content.push({Id: field.Id, Value: fData.state.fieldValue});
     }
+
     field.Children.forEach(cf => {
       if (fData.state.selected) {
-        this.addFieldContent(cf, content);
+        this.addFieldContent(cf, content, validationErrors);
       }
     });
 
   }
 
+  //sends the message (as JSON) to the API server to be sent to the ISO host
   sendToHost() {
 
     let content = [];
+    let validationErrors = [];
     this.state.msgTemplate.Fields.forEach(f => {
-      this.addFieldContent(f, content);
+      this.addFieldContent(f, content, validationErrors);
     });
-    console.log(content);
+    //console.log("After gathering data = ", content, validationErrors);
+
+    if (validationErrors.length > 0) {
+      let errMsg = "";
+      validationErrors.forEach(e => errMsg += e + "\n");
+      this.setState({errorMessage: errMsg});
+      this.showErrorDialog();
+      return
+    }
 
     //lets not hide and then show the response segment again
     this.setState({showResponse: false, responseData: []});
@@ -287,6 +305,7 @@ export default class MessageStructure extends React.Component {
 
   appendFieldContent(content, field, isoMsg, level) {
     content.push(<IsoField key={field.Id} field={field} isoMsg={isoMsg}
+                           level={level}
                            onFieldUpdate={this.onFieldUpdate}/>);
   }
 
@@ -295,7 +314,7 @@ export default class MessageStructure extends React.Component {
     let content = [];
     if (this.state.loaded === true) {
       this.state.msgTemplate.Fields.map(field => {
-        this.appendFieldContent(content, field, this.state.isoMsg, 1)
+        this.appendFieldContent(content, field, this.state.isoMsg, 0)
       })
     }
 
@@ -314,7 +333,11 @@ export default class MessageStructure extends React.Component {
             <Modal.Header closeButton>
               <Modal.Title>Error</Modal.Title>
             </Modal.Header>
-            <Modal.Body>{this.state.errorMessage}</Modal.Body>
+            <Modal.Body><pre style={{
+              font: "Lato",
+              fontSize: "14px"
+            }}>{this.state.errorMessage}</pre>
+            </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={this.closeErrorDialog}>
                 Close
@@ -400,58 +423,43 @@ export default class MessageStructure extends React.Component {
             </table>
           </div>
 
-          {/* outer table for request and response */}
-          <table>
+          <div style={{align: "center", width: "70%"}}>
 
-            <thead>
-            </thead>
-            <tbody>
-            <tr>
-              <td>
-                <table border="0">
-                  <thead>
-                  <tr style={{
-                    fontFamily: "lato-regular",
-                    backgroundColor: "#ff8f5b",
-                    fontSize: "15px",
-                    borderBottom: 'solid',
-                    borderColor: 'blue'
-                  }}>
-                    <td colspan="3" align={"center"}>{"Request Segment"}</td>
-                  </tr>
-                  <tr style={{
-                    fontFamily: "lato-regular",
-                    backgroundColor: "#ff8f5b",
-                    fontSize: "14px",
-                  }}>
-                    <td align={"center"}>Selection</td>
-                    <td align={"center"}>Field</td>
-                    {/*<td align={"center"}
-                        style={{minWidth: "50px", maxWidth: "200px"}}>Field Spec
-                    </td>*/}
-                    <td align={"center"} style={{width: '220px'}}>Field Data
-                    </td>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {content}
-                  </tbody>
-                </table>
+            <div style={{float: "left"}}>
+              <table border="0">
+                <thead>
+                <tr style={{
+                  fontFamily: "lato-regular",
+                  backgroundColor: "#ff8f5b",
+                  fontSize: "15px",
+                  borderBottom: 'solid',
+                  borderColor: 'blue'
+                }}>
+                  <td colspan="3" align={"center"}>{"Request Segment"}</td>
+                </tr>
+                <tr style={{
+                  fontFamily: "lato-regular",
+                  backgroundColor: "#ff8f5b",
+                  fontSize: "14px",
+                }}>
+                  <td align={"center"}>Selection</td>
+                  <td align={"center"} style={{width: '220px'}}> Field</td>
+                  <td align={"center"} style={{width: '220px'}}>Field Data
+                  </td>
+                </tr>
+                </thead>
+                <tbody>
+                {content}
+                </tbody>
+              </table>
+            </div>
 
-              </td>
-              <td>{' '}</td>
-
-              <td>
-                <ResponseSegment show={this.state.showResponse}
-                                 data={this.state.responseData}
-                                 msgTemplate={this.state.msgTemplate}/>
-              </td>
-
-            </tr>
-            </tbody>
-
-          </table>
-
+            <div style={{float: "right"}}>
+              <ResponseSegment show={this.state.showResponse}
+                               data={this.state.responseData}
+                               msgTemplate={this.state.msgTemplate}/>
+            </div>
+          </div>
 
           <div style={{height: "10px"}}>{' '}</div>
 
