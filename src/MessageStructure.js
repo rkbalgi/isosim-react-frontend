@@ -80,6 +80,7 @@ export default class MessageStructure extends React.Component {
     this.handleMenuClick = this.handleMenuClick.bind(this);
 
     this.showResponseDialog = this.showResponseDialog.bind(this);
+    this.getTemplateLabel = this.getTemplateLabel.bind(this);
 
   }
 
@@ -98,8 +99,9 @@ export default class MessageStructure extends React.Component {
   }
 
   showResponseDialog() {
-    this.setState({showResponse: true})
     this.hideMenu()
+    this.setState({showResponse: true})
+
   }
 
   handleMenuClick(event) {
@@ -200,13 +202,15 @@ export default class MessageStructure extends React.Component {
   }
 
   showTraceInputsDialog() {
-    this.setState({showTraceInputDialog: true})
     this.hideMenu()
+    this.setState({showTraceInputDialog: true})
+
   }
 
   showLoadMessagesDialog() {
-    this.setState({showLoadMessagesDialog: true})
     this.hideMenu()
+    this.setState({showLoadMessagesDialog: true})
+
   }
 
   closeErrorDialog() {
@@ -253,6 +257,7 @@ export default class MessageStructure extends React.Component {
   //sends the message (as JSON) to the API server to be sent to the ISO host
   sendToHost() {
 
+    this.hideMenu()
     let content = [];
     let validationErrors = [];
     this.state.msgTemplate.Fields.forEach(f => {
@@ -311,6 +316,11 @@ export default class MessageStructure extends React.Component {
                 + e.response.status, errDialogVisible: true
           });
     }
+  }
+
+  getTemplateLabel() {
+    //alert(this.state.spec + "// " + this.state.msg)
+    return this.state.spec.Name + " // " + this.state.msg.Name;
   }
 
   onFieldUpdate(e) {
@@ -377,8 +387,6 @@ export default class MessageStructure extends React.Component {
         <div style={{
           fontFamily: 'lato-regular',
           fontSize: '12px',
-          alignContent: 'center',
-          alignSelf: 'center',
           fill: 'aqua'
         }}>
 
@@ -416,20 +424,18 @@ export default class MessageStructure extends React.Component {
                              msgSaveFailed={this.msgSaveFailed}
                              msgSaveCancelled={this.msgSaveCancelled}/>
 
-          <div
-              style={{
-                height: "100px",
-                verticalAlign: "baseline",
-                alignItems: "center",
-                margin: "10px"
-              }}>
+          <div align={"left"}
+               style={{
+                 height: "100px",
+                 verticalAlign: "baseline",
+                 margin: "10px"
+               }}>
 
 
             <table
                 style={{
                   fontFamily: 'lato-regular',
                   fontSize: '14px',
-                  alignSelf: 'center',
                   borderBottom: 'solid',
                   backgroundColor: '#4cffff'
                 }}>
@@ -452,9 +458,9 @@ export default class MessageStructure extends React.Component {
 
           </div>
 
-          <div style={{align: "center", width: "70%"}}>
+          <div align={"left"} style={{align: "left", width: "70%"}}>
 
-            <div style={{float: "left"}}>
+            <div>
               <table border="0">
                 <thead>
                 <tr style={{
@@ -487,7 +493,8 @@ export default class MessageStructure extends React.Component {
                       >
                         <MenuItem dense={true}
                                   onClick={this.showTraceInputsDialog}>Parse</MenuItem>
-                        <MenuItem dense={true} onClick={this.showLoadMessagesDialog}>Load
+                        <MenuItem dense={true}
+                                  onClick={this.showLoadMessagesDialog}>Load
                           Message</MenuItem>
                         <MenuItem dense={true} onClick={this.showSaveMsgDialog}>Save
                           Message</MenuItem>
@@ -500,7 +507,7 @@ export default class MessageStructure extends React.Component {
                     </div>
 
                     <div
-                        style={{display: "inline-block"}}>{"Request Segment"}</div>
+                        style={{display: "inline-block"}}>{this.getTemplateLabel()}</div>
                   </td>
                 </tr>
                 <tr style={{
@@ -527,7 +534,9 @@ export default class MessageStructure extends React.Component {
                     aria-labelledby="draggable-dialog-title"
                     maxWidth={"sm"} fullWidth={true}
                     disableBackdropClick={true}>
-              <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">ISO Response</DialogTitle>
+              <DialogTitle style={{cursor: 'move'}}
+                           id="draggable-dialog-title"> Response -
+                [{this.getTemplateLabel()}]</DialogTitle>
               <DialogContent dividers={true}>
 
                 <ResponseSegment show={this.state.showResponse}
@@ -555,7 +564,8 @@ export default class MessageStructure extends React.Component {
 
 function PaperComponent(props) {
   return (
-      <Draggable handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
+      <Draggable handle="#draggable-dialog-title"
+                 cancel={'[class*="MuiDialogContent-root"]'}>
         <Paper {...props} />
       </Draggable>
   );
