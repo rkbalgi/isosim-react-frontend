@@ -450,31 +450,6 @@ export default class MessageStructure extends React.Component {
               </tr>
             </table>
 
-            <table>
-
-              <tr>
-                <td>
-
-                </td>
-              </tr>
-
-
-              <tr>
-                <td>
-                  <Button size={"sm"} onClick={this.showTraceInputsDialog}>Parse
-                    Raw</Button>{' '}
-                  <Button size={"sm"} onClick={this.showLoadMessagesDialog}>Load
-                    Message</Button>{' '}
-                  <Button size={"sm"} onClick={this.showSaveMsgDialog}>Save
-                    Message</Button>{' '}
-                  <Button size={"sm"} onClick={this.sendToHost}>Send</Button>
-
-
-                </td>
-              </tr>
-
-
-            </table>
           </div>
 
           <div style={{align: "center", width: "70%"}}>
