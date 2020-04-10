@@ -288,6 +288,7 @@ export default class IsoField extends React.Component {
               <input type="text" value={this.state.fieldValue}
                      style={{
                        fontFamily: "courier new",
+                       fontSize:"12px",
                        backgroundColor: this.getBgColor()
                      }}
                      onChange={this.fieldValueChanged}

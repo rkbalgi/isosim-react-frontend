@@ -9,6 +9,19 @@ import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "./ParseMessageDialog";
 import SaveMessageDialog from "./SaveMessageDialog";
 import fieldValidator from './FieldValidator'
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogActions from "@material-ui/core/DialogActions";
+import MoreVert from "@material-ui/icons/MoreVert";
+
+import 'typeface-roboto';
+import Menu from "@material-ui/core/Menu";
+import Fade from "@material-ui/core/Fade";
+import MenuItem from "@material-ui/core/MenuItem";
+import IconButton from "@material-ui/core/IconButton";
+import Paper from '@material-ui/core/Paper';
+import Draggable from 'react-draggable';
 
 export default class MessageStructure extends React.Component {
 
@@ -34,7 +47,9 @@ export default class MessageStructure extends React.Component {
       showTraceInputDialog: false,
       showSaveMsgDialog: false,
       showResponse: false,
-      responseData: null
+      responseData: null,
+      reqMenuVisible: false,
+      selectedReqMenuItem: null
     };
 
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
@@ -58,7 +73,44 @@ export default class MessageStructure extends React.Component {
     this.msgSaveFailed = this.msgSaveFailed.bind(this);
     this.msgSaveCancelled = this.msgSaveCancelled.bind(this);
     this.showInfoDialog = this.showInfoDialog.bind(this);
+    this.hideResponseSegment = this.hideResponseSegment.bind(this);
 
+    this.showMenu = this.showMenu.bind(this);
+    this.hideMenu = this.hideMenu.bind(this);
+    this.handleMenuClick = this.handleMenuClick.bind(this);
+
+    this.showResponseDialog = this.showResponseDialog.bind(this);
+
+  }
+
+  showMenu(event) {
+
+    this.setState({
+      selectedReqMenuItem: event.currentTarget,
+      reqMenuVisible: true
+    })
+
+  }
+
+  hideMenu() {
+    this.setState({reqMenuVisible: false})
+    this.setState({selectedReqMenuItem: null})
+  }
+
+  showResponseDialog() {
+    this.setState({showResponse: true})
+    this.hideMenu()
+  }
+
+  handleMenuClick(event) {
+    alert(event.currentTarget)
+
+    this.setState({selectedReqMenuItem: event.currentTarget})
+    this.hideMenu()
+  }
+
+  hideResponseSegment() {
+    this.setState({showResponse: false});
   }
 
   // Receives the trace as a callback from ParseMessageDialog component
@@ -149,10 +201,12 @@ export default class MessageStructure extends React.Component {
 
   showTraceInputsDialog() {
     this.setState({showTraceInputDialog: true})
+    this.hideMenu()
   }
 
   showLoadMessagesDialog() {
     this.setState({showLoadMessagesDialog: true})
+    this.hideMenu()
   }
 
   closeErrorDialog() {
@@ -435,7 +489,44 @@ export default class MessageStructure extends React.Component {
                   borderBottom: 'solid',
                   borderColor: 'blue'
                 }}>
-                  <td colspan="3" align={"center"}>{"Request Segment"}</td>
+                  <td colSpan="3" align={"center"}>
+
+                    <div style={{display: "inline-block", float: "left"}}>
+                      <IconButton
+                          aria-label="more"
+                          aria-controls="long-menu"
+                          aria-haspopup="true"
+                          onClick={this.showMenu}
+                      >
+                        <MoreVert/>
+                      </IconButton>
+
+                      <Menu
+                          id="fade-menu"
+                          anchorEl={this.state.selectedReqMenuItem}
+                          getContentAnchorEl={null}
+                          keepMounted
+                          open={this.state.reqMenuVisible}
+                          onClose={this.hideMenu}
+                          TransitionComponent={Fade}
+                      >
+                        <MenuItem dense={true}
+                                  onClick={this.showTraceInputsDialog}>Parse</MenuItem>
+                        <MenuItem dense={true} onClick={this.showLoadMessagesDialog}>Load
+                          Message</MenuItem>
+                        <MenuItem dense={true} onClick={this.showSaveMsgDialog}>Save
+                          Message</MenuItem>
+                        <MenuItem dense={true} onClick={this.sendToHost}>Send
+                          Message</MenuItem>
+                        <MenuItem dense={true}
+                                  onClick={this.showResponseDialog}>Show
+                          Response</MenuItem>
+                      </Menu>
+                    </div>
+
+                    <div
+                        style={{display: "inline-block"}}>{"Request Segment"}</div>
+                  </td>
                 </tr>
                 <tr style={{
                   fontFamily: "lato-regular",
@@ -454,11 +545,27 @@ export default class MessageStructure extends React.Component {
               </table>
             </div>
 
-            <div style={{float: "right"}}>
-              <ResponseSegment show={this.state.showResponse}
-                               data={this.state.responseData}
-                               msgTemplate={this.state.msgTemplate}/>
-            </div>
+            {/*<div style={{float: "right"}}>*/}
+            <Dialog open={this.state.showResponse}
+                    onClose={this.hideResponseSegment} scroll={"paper"}
+                    PaperComponent={PaperComponent}
+                    aria-labelledby="draggable-dialog-title"
+                    maxWidth={"sm"} fullWidth={true}
+                    disableBackdropClick={true}>
+              <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">ISO Response</DialogTitle>
+              <DialogContent dividers={true}>
+
+                <ResponseSegment show={this.state.showResponse}
+                                 data={this.state.responseData}
+                                 msgTemplate={this.state.msgTemplate}/>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={this.hideResponseSegment} color="primary">
+                  Close
+                </Button>
+              </DialogActions>
+            </Dialog>
+            {/*</div>*/}
           </div>
 
           <div style={{height: "10px"}}>{' '}</div>
@@ -469,4 +576,12 @@ export default class MessageStructure extends React.Component {
 
   }
 
+}
+
+function PaperComponent(props) {
+  return (
+      <Draggable handle="#draggable-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
+        <Paper {...props} />
+      </Draggable>
+  );
 }
