@@ -106,7 +106,8 @@ class NavBar extends React.Component {
             <div style={{
               float: "left",
               display: "inline-block",
-              marginRight: "20px"
+              marginRight: "20px",
+              marginLeft: "20px"
 
             }}>
               <SpecTree msgSelected={this.msgSelected}/>

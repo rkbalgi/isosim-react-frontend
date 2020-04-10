@@ -68,7 +68,7 @@ class SpecTree extends React.Component {
 
       return (<React.Fragment>
             <TreeView
-                defaultExpanded={['1']}
+                defaultExpanded={['nodeId_0']}
                 defaultCollapseIcon={<ExpandMoreIcon/>}
                 defaultExpandIcon={<ChevronRightIcon/>}
                 defaultParentIcon={<Folder color={"primary"}/>}
