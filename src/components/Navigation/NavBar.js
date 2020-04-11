@@ -1,13 +1,13 @@
 import React from 'react';
 import axios from 'axios'
-import MessageStructure from './MessageStructure.js'
+import MessageStructure from '../Iso/MessageStructure.js'
 import {Button, Modal} from "react-bootstrap";
-import appProps from "./Properties";
+import appProps from "../Utils/Properties";
 import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
 import ChevronRightIcon from "@material-ui/icons/ChevronRight"
-import SpecTree from "./SpecTree";
+import SpecTree from "./SpecTree/SpecTree";
 
 class NavBar extends React.Component {
 
@@ -107,12 +107,13 @@ class NavBar extends React.Component {
               float: "left",
               display: "inline-block",
               marginRight: "20px",
-              marginLeft: "20px"
+              marginLeft: "20px",
+              backgroundColor:'#fbfff0'
 
             }}>
               <SpecTree msgSelected={this.msgSelected}/>
             </div>
-            <div align="center">
+            <div align="center" style={{backgroundColor:'#fbfff0'}}>
               {
                 this.state.loaded && this.state.currentSpec !== "Select" ?
                     <MessageStructure key={this.state.currentSpec + "_" + msg}

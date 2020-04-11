@@ -4,7 +4,7 @@ import TreeItem from "@material-ui/lab/TreeItem";
 import TreeView from "@material-ui/lab/TreeView";
 import React from "react";
 import axios from "axios";
-import appProps from "./Properties";
+import appProps from "../../Utils/Properties";
 import {Folder, FolderSpecial, Message} from "@material-ui/icons"
 
 class SpecTree extends React.Component {

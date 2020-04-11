@@ -1,5 +1,5 @@
 import React from "react";
-import ExpandedText from './ExpandedText.js'
+import ExpandedText from '../../Utils/ExpandedText.js'
 import {Button} from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from 'react-bootstrap/Tooltip'

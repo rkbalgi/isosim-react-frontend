@@ -1,14 +1,14 @@
 import React from 'react';
 import axios from "axios";
 //import axios from 'axios'
-import IsoField from './IsoField.js'
-import SelectMessageDialog from './SelectMessageDialog.js'
+import IsoField from './IsoField/IsoField.js'
+import SelectMessageDialog from '../Dialogs/SelectMessageDialog.js'
 import {Button, Modal} from 'react-bootstrap';
-import appProps from './Properties.js'
+import appProps from '../Utils/Properties.js'
 import ResponseSegment from "./ResponseSegment";
-import ParseMessageDialog from "./ParseMessageDialog";
-import SaveMessageDialog from "./SaveMessageDialog";
-import fieldValidator from './FieldValidator'
+import ParseMessageDialog from "../Dialogs/ParseMessageDialog";
+import SaveMessageDialog from "../Dialogs/SaveMessageDialog";
+import fieldValidator from '../Utils/FieldValidator'
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -22,6 +22,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import Paper from '@material-ui/core/Paper';
 import Draggable from 'react-draggable';
+import NetworkSettings from "../Utils/NetworkSettings";
 
 export default class MessageStructure extends React.Component {
 
@@ -56,9 +57,6 @@ export default class MessageStructure extends React.Component {
     this.appendFieldContent = this.appendFieldContent.bind(this);
     this.sendToHost = this.sendToHost.bind(this);
     this.addFieldContent = this.addFieldContent.bind(this);
-    this.serverIpChanged = this.serverIpChanged.bind(this);
-    this.serverPortChanged = this.serverPortChanged.bind(this);
-    this.mliTypeChanged = this.mliTypeChanged.bind(this);
     this.showErrorDialog = this.showErrorDialog.bind(this);
     this.closeErrorDialog = this.closeErrorDialog.bind(this);
     this.processError = this.processError.bind(this);
@@ -81,7 +79,13 @@ export default class MessageStructure extends React.Component {
 
     this.showResponseDialog = this.showResponseDialog.bind(this);
     this.getTemplateLabel = this.getTemplateLabel.bind(this);
+    this.networkSettingsChanged = this.networkSettingsChanged.bind(this);
 
+  }
+
+  networkSettingsChanged(ip, port, mliType) {
+    this.setState(
+        {targetServerIp: ip, targetServerPort: port, mliType: mliType})
   }
 
   showMenu(event) {
@@ -219,18 +223,6 @@ export default class MessageStructure extends React.Component {
 
   showErrorDialog() {
     this.setState({errDialogVisible: true});
-  }
-
-  mliTypeChanged(e) {
-    this.setState({mliType: e.target.value});
-  }
-
-  serverIpChanged(e) {
-    this.setState({targetServerIp: e.target.value});
-  }
-
-  serverPortChanged(e) {
-    this.setState({targetServerPort: e.target.value});
   }
 
   addFieldContent(field, content, validationErrors) {
@@ -424,44 +416,21 @@ export default class MessageStructure extends React.Component {
                              msgSaveFailed={this.msgSaveFailed}
                              msgSaveCancelled={this.msgSaveCancelled}/>
 
+          <NetworkSettings onChange={this.networkSettingsChanged}/>
+
+
           <div align={"left"}
                style={{
-                 height: "100px",
-                 verticalAlign: "baseline",
-                 margin: "10px"
+                 align: "left",
+                 display: "inline-block",
+                 width: "35%",
+                 float: "left",
+                 fill: 'aqua'
                }}>
 
-
-            <table
-                style={{
-                  fontFamily: 'lato-regular',
-                  fontSize: '14px',
-                  borderBottom: 'solid',
-                  backgroundColor: '#4cffff'
-                }}>
-              <tr>
-                <td><label style={{width: '60px'}}>Server Ip </label>{'   '}
-                  <input type="text" value={this.state.targetServerIp}
-                         onChange={this.serverIpChanged}/></td>
-                <td><label style={{width: '80px'}}>Server Port </label>
-                  <input type="text" value={this.state.targetServerPort}
-                         onChange={this.serverPortChanged}/></td>
-                <td><label style={{width: '70px'}}>MLI Type </label>
-
-                  <select value={this.state.mliType}
-                          onChange={this.mliTypeChanged}>
-                    <option key={"2i"} value={"2I"}>2I</option>
-                    <option key={"2e"} value={"2E"}>2E</option>
-                  </select></td>
-              </tr>
-            </table>
-
-          </div>
-
-          <div align={"left"} style={{align: "left", width: "70%"}}>
-
-            <div>
-              <table border="0">
+            <Paper variation={"outlined"} style={{verticalAlign: "middle"}}>
+              <table border="0" align={"center"}
+                     style={{align: "center", marginTop: "10px"}}>
                 <thead>
                 <tr style={{
                   fontFamily: "lato-regular",
@@ -496,7 +465,8 @@ export default class MessageStructure extends React.Component {
                         <MenuItem dense={true}
                                   onClick={this.showLoadMessagesDialog}>Load
                           Message</MenuItem>
-                        <MenuItem dense={true} onClick={this.showSaveMsgDialog}>Save
+                        <MenuItem dense={true}
+                                  onClick={this.showSaveMsgDialog}>Save
                           Message</MenuItem>
                         <MenuItem dense={true} onClick={this.sendToHost}>Send
                           Message</MenuItem>
@@ -525,7 +495,7 @@ export default class MessageStructure extends React.Component {
                 {content}
                 </tbody>
               </table>
-            </div>
+            </Paper>
 
             {/*<div style={{float: "right"}}>*/}
             <Dialog open={this.state.showResponse}
@@ -551,6 +521,7 @@ export default class MessageStructure extends React.Component {
             </Dialog>
             {/*</div>*/}
           </div>
+
 
           <div style={{height: "10px"}}>{' '}</div>
 

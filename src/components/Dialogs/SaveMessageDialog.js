@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import {Button, Modal} from "react-bootstrap";
-import appProps from "./Properties";
+import appProps from "../Utils/Properties";
 
 export default class SaveMessageDialog extends React.Component {
 

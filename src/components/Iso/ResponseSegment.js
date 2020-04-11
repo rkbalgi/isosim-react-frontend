@@ -1,5 +1,6 @@
 import React from 'react'
-import IsoField from "./IsoField";
+import IsoField from "./IsoField/IsoField";
+import Paper from "@material-ui/core/Paper";
 
 export default class ResponseSegment extends React.Component {
 
@@ -50,32 +51,36 @@ export default class ResponseSegment extends React.Component {
 
       return (
           <React.Fragment>
+
             {this.props.show ?
-                <table border="0">
-                  <thead>
-                  <tr style={{
-                    fontFamily: "lato-regular",
-                    backgroundColor: "#3effba",
-                    fontSize: "15px",
-                    borderBottom: 'solid',
-                    borderColor: 'blue'
-                  }}>
-                    <td colSpan="3" align={"center"}>{"Response Segment"}</td>
-                  </tr>
-                  <tr style={{
-                    fontFamily: "lato-regular",
-                    backgroundColor: "#3effba",
-                    fontSize: "14px",
-                  }}>
-                    <td align={"center"}>Selection</td>
-                    <td align={"center"}>Field</td>
-                    <td align={"center"}>Field Data</td>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {content}
-                  </tbody>
-                </table>
+                <Paper>
+                  <table border="0" align={"center"}>
+                    <thead>
+                    <tr style={{
+                      fontFamily: "lato-regular",
+                      backgroundColor: "#eed143",
+                      fontSize: "15px",
+                      align: "center",
+                      borderBottom: 'solid',
+                      borderColor: 'blue'
+                    }}>
+                      <td colSpan="3" align={"center"}>{"Response Segment"}</td>
+                    </tr>
+                    <tr style={{
+                      fontFamily: "lato-regular",
+                      backgroundColor: "#3effba",
+                      fontSize: "14px",
+                    }}>
+                      <td align={"center"}>Selection</td>
+                      <td align={"center"}>Field</td>
+                      <td align={"center"}>Field Data</td>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {content}
+                    </tbody>
+                  </table>
+                </Paper>
                 : null}
           </React.Fragment>);
 
