@@ -158,6 +158,12 @@ export default class IsoField extends React.Component {
       } else if (event.ChangeType === 'FieldDeselected') {
         this.setState({selected: false});
         obj.ChangeType = "FieldDeselected";
+      } else {
+
+        //TODO:: field value has changed, it needs to be parsed and children
+        // have to be changed - wait for the new WASM library for ISO parsing capabilities
+        // on the frontend :-)
+
       }
 
       // for fixed and variable type field, if they have children
@@ -171,6 +177,7 @@ export default class IsoField extends React.Component {
         }
       });
 
+      //pass on the message to the parent that I have changed
       this.props.onFieldUpdate(obj);
 
     }
@@ -210,7 +217,8 @@ export default class IsoField extends React.Component {
           {hasError: true, errMsg: errors[0], fieldValue: event.target.value})
     } else {
 
-      this.setState({hasError: false, errMsg:null,fieldValue: event.target.value});
+      this.setState(
+          {hasError: false, errMsg: null, fieldValue: event.target.value});
       let obj = {
         fieldName: this.props.field.Name,
         ChangeType: "ValueChanged"
