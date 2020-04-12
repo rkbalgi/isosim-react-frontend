@@ -3,7 +3,8 @@ import axios from "axios";
 //import axios from 'axios'
 import IsoField from './IsoField/IsoField.js'
 import SelectMessageDialog from '../Dialogs/SelectMessageDialog.js'
-import {Button, Modal} from 'react-bootstrap';
+import {Button} from "@material-ui/core";
+import {Modal} from 'react-bootstrap';
 import appProps from '../Utils/Properties.js'
 import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "../Dialogs/ParseMessageDialog";
@@ -23,6 +24,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Paper from '@material-ui/core/Paper';
 import Draggable from 'react-draggable';
 import NetworkSettings from "../Utils/NetworkSettings";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
 
 // MessageStructure is the central component that encompasses the Request and
 // the response segments along with NetworkSettings etc
@@ -268,7 +270,7 @@ export default class MessageStructure extends React.Component {
     }
 
     //lets not hide and then show the response segment again
-    this.setState({showResponse: false, responseData: []});
+    this.setState({showResponse: false, responseData: null});
 
     let postData = 'host=' +
         this.state.targetServerIp + "&port=" + this.state.targetServerPort
@@ -428,6 +430,24 @@ export default class MessageStructure extends React.Component {
                  float: "left",
                  fill: 'aqua'
                }}>
+
+            <div>
+
+              <ButtonGroup size={"small"} color={"primary"} fullWidth={true}
+                           variant={"contained"}>
+                <Button
+                    onClick={this.showTraceInputsDialog}>Parse</Button>
+                <Button
+                    onClick={this.showLoadMessagesDialog}>Load</Button>
+                <Button
+                    onClick={this.showSaveMsgDialog}>Save</Button>
+                <Button onClick={this.sendToHost}>Send</Button>
+                <Button onClick={this.showResponseDialog}
+                        disabled={this.state.responseData == null}>Show
+                  Response</Button>
+              </ButtonGroup>
+
+            </div>
 
             {/*TODO:: pull this into a separate component*/}
             <Paper variation={"outlined"} style={{verticalAlign: "middle"}}>
