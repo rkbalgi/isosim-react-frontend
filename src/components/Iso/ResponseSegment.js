@@ -72,8 +72,8 @@ export default class ResponseSegment extends React.Component {
                       fontSize: "14px",
                     }}>
                       <td align={"center"}>Selection</td>
-                      <td align={"center"}>Field</td>
-                      <td align={"center"}>Field Data</td>
+                      <td align={"center"} style={{width:"35%"}}>Field</td>
+                      <td align={"center"} style={{width:"50%"}}>Field Data</td>
                     </tr>
                     </thead>
                     <tbody>

@@ -5,7 +5,7 @@ import TreeView from "@material-ui/lab/TreeView";
 import React from "react";
 import axios from "axios";
 import appProps from "../../Utils/Properties";
-import {Folder, FolderSpecial, Message} from "@material-ui/icons"
+import {Folder, FolderSpecial, Home, Message} from "@material-ui/icons"
 
 class SpecTree extends React.Component {
 
@@ -63,7 +63,7 @@ class SpecTree extends React.Component {
 
       });
 
-      let treeContent = <TreeItem nodeId={"nodeId_0"} icon={<FolderSpecial color={"primary"}/>}
+      let treeContent = <TreeItem nodeId={"nodeId_0"} icon={<Home color={"primary"}/>}
                                   label={"ISO8583 Specifications"}>{content}</TreeItem>;
 
       return (<React.Fragment>

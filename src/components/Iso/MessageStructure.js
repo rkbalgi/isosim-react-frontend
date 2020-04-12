@@ -269,12 +269,11 @@ export default class MessageStructure extends React.Component {
     this.setState({showResponse: false, responseData: []});
 
     let postData = 'host=' +
-        this.state.targetServerIp + '&' + 'port=' + this.state.targetServerPort
-        + '&' + 'mli=' + this.state.mliType
-        + '&' + 'specId=' + this.state.spec.Id + "&" + 'msgId='
-        + this.state.msg.Id + "&"
-        + "msg="
-        + JSON.stringify(content);
+        this.state.targetServerIp + "&port=" + this.state.targetServerPort
+        + '&mli=' + this.state.mliType
+        + '&specId=' + this.state.spec.Id + '&msgId='
+        + this.state.msg.Id + "&msg=" + JSON.stringify(content);
+    console.log(postData)
     axios.post(appProps.sendMsgUrl, postData).then(res => {
       console.log("Response from server", res);
       this.setState({showResponse: true, responseData: res.data});
@@ -423,14 +422,14 @@ export default class MessageStructure extends React.Component {
                style={{
                  align: "left",
                  display: "inline-block",
-                 width: "35%",
+                 width: "40%",
                  float: "left",
                  fill: 'aqua'
                }}>
 
             <Paper variation={"outlined"} style={{verticalAlign: "middle"}}>
               <table border="0" align={"center"}
-                     style={{align: "center", marginTop: "10px"}}>
+                     style={{align: "center", marginTop: "10px", width: "70%"}}>
                 <thead>
                 <tr style={{
                   fontFamily: "lato-regular",
@@ -486,8 +485,8 @@ export default class MessageStructure extends React.Component {
                   fontSize: "14px",
                 }}>
                   <td align={"center"}>Selection</td>
-                  <td align={"center"} style={{width: '220px'}}> Field</td>
-                  <td align={"center"} style={{width: '220px'}}>Field Data
+                  <td align={"center"} style={{width: '35%'}}> Field</td>
+                  <td align={"center"} style={{width: '70%'}}>Field Data
                   </td>
                 </tr>
                 </thead>

@@ -1,4 +1,10 @@
 import React from "react";
+import TextField from "@material-ui/core/TextField";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import InputLabel from "@material-ui/core/InputLabel";
+import FormControl from "@material-ui/core/FormControl";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 class NetworkSettings extends React.Component {
 
@@ -7,7 +13,7 @@ class NetworkSettings extends React.Component {
     this.state = {
       targetServerIp: "127.0.0.1",
       targetServerPort: "6666",
-      mliType: "2I"
+      mliType: "2i"
     }
 
     this.serverIpChanged = this.serverIpChanged.bind(this);
@@ -18,15 +24,19 @@ class NetworkSettings extends React.Component {
 
   mliTypeChanged(e) {
     this.setState({mliType: e.target.value});
+    this.props.onChange(this.state.targetServerIp, this.state.targetServerPort,
+        e.target.value)
   }
 
   serverIpChanged(e) {
     this.setState({targetServerIp: e.target.value});
+    this.props.onChange(e.target.value, this.state.targetServerPort,
+        this.state.mliType)
   }
 
   serverPortChanged(e) {
     this.setState({targetServerPort: e.target.value});
-    this.props.onChange(this.state.targetServerIp, this.state.targetServerPort,
+    this.props.onChange(this.state.targetServerIp, e.target.value,
         this.state.mliType)
   }
 
@@ -34,7 +44,7 @@ class NetworkSettings extends React.Component {
     return (
         <div align={"left"}
              style={{
-               align:'left',
+               align: 'left',
                height: "80px",
                verticalAlign: "baseline",
                margin: "10px"
@@ -44,26 +54,34 @@ class NetworkSettings extends React.Component {
           <table
               style={{
                 fontFamily: 'lato-regular',
-                fontSize: '14px',
-                borderBottom: 'solid',
-                backgroundColor: '#4cffff'
+                fontSize: '14px'
               }}>
             <tr>
-              <td><label style={{width: '60px'}}>Server Ip </label>{'   '}
-                <input type="text" value={this.state.targetServerIp}
-                       onChange={this.serverIpChanged}/></td>
-              <td><label style={{width: '80px'}}>Server Port </label>
-                <input type="text" value={this.state.targetServerPort}
-                       onChange={this.serverPortChanged}/></td>
-              <td><label style={{width: '70px'}}>MLI Type </label>
+              <td>
+                <TextField id="outlined-basic" label="IP" size={"small"}
+                           variant="outlined" defaultValue={"127.0.0.1"}
+                           onChange={this.serverIpChanged}/>
+              </td>
+              <td>
 
-                <select value={this.state.mliType}
-                        onChange={this.mliTypeChanged}>
-                  <option key={"2i"} value={"2I"}>2I</option>
-                  <option key={"2e"} value={"2E"}>2E</option>
-                </select></td>
+                <TextField id="outlined-basic" label="Port" size={"small"}
+                           variant="outlined" defaultValue={"6666"}
+                           onChange={this.serverPortChanged}/>
+              </td>
+
+              <td>
+                <TextField select size={"small"}
+                    value={this.state.mliType} variant={"outlined"} label={"MLI"}
+                    onChange={this.mliTypeChanged}>
+                  <MenuItem value={"2i"}>2I</MenuItem>
+                  <MenuItem value={"2e"}>2E</MenuItem>
+                </TextField>
+
+              </td>
+
             </tr>
           </table>
+
 
         </div>
     );

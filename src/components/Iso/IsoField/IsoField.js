@@ -3,6 +3,10 @@ import ExpandedText from '../../Utils/ExpandedText.js'
 import {Button} from "react-bootstrap";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from 'react-bootstrap/Tooltip'
+import {TextField} from "@material-ui/core";
+import Checkbox from "@material-ui/core/Checkbox";
+import InputLabel from "@material-ui/core/InputLabel";
+import fieldValidator from "../../Utils/FieldValidator";
 
 // IsoField represents a single field from a ISO8583 specification
 export default class IsoField extends React.Component {
@@ -28,12 +32,19 @@ export default class IsoField extends React.Component {
     //readOnly is true when displaying a response segment
     if (this.props.readOnly) {
       this.selectable = false;
+
+      let selected = false;
+      let fieldValue = this.props.id2Value.get(this.props.field.Id)
+      if (fieldValue) {
+        selected = true;
+      }
+
       this.state = {
         bgColor: 'white',
         hasError: false,
-        selected: true,
+        selected: selected,
         id2Value: this.props.id2Value,
-        fieldValue: this.props.id2Value.get(this.props.field.Id),
+        fieldValue: fieldValue,
         showExpanded: false
       };
     } else {
@@ -192,9 +203,21 @@ export default class IsoField extends React.Component {
   }
 
   fieldValueChanged(event) {
-    this.setState({fieldValue: event.target.value});
-    let obj = {fieldName: this.props.field.Name, ChangeType: "ValueChanged"};
-    this.props.onFieldUpdate(obj)
+
+    let errors = []
+    if (fieldValidator.validate(this.props.field, event.target.value, errors)) {
+      this.setState(
+          {hasError: true, errMsg: errors[0], fieldValue: event.target.value})
+    } else {
+
+      this.setState({hasError: false, errMsg:null,fieldValue: event.target.value});
+      let obj = {
+        fieldName: this.props.field.Name,
+        ChangeType: "ValueChanged"
+      };
+      this.props.onFieldUpdate(obj)
+    }
+
   }
 
   appendFieldContent(content, field, parentField, id2Value, level) {
@@ -216,15 +239,18 @@ export default class IsoField extends React.Component {
 
     if (this.selectable) {
       selectionColumnContent =
-          <td align={"center"}><input type={"checkbox"}
-                                      checked={this.state.selected}
-                                      onChange={this.fieldSelectionChanged}/>
+          <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
+                                         color={"primary"}
+                                         checked={this.state.selected}
+                                         onChange={this.fieldSelectionChanged}/>
           </td>
     } else {
       selectionColumnContent =
-          <td align={"center"}><input type={"checkbox"}
-                                      disabled={true} checked={true}
-                                      onChange={this.fieldSelectionChanged}/>
+          <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
+                                         color={"primary"}
+                                         disabled={true}
+                                         checked={this.state.selected}
+                                         onChange={this.fieldSelectionChanged}/>
           </td>
     }
 
@@ -275,8 +301,8 @@ export default class IsoField extends React.Component {
                 fontFamily: "lato-regular",
                 fontSize: "14px"
               }}>
-                <span
-                    style={{color: 'blue'}}>{levelIndicator+' '}</span>{this.props.field.Name}
+                <InputLabel>{levelIndicator + ' '
+                + this.props.field.Name}</InputLabel>
               </td>
             </OverlayTrigger>
 
@@ -285,15 +311,17 @@ export default class IsoField extends React.Component {
 
             {/* field value column */}
             <td>
-              <input type="text" value={this.state.fieldValue}
-                     style={{
-                       fontFamily: "courier new",
-                       fontSize:"12px",
-                       backgroundColor: this.getBgColor()
-                     }}
-                     onChange={this.fieldValueChanged}
-                     disabled={this.props.readOnly}
-                     ondblclick={this.showExpanded}/>
+
+              <TextField margin={"none"} size={"small"}
+                         value={this.state.fieldValue}
+                         error={this.state.hasError}
+                         helperText={this.state.errMsg}
+                         onChange={this.fieldValueChanged}
+                         style={{width: "70%"}}
+                         disabled={this.props.readOnly}
+                         ondblclick={this.showExpanded}
+              />
+
               <Button size={"sm"} style={{
                 float: 'right',
                 fontSize: '10px',
