@@ -1,4 +1,9 @@
-class AppProps {
+// AppProps are various URL's that are used by axios
+export class AppProps {
+
+  static FixedField = "Fixed";
+  static VariableField = "Variable";
+  static BitmappedField = "Bitmapped";
 
   constructor() {
     this.baseUrl = 'http://localhost:8080';

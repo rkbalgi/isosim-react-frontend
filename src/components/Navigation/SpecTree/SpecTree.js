@@ -5,8 +5,10 @@ import TreeView from "@material-ui/lab/TreeView";
 import React from "react";
 import axios from "axios";
 import appProps from "../../Utils/Properties";
-import {Folder, FolderSpecial, Home, Message} from "@material-ui/icons"
+import {Folder, Home, Message} from "@material-ui/icons"
 
+// SpecTree displays a tree of all the available specifications and the messages
+// defined under the spec
 class SpecTree extends React.Component {
 
   constructor(props) {
@@ -57,13 +59,15 @@ class SpecTree extends React.Component {
       let content = [];
       this.state.specs.forEach(s => {
 
-        content.push(<TreeItem align="left" nodeId={"nodeId_" + s.Id} icon={<Folder color={"primary"}/>}
+        content.push(<TreeItem align="left" nodeId={"nodeId_" + s.Id}
+                               icon={<Folder color={"primary"}/>}
                                label={s.Name}>{this.buildMessages(
             s)}</TreeItem>);
 
       });
 
-      let treeContent = <TreeItem nodeId={"nodeId_0"} icon={<Home color={"primary"}/>}
+      let treeContent = <TreeItem nodeId={"nodeId_0"}
+                                  icon={<Home color={"primary"}/>}
                                   label={"ISO8583 Specifications"}>{content}</TreeItem>;
 
       return (<React.Fragment>

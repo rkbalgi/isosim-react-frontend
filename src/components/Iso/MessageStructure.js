@@ -24,6 +24,8 @@ import Paper from '@material-ui/core/Paper';
 import Draggable from 'react-draggable';
 import NetworkSettings from "../Utils/NetworkSettings";
 
+// MessageStructure is the central component that encompasses the Request and
+// the response segments along with NetworkSettings etc
 export default class MessageStructure extends React.Component {
 
   constructor(props) {
@@ -427,6 +429,7 @@ export default class MessageStructure extends React.Component {
                  fill: 'aqua'
                }}>
 
+            {/*TODO:: pull this into a separate component*/}
             <Paper variation={"outlined"} style={{verticalAlign: "middle"}}>
               <table border="0" align={"center"}
                      style={{align: "center", marginTop: "10px", width: "70%"}}>

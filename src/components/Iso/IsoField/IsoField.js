@@ -7,6 +7,7 @@ import {TextField} from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import InputLabel from "@material-ui/core/InputLabel";
 import fieldValidator from "../../Utils/FieldValidator";
+import AppProps from "../../Utils/Properties";
 
 // IsoField represents a single field from a ISO8583 specification
 export default class IsoField extends React.Component {
@@ -114,7 +115,7 @@ export default class IsoField extends React.Component {
     console.log(
         `${this.props.field.Name}: Child field ${event.fieldName} has been updated. ChangeType: ${event.ChangeType}`);
 
-    if (this.props.field.Type === 'Bitmapped') {
+    if (this.props.field.Type === AppProps.BitmappedField) {
       // get the position of the field
       this.props.field.Children.forEach(f => {
 
@@ -203,7 +204,7 @@ export default class IsoField extends React.Component {
       obj.ChangeType = "FieldDeselected";
     }
 
-    if (this.props.field.Type !== "Bitmapped") {
+    if (this.props.field.Type !== AppProps.BitmappedField) {
       this.setSelected(selected);
     }
     this.props.onFieldUpdate(obj)
@@ -270,15 +271,15 @@ export default class IsoField extends React.Component {
 
     let fieldInfo = positionInParent + " Type: " + this.props.field.Type
         + ' / ';
-    if (this.props.field.Type === 'Fixed') {
+    if (this.props.field.Type === AppProps.FixedField) {
       fieldInfo += "Length: " + this.props.field.FixedSize + ' / '
           + 'Encoding: '
           + this.props.field.DataEncoding;
-    } else if (this.props.field.Type === 'Variable') {
+    } else if (this.props.field.Type === AppProps.VariableField) {
       fieldInfo += "Length Indicator: " + this.props.field.LengthIndicatorSize
           + ' / ' + 'Length Encoding: ' + this.props.field.LengthEncoding
           + ' / ' + 'Data Encoding: ' + this.props.field.DataEncoding;
-    } else if (this.props.field.Type === 'Bitmapped') {
+    } else if (this.props.field.Type === AppProps.BitmappedField) {
     }
 
     let children = [];

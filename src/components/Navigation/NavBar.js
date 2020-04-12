@@ -3,10 +3,6 @@ import axios from 'axios'
 import MessageStructure from '../Iso/MessageStructure.js'
 import {Button, Modal} from "react-bootstrap";
 import appProps from "../Utils/Properties";
-import TreeItem from "@material-ui/lab/TreeItem";
-import TreeView from "@material-ui/lab/TreeView";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore"
-import ChevronRightIcon from "@material-ui/icons/ChevronRight"
 import SpecTree from "./SpecTree/SpecTree";
 
 class NavBar extends React.Component {

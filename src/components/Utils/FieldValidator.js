@@ -1,3 +1,7 @@
+
+// FieldValidator provides validation logic for field values
+import {AppProps} from "./Properties";
+
 class FieldValidator {
 
   constructor(props) {
@@ -9,7 +13,7 @@ class FieldValidator {
     console.log("validate", field, fieldData, errors);
     let validationFailed = false;
 
-    if (field.Type === "Fixed") {
+    if (field.Type === AppProps.FixedField) {
 
       if (field.DataEncoding === 'ASCII' || field.DataEncoding === 'EBCDIC') {
         if (fieldData.length !== field.FixedSize) {
@@ -49,7 +53,7 @@ class FieldValidator {
       }
     }
 
-    if (!dataErr && field.Type === "Variable") {
+    if (!dataErr && field.Type === AppProps.VariableField) {
 
       let fieldLen = fieldData.length;
       if (field.DataEncoding === 'BCD' || field.DataEncoding === 'BINARY') {

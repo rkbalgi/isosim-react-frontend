@@ -1,11 +1,9 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import InputLabel from "@material-ui/core/InputLabel";
-import FormControl from "@material-ui/core/FormControl";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 
+// NetworkSettings is a component that manages the ip, port and MLI type
+// used when sending a message
 class NetworkSettings extends React.Component {
 
   constructor(props) {

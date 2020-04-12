@@ -2,6 +2,7 @@ import React from 'react'
 import IsoField from "./IsoField/IsoField";
 import Paper from "@material-ui/core/Paper";
 
+// ResponseSegment displays the response to an ISO message
 export default class ResponseSegment extends React.Component {
 
   constructor(props) {
