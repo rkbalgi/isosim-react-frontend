@@ -44,7 +44,8 @@ class SpecTree extends React.Component {
   buildMessages(spec) {
     let content = []
     spec.Messages.forEach(m => {
-      content.push(<TreeItem nodeId={"nodeId_" + m.Id} sid={spec.Id} mid={m.Id}
+      content.push(<TreeItem nodeId={"nodeId_" + spec.Id + "_" + m.Id}
+                             sid={spec.Id} mid={m.Id}
                              label={m.Name}
                              onClick={this.messageClicked}/>)
     });

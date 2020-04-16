@@ -10,10 +10,6 @@ import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "../Dialogs/ParseMessageDialog";
 import SaveMessageDialog from "../Dialogs/SaveMessageDialog";
 import fieldValidator from '../Utils/FieldValidator'
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
 import MoreVert from "@material-ui/icons/MoreVert";
 
 import 'typeface-roboto';
@@ -22,7 +18,6 @@ import Fade from "@material-ui/core/Fade";
 import MenuItem from "@material-ui/core/MenuItem";
 import IconButton from "@material-ui/core/IconButton";
 import Paper from '@material-ui/core/Paper';
-import Draggable from 'react-draggable';
 import NetworkSettings from "../Utils/NetworkSettings";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 
@@ -54,7 +49,8 @@ export default class MessageStructure extends React.Component {
       showResponse: false,
       responseData: null,
       reqMenuVisible: false,
-      selectedReqMenuItem: null
+      selectedReqMenuItem: null,
+      reqClipboardData: null
     };
 
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
@@ -75,7 +71,6 @@ export default class MessageStructure extends React.Component {
     this.msgSaveFailed = this.msgSaveFailed.bind(this);
     this.msgSaveCancelled = this.msgSaveCancelled.bind(this);
     this.showInfoDialog = this.showInfoDialog.bind(this);
-    this.hideResponseSegment = this.hideResponseSegment.bind(this);
 
     this.showMenu = this.showMenu.bind(this);
     this.hideMenu = this.hideMenu.bind(this);
@@ -84,6 +79,7 @@ export default class MessageStructure extends React.Component {
     this.showResponseDialog = this.showResponseDialog.bind(this);
     this.getTemplateLabel = this.getTemplateLabel.bind(this);
     this.networkSettingsChanged = this.networkSettingsChanged.bind(this);
+    this.hideResponse=this.hideResponse.bind(this);
 
   }
 
@@ -109,8 +105,13 @@ export default class MessageStructure extends React.Component {
   showResponseDialog() {
     this.hideMenu()
     this.setState({showResponse: true})
+  }
+
+  hideResponse() {
+    this.setState({showResponse: false})
 
   }
+
 
   handleMenuClick(event) {
     alert(event.currentTarget)
@@ -119,14 +120,10 @@ export default class MessageStructure extends React.Component {
     this.hideMenu()
   }
 
-  hideResponseSegment() {
-    this.setState({showResponse: false});
-  }
-
   // Receives the trace as a callback from ParseMessageDialog component
   setTrace(trace) {
     if (trace != null) {
-      console.log("trace  = ", trace);
+      //console.log("trace  = ", trace);
       // now parse this via a API call
 
       axios.post(appProps.parseTraceUrl + '/' + this.state.spec.Id + '/'
@@ -156,7 +153,7 @@ export default class MessageStructure extends React.Component {
 
   closeLoadMsgDialog(selectedMsg) {
     this.setState({showLoadMessagesDialog: false, currentDataSet: selectedMsg});
-    console.log("selected msg = ", selectedMsg);
+    //console.log("selected msg = ", selectedMsg);
 
     if (selectedMsg != null) {
       axios.get(appProps.loadMsgUrl, {
@@ -239,7 +236,8 @@ export default class MessageStructure extends React.Component {
       } else {
         fData.setError(false);
       }
-      content.push({Id: field.Id, Value: fData.state.fieldValue});
+      content.push(
+          {Id: field.Id, Name: field.Name, Value: fData.state.fieldValue});
     }
 
     field.Children.forEach(cf => {
@@ -269,8 +267,24 @@ export default class MessageStructure extends React.Component {
       return
     }
 
+    console.log(content)
+    let reqClipboardData = content.reduce((p, c, currentIndex) => {
+
+      if (currentIndex === 1) {
+        return p.Name + ":" + p.Value + "\n" + c.Name + ":" + c.Value + "\n";
+      }
+      return p + c.Name + ':' + c.Value + "\n";
+
+    });
+
+    //alert(reqClipboardData)
+
     //lets not hide and then show the response segment again
-    this.setState({showResponse: false, responseData: null});
+    this.setState({
+      showResponse: false,
+      responseData: null,
+      reqClipboardData: reqClipboardData
+    });
 
     let postData = 'host=' +
         this.state.targetServerIp + "&port=" + this.state.targetServerPort
@@ -319,7 +333,7 @@ export default class MessageStructure extends React.Component {
   }
 
   onFieldUpdate(e) {
-    console.log("field updated =>" + e.fieldName)
+    //console.log("field updated =>" + e.fieldName)
   }
 
   componentDidMount() {
@@ -520,32 +534,19 @@ export default class MessageStructure extends React.Component {
             </Paper>
 
             {/*<div style={{float: "right"}}>*/}
-            <Dialog open={this.state.showResponse}
-                    onClose={this.hideResponseSegment} scroll={"paper"}
-                    PaperComponent={PaperComponent}
-                    aria-labelledby="draggable-dialog-title"
-                    maxWidth={"sm"} fullWidth={true}
-                    disableBackdropClick={true}>
-              <DialogTitle style={{cursor: 'move'}}
-                           id="draggable-dialog-title"> Response -
-                [{this.getTemplateLabel()}]</DialogTitle>
-              <DialogContent dividers={true}>
+            <ResponseSegment show={this.state.showResponse}
+                             reqData={this.state.reqClipboardData}
+                             onClose={this.hideResponse}
+                             data={this.state.responseData}
+                             dialogTitle={"Response - ["
+                             + this.getTemplateLabel() + "]"}
+                             msgTemplate={this.state.msgTemplate}/>
 
-                <ResponseSegment show={this.state.showResponse}
-                                 data={this.state.responseData}
-                                 msgTemplate={this.state.msgTemplate}/>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={this.hideResponseSegment} color="primary">
-                  Close
-                </Button>
-              </DialogActions>
-            </Dialog>
-            {/*</div>*/}
           </div>
 
 
           <div style={{height: "10px"}}>{' '}</div>
+
 
         </div>
 
@@ -555,11 +556,3 @@ export default class MessageStructure extends React.Component {
 
 }
 
-function PaperComponent(props) {
-  return (
-      <Draggable handle="#draggable-dialog-title"
-                 cancel={'[class*="MuiDialogContent-root"]'}>
-        <Paper {...props} />
-      </Draggable>
-  );
-}
