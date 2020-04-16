@@ -466,7 +466,7 @@ export default class MessageStructure extends React.Component {
             {/*TODO:: pull this into a separate component*/}
             <Paper variation={"outlined"} style={{verticalAlign: "middle"}}>
               <table border="0" align={"center"}
-                     style={{align: "center", marginTop: "10px", width: "70%"}}>
+                     style={{align: "center", marginTop: "10px", width: "80%"}}>
                 <thead>
                 <tr style={{
                   fontFamily: "lato-regular",
@@ -477,43 +477,43 @@ export default class MessageStructure extends React.Component {
                 }}>
                   <td colSpan="3" align={"center"}>
 
-                    <div style={{display: "inline-block", float: "left"}}>
-                      <IconButton
-                          aria-label="more"
-                          aria-controls="long-menu"
-                          aria-haspopup="true"
-                          onClick={this.showMenu}
-                      >
-                        <MoreVert/>
-                      </IconButton>
+                    {/*
+                      <div style={{display: "inline-block", float: "left"}}>
+                        <IconButton
+                            aria-label="more"
+                            aria-controls="long-menu"
+                            aria-haspopup="true"
+                            onClick={this.showMenu}
+                        >
+                          <MoreVert/>
+                        </IconButton>
 
-                      <Menu
-                          id="fade-menu"
-                          anchorEl={this.state.selectedReqMenuItem}
-                          getContentAnchorEl={null}
-                          keepMounted
-                          open={this.state.reqMenuVisible}
-                          onClose={this.hideMenu}
-                          TransitionComponent={Fade}
-                      >
-                        <MenuItem dense={true}
-                                  onClick={this.showTraceInputsDialog}>Parse</MenuItem>
-                        <MenuItem dense={true}
-                                  onClick={this.showLoadMessagesDialog}>Load
-                          Message</MenuItem>
-                        <MenuItem dense={true}
-                                  onClick={this.showSaveMsgDialog}>Save
-                          Message</MenuItem>
-                        <MenuItem dense={true} onClick={this.sendToHost}>Send
-                          Message</MenuItem>
-                        <MenuItem dense={true}
-                                  onClick={this.showResponseDialog}>Show
-                          Response</MenuItem>
-                      </Menu>
-                    </div>
-
-                    <div
-                        style={{display: "inline-block"}}>{this.getTemplateLabel()}</div>
+                        <Menu
+                            id="fade-menu"
+                            anchorEl={this.state.selectedReqMenuItem}
+                            getContentAnchorEl={null}
+                            keepMounted
+                            open={this.state.reqMenuVisible}
+                            onClose={this.hideMenu}
+                            TransitionComponent={Fade}
+                        >
+                          <MenuItem dense={true}
+                                    onClick={this.showTraceInputsDialog}>Parse</MenuItem>
+                          <MenuItem dense={true}
+                                    onClick={this.showLoadMessagesDialog}>Load
+                            Message</MenuItem>
+                          <MenuItem dense={true}
+                                    onClick={this.showSaveMsgDialog}>Save
+                            Message</MenuItem>
+                          <MenuItem dense={true} onClick={this.sendToHost}>Send
+                            Message</MenuItem>
+                          <MenuItem dense={true}
+                                    onClick={this.showResponseDialog}>Show
+                            Response</MenuItem>
+                        </Menu>
+                      </div>
+                    */}
+                    <div style={{display: "inline-block"}}>{this.getTemplateLabel()}</div>
                   </td>
                 </tr>
                 <tr style={{

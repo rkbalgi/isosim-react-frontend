@@ -2,6 +2,7 @@ import React from 'react'
 import axios from 'axios'
 import {Button, Modal} from "react-bootstrap";
 import appProps from "../Utils/Properties";
+import {TextField} from "@material-ui/core";
 
 export default class ParseMessageDialog extends React.Component {
 
@@ -46,13 +47,16 @@ export default class ParseMessageDialog extends React.Component {
       } else {
         content =
             <React.Fragment>
-              <label
-                  style={{fontFamily: "lato-regular"}}> Trace </label>{'  '}
 
-              <textarea key={"trace_input"} value={this.state.traceMsg}
-                        onChange={this.traceChanged}
+              <TextField key={"trace_input"} variant={"outlined"} label={"Hex Trace"}
+                         fullWidth={true} value={this.state.traceMsg}
+                         onChange={this.traceChanged} rows={20}
+                         multiline={true}/>
+
+              {/*             <textarea key={"trace_input"} value=
+
                         style={{fontFamily: "courier new", width: '100%'}}/>
-
+*/}
 
             </React.Fragment>
       }
@@ -63,7 +67,7 @@ export default class ParseMessageDialog extends React.Component {
         <Modal show={this.state.show}
                onHide={this.closeDialogFail}>
           <Modal.Header closeButton>
-            <Modal.Title>Parse Trace</Modal.Title>
+            <Modal.Title>Parse Hex Trace</Modal.Title>
           </Modal.Header>
           <Modal.Body>{content}</Modal.Body>
           <Modal.Footer>

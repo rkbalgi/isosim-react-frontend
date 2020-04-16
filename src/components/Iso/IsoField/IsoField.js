@@ -1,6 +1,6 @@
 import React from "react";
 import ExpandedText from '../../Utils/ExpandedText.js'
-import {Button} from "react-bootstrap";
+import {Button} from "@material-ui/core";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from 'react-bootstrap/Tooltip'
 import {TextField} from "@material-ui/core";
@@ -121,6 +121,7 @@ export default class IsoField extends React.Component {
 
   setNewValue(newValue) {
     this.setState({fieldValue: newValue, showExpanded: false});
+    this.toggleExpanded()
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -329,10 +330,9 @@ export default class IsoField extends React.Component {
                             placement="top">
               <td style={{
                 width: "100px",
-                fontFamily: "lato-regular",
-                fontSize: "14px"
+                fontSize: "12px"
               }}>
-                <InputLabel>{levelIndicator + ' '
+                <InputLabel style={{fontSize:"14px"}}>{levelIndicator + ' '
                 + this.props.field.Name}</InputLabel>
               </td>
             </OverlayTrigger>
@@ -343,7 +343,7 @@ export default class IsoField extends React.Component {
             {/* field value column */}
             <td>
 
-              <TextField margin={"dense"} size={"small"}
+              <TextField margin={"dense"} size={"small"} variant={"standard"}
                          value={this.state.fieldValue}
                          error={this.state.hasError}
                          helperText={this.state.errMsg}
@@ -352,15 +352,17 @@ export default class IsoField extends React.Component {
                          disabled={this.props.readOnly
                          || !this.state.fieldEditable}
                          key={this.props.key}
-                         ondblclick={this.showExpanded}
+                         onDoubleClick={this.toggleExpanded}
               />
 
-              <Button size={"sm"} style={{
+              <Button size={"small"} variant={"contained"} style={{
                 float: 'right',
-                fontSize: '10px',
-                marginRight: '10px'
+                fontSize: '14px',
+                marginRight: '2%',
+                marginLeft: "2%"
               }}
-                      onClick={this.toggleExpanded}> {this.state.expandBtnLabel} </Button>{' '}
+                      onClick={this.toggleExpanded}> {this.state.expandBtnLabel}
+              </Button>
 
             </td>
 
