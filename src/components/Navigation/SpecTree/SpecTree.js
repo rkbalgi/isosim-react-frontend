@@ -35,7 +35,7 @@ class SpecTree extends React.Component {
   componentDidMount() {
 
     axios.get(appProps.allSpecsUrl).then(res => {
-      console.log(res.data);
+      console.log("allSpecs",res.data);
       this.setState({specs: res.data, loaded: true});
     }).catch(
         err => console.log(err))
@@ -44,8 +44,8 @@ class SpecTree extends React.Component {
   buildMessages(spec) {
     let content = []
     spec.Messages.forEach(m => {
-      content.push(<TreeItem nodeId={"nodeId_" + spec.Id + "_" + m.Id}
-                             sid={spec.Id} mid={m.Id}
+      content.push(<TreeItem nodeId={"nodeId_" + spec.ID + "_" + m.ID}
+                             sid={spec.ID} mid={m.ID}
                              label={m.Name}
                              onClick={this.messageClicked}/>)
     });
@@ -60,7 +60,7 @@ class SpecTree extends React.Component {
       let content = [];
       this.state.specs.forEach(s => {
 
-        content.push(<TreeItem align="left" nodeId={"nodeId_" + s.Id}
+        content.push(<TreeItem align="left" nodeId={"nodeId_" + s.ID}
                                icon={<Folder color={"primary"}/>}
                                label={s.Name}>{this.buildMessages(
             s)}</TreeItem>);

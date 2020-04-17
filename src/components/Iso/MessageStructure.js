@@ -126,11 +126,11 @@ export default class MessageStructure extends React.Component {
       //console.log("trace  = ", trace);
       // now parse this via a API call
 
-      axios.post(appProps.parseTraceUrl + '/' + this.state.spec.Id + '/'
-          + this.state.msg.Id, trace).then(res => {
+      axios.post(appProps.parseTraceUrl + '/' + this.state.spec.ID + '/'
+          + this.state.msg.ID, trace).then(res => {
             console.log("parsed msg data", res.data);
             res.data.forEach(fd => {
-              let fieldComponent = this.state.isoMsg.get(fd.Id);
+              let fieldComponent = this.state.isoMsg.get(fd.ID);
               fieldComponent.setState({selected: true, fieldValue: fd.Value});
             });
           }
@@ -158,14 +158,14 @@ export default class MessageStructure extends React.Component {
     if (selectedMsg != null) {
       axios.get(appProps.loadMsgUrl, {
         params: {
-          specId: this.state.spec.Id,
-          msgId: this.state.msg.Id,
+          specId: this.state.spec.ID,
+          msgId: this.state.msg.ID,
           dsName: selectedMsg
         }
       }).then(res => {
             //console.log("saved msg data", res.data);
             res.data.forEach(fd => {
-              let fieldComponent = this.state.isoMsg.get(fd.Id);
+              let fieldComponent = this.state.isoMsg.get(fd.ID);
               fieldComponent.setState({selected: true, fieldValue: fd.Value});
             });
           }
@@ -228,7 +228,7 @@ export default class MessageStructure extends React.Component {
 
   addFieldContent(field, content, validationErrors) {
 
-    let fData = this.state.isoMsg.get(field.Id);
+    let fData = this.state.isoMsg.get(field.ID);
     if (fData.state.selected) {
       if (fieldValidator.validate(field, fData.state.fieldValue,
           validationErrors)) {
@@ -237,7 +237,7 @@ export default class MessageStructure extends React.Component {
         fData.setError(false);
       }
       content.push(
-          {Id: field.Id, Name: field.Name, Value: fData.state.fieldValue});
+          {ID: field.ID, Name: field.Name, Value: fData.state.fieldValue});
     }
 
     field.Children.forEach(cf => {
@@ -289,8 +289,8 @@ export default class MessageStructure extends React.Component {
     let postData = 'host=' +
         this.state.targetServerIp + "&port=" + this.state.targetServerPort
         + '&mli=' + this.state.mliType
-        + '&specId=' + this.state.spec.Id + '&msgId='
-        + this.state.msg.Id + "&msg=" + JSON.stringify(content);
+        + '&specId=' + this.state.spec.ID + '&msgId='
+        + this.state.msg.ID + "&msg=" + JSON.stringify(content);
     console.log(postData)
     axios.post(appProps.sendMsgUrl, postData).then(res => {
       console.log("Response from server", res);
@@ -355,7 +355,7 @@ export default class MessageStructure extends React.Component {
       return null;
     });
 
-    let url = appProps.templateUrl + '/' + spec.Id + "/" + msg.Id;
+    let url = appProps.templateUrl + '/' + spec.ID + "/" + msg.ID;
     console.log(url);
     axios.get(url).then(
         res => {
@@ -377,7 +377,7 @@ export default class MessageStructure extends React.Component {
   }
 
   appendFieldContent(content, field, isoMsg, level) {
-    content.push(<IsoField key={field.Id} field={field} isoMsg={isoMsg}
+    content.push(<IsoField key={field.ID} field={field} isoMsg={isoMsg}
                            level={level}
                            onFieldUpdate={this.onFieldUpdate}/>);
   }
@@ -417,16 +417,16 @@ export default class MessageStructure extends React.Component {
           </Modal>
 
           <SelectMessageDialog show={this.state.showLoadMessagesDialog}
-                               specId={this.state.spec.Id}
-                               msgId={this.state.msg.Id}
+                               specId={this.state.spec.ID}
+                               msgId={this.state.msg.ID}
                                closeLoadMsgDialog={this.closeLoadMsgDialog}/>
 
           <ParseMessageDialog show={this.state.showTraceInputDialog}
                               setTrace={this.setTrace}/>
 
           <SaveMessageDialog show={this.state.showSaveMsgDialog}
-                             msgId={this.state.msg.Id}
-                             specId={this.state.spec.Id}
+                             msgId={this.state.msg.ID}
+                             specId={this.state.spec.ID}
                              data={this.state.saveData}
                              msgName={this.state.currentDataSet}
                              msgSaveSuccess={this.msgSaveSuccess}

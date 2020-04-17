@@ -38,7 +38,7 @@ export default class IsoField extends React.Component {
       this.selectable = false;
 
       let selected = false;
-      let fieldValue = this.props.id2Value.get(this.props.field.Id)
+      let fieldValue = this.props.id2Value.get(this.props.field.ID)
       if (fieldValue) {
         selected = true;
       }
@@ -85,7 +85,7 @@ export default class IsoField extends React.Component {
           showExpanded: false
         };
       }
-      this.props.isoMsg.set(this.props.field.Id, this);
+      this.props.isoMsg.set(this.props.field.ID, this);
     }
   }
 
@@ -127,7 +127,7 @@ export default class IsoField extends React.Component {
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.id2Value !== this.props.id2Value) {
       this.setState({
-        fieldValue: this.props.id2Value.get(this.props.field.Id),
+        fieldValue: this.props.id2Value.get(this.props.field.ID),
         id2Value: this.props.id2Value
       });
     }
@@ -195,9 +195,9 @@ export default class IsoField extends React.Component {
 
       this.props.field.Children.forEach(c => {
         if (event.ChangeType === 'FieldSelected') {
-          this.props.isoMsg.get(c.Id).setSelected(true);
+          this.props.isoMsg.get(c.ID).setSelected(true);
         } else if (event.ChangeType === 'FieldDeselected') {
-          this.props.isoMsg.get(c.Id).setSelected(false);
+          this.props.isoMsg.get(c.ID).setSelected(false);
         }
       });
 
@@ -211,7 +211,7 @@ export default class IsoField extends React.Component {
 
     this.setState({selected: selected});
     this.props.field.Children.forEach(c => {
-      this.props.isoMsg.get(c.Id).setSelected(selected);
+      this.props.isoMsg.get(c.ID).setSelected(selected);
     });
 
   }
@@ -254,9 +254,9 @@ export default class IsoField extends React.Component {
 
   appendFieldContent(content, field, parentField, id2Value, level) {
 
-    let key = field.Id;
+    let key = field.ID;
     if (this.props.readOnly) {
-      key = 'response_seg_' + field.Id;
+      key = 'response_seg_' + field.ID;
     }
     content.push(<IsoField key={key} field={field} id2Value={id2Value}
                            readOnly={this.props.readOnly}

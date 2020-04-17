@@ -37,7 +37,7 @@ class NavBar extends React.Component {
     console.log("spec = ", spec)
     let msg = null;
     spec.Messages.forEach(m => {
-      if (m.Id === parseInt(msgId)) {
+      if (m.ID === parseInt(msgId)) {
         msg = m;
       }
     })
@@ -187,7 +187,7 @@ class NavBar extends React.Component {
                   onChange={this.messageChanged}>
             {
               spec.Messages.map(msg => {
-                return <option key={msg.Id}
+                return <option key={msg.ID}
                                value={msg.Name}>{msg.Name}</option>
               })
             }
@@ -223,7 +223,7 @@ class NavBar extends React.Component {
   // returns specification given its name
   getSpecByID(specId) {
     return this.state.specs.find((s, i) => {
-      if (s.Id === specId) {
+      if (s.ID === specId) {
         return s;
       }
       return null;
