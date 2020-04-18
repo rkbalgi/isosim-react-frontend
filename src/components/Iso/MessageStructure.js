@@ -79,7 +79,7 @@ export default class MessageStructure extends React.Component {
     this.showResponseDialog = this.showResponseDialog.bind(this);
     this.getTemplateLabel = this.getTemplateLabel.bind(this);
     this.networkSettingsChanged = this.networkSettingsChanged.bind(this);
-    this.hideResponse=this.hideResponse.bind(this);
+    this.hideResponse = this.hideResponse.bind(this);
 
   }
 
@@ -111,7 +111,6 @@ export default class MessageStructure extends React.Component {
     this.setState({showResponse: false})
 
   }
-
 
   handleMenuClick(event) {
     alert(event.currentTarget)
@@ -153,7 +152,6 @@ export default class MessageStructure extends React.Component {
 
   closeLoadMsgDialog(selectedMsg) {
     this.setState({showLoadMessagesDialog: false, currentDataSet: selectedMsg});
-    //console.log("selected msg = ", selectedMsg);
 
     if (selectedMsg != null) {
       axios.get(appProps.loadMsgUrl, {
@@ -163,7 +161,7 @@ export default class MessageStructure extends React.Component {
           dsName: selectedMsg
         }
       }).then(res => {
-            //console.log("saved msg data", res.data);
+            console.log("saved msg = ", res.data);
             res.data.forEach(fd => {
               let fieldComponent = this.state.isoMsg.get(fd.ID);
               fieldComponent.setState({selected: true, fieldValue: fd.Value});
@@ -307,7 +305,7 @@ export default class MessageStructure extends React.Component {
   processError(e) {
 
     if (!e.response) {
-      console.log(e);
+      console.log("Error = ", e);
       this.setState({
         errorMessage: 'Error: Unable to reach API server',
         errDialogVisible: true
@@ -373,7 +371,10 @@ export default class MessageStructure extends React.Component {
 
           console.log("MsgTemplate = ", this.state.msgTemplate);
         }).catch(
-        err => this.setState({errorMessage: err, errDialogVisible: true}))
+        err => {
+          console.log(err)
+          this.setState({errorMessage: err, errDialogVisible: true})
+        });
   }
 
   appendFieldContent(content, field, isoMsg, level) {
@@ -410,7 +411,7 @@ export default class MessageStructure extends React.Component {
             }}>{this.state.errorMessage}</pre>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={this.closeErrorDialog}>
+              <Button onClick={this.closeErrorDialog}>
                 Close
               </Button>
             </Modal.Footer>
@@ -513,7 +514,8 @@ export default class MessageStructure extends React.Component {
                         </Menu>
                       </div>
                     */}
-                    <div style={{display: "inline-block"}}>{this.getTemplateLabel()}</div>
+                    <div
+                        style={{display: "inline-block"}}>{this.getTemplateLabel()}</div>
                   </td>
                 </tr>
                 <tr style={{

@@ -56,13 +56,13 @@ class NetworkSettings extends React.Component {
               }}>
             <tr>
               <td>
-                <TextField id="outlined-basic" label="IP" size={"small"}
+                <TextField id="ns_ip" label="IP" size={"small"}
                            variant="outlined" defaultValue={"127.0.0.1"}
                            onChange={this.serverIpChanged}/>
               </td>
               <td>
 
-                <TextField id="outlined-basic" label="Port" size={"small"}
+                <TextField id="ns_port" label="Port" size={"small"}
                            variant="outlined" defaultValue={"6666"}
                            onChange={this.serverPortChanged}/>
               </td>

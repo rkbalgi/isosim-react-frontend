@@ -51,7 +51,8 @@ export default class IsoField extends React.Component {
         id2Value: this.props.id2Value,
         fieldValue: fieldValue,
         expandBtnLabel: initialExpandBtnLabel,
-        showExpanded: false
+        showExpanded: false,
+        field: this.props.field
       };
     } else {
       let defaultFieldValue = "";
@@ -72,7 +73,8 @@ export default class IsoField extends React.Component {
           selected: true,
           fieldValue: defaultFieldValue,
           expandBtnLabel: initialExpandBtnLabel,
-          showExpanded: false
+          showExpanded: false,
+          field: this.props.field
         };
       } else {
         this.state = {
@@ -82,7 +84,8 @@ export default class IsoField extends React.Component {
           hasError: false,
           fieldValue: defaultFieldValue,
           expandBtnLabel: initialExpandBtnLabel,
-          showExpanded: false
+          showExpanded: false,
+          field: this.props.field
         };
       }
       this.props.isoMsg.set(this.props.field.ID, this);
@@ -332,7 +335,7 @@ export default class IsoField extends React.Component {
                 width: "100px",
                 fontSize: "12px"
               }}>
-                <InputLabel style={{fontSize:"14px"}}>{levelIndicator + ' '
+                <InputLabel style={{fontSize: "14px"}}>{levelIndicator + ' '
                 + this.props.field.Name}</InputLabel>
               </td>
             </OverlayTrigger>
@@ -351,7 +354,7 @@ export default class IsoField extends React.Component {
                          style={{width: "70%"}}
                          disabled={this.props.readOnly
                          || !this.state.fieldEditable}
-                         key={this.props.key}
+                         key={"fld_value_" + this.state.field.ID}
                          onDoubleClick={this.toggleExpanded}
               />
 
