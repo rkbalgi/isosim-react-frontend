@@ -1,22 +1,15 @@
 import React from 'react';
 import axios from "axios";
-//import axios from 'axios'
 import IsoField from './IsoField/IsoField.js'
 import SelectMessageDialog from '../Dialogs/SelectMessageDialog.js'
 import {Button} from "@material-ui/core";
-import {Modal} from 'react-bootstrap';
 import appProps from '../Utils/Properties.js'
 import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "../Dialogs/ParseMessageDialog";
 import SaveMessageDialog from "../Dialogs/SaveMessageDialog";
 import fieldValidator from '../Utils/FieldValidator'
-import MoreVert from "@material-ui/icons/MoreVert";
 
 import 'typeface-roboto';
-import Menu from "@material-ui/core/Menu";
-import Fade from "@material-ui/core/Fade";
-import MenuItem from "@material-ui/core/MenuItem";
-import IconButton from "@material-ui/core/IconButton";
 import Paper from '@material-ui/core/Paper';
 import NetworkSettings from "../Utils/NetworkSettings";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -127,15 +120,17 @@ export default class MessageStructure extends React.Component {
       // now parse this via a API call
 
       axios.post(appProps.parseTraceUrl + '/' + this.state.spec.ID + '/'
-          + this.state.msg.ID, trace).then(res => {
+          + this.state.msg.ID, trace)
+      .then(res => {
             console.log("parsed msg data", res.data);
-            res.data.forEach(fd => {
+            res.data.parsed_fields.forEach(fd => {
               let fieldComponent = this.state.isoMsg.get(fd.ID);
               fieldComponent.setState({selected: true, fieldValue: fd.Value});
             });
           }
       ).catch(e => {
-            console.log(e);
+
+            console.log("errr",e);
             this.processError(e)
           }
       )
@@ -181,10 +176,10 @@ export default class MessageStructure extends React.Component {
     this.setState({errDialogVisible: true, errorMessage: msg})
   }
 
-  msgSaveSuccess(msgName,updated) {
-    let type="saved";
-    if(updated){
-      type="updated"
+  msgSaveSuccess(msgName, updated) {
+    let type = "saved";
+    if (updated) {
+      type = "updated"
     }
     this.showInfoDialog(`Message ${msgName} ${type} successfully.`);
     this.setState({showSaveMsgDialog: false});
@@ -296,8 +291,9 @@ export default class MessageStructure extends React.Component {
         + this.state.msg.ID + "&msg=" + JSON.stringify(content);
     console.log(postData)
     axios.post(appProps.sendMsgUrl, postData).then(res => {
-      console.log("Response from server", res);
-      this.setState({showResponse: true, responseData: res.data});
+      console.log("Response from server", res.data.response_fields);
+      this.setState(
+          {showResponse: true, responseData: res.data.response_fields});
 
     }).catch(
         e => {
@@ -405,8 +401,9 @@ export default class MessageStructure extends React.Component {
           fill: 'aqua'
         }}>
 
-          <AlertDialog show={this.state.errDialogVisible} msg={this.state.errorMessage}
-          onClose={this.closeErrorDialog}/>
+          <AlertDialog show={this.state.errDialogVisible}
+                       msg={this.state.errorMessage}
+                       onClose={this.closeErrorDialog}/>
 
 
           <SelectMessageDialog show={this.state.showLoadMessagesDialog}

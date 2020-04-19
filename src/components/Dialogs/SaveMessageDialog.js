@@ -1,6 +1,6 @@
 import React from 'react'
 import axios from 'axios'
-import {Button, Modal} from "react-bootstrap";
+import {Button} from "react-bootstrap";
 import appProps from "../Utils/Properties";
 import {Checkbox} from "@material-ui/core";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -9,7 +9,6 @@ import Grid from "@material-ui/core/Grid";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogActions from "@material-ui/core/DialogActions";
 
 export default class SaveMessageDialog extends React.Component {
@@ -48,7 +47,7 @@ export default class SaveMessageDialog extends React.Component {
     }
 
     let postData = 'specId=' + this.props.specId + '&msgId=' + this.props.msgId
-        + '&dataSetName=' + this.state.msgName + '&updateMsg='
+        + '&dsName=' + this.state.msgName + '&updateMsg='
         + this.state.updateIfExists + '&msg=' + JSON.stringify(
             this.props.data);
 

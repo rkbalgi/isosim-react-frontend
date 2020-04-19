@@ -4,8 +4,6 @@ import MessageStructure from '../Iso/MessageStructure.js'
 import {Button, Modal} from "react-bootstrap";
 import appProps from "../Utils/Properties";
 import SpecTree from "./SpecTree/SpecTree";
-import Container from "@material-ui/core/Container";
-import TextareaAutosize from "@material-ui/core/TextareaAutosize";
 
 class NavBar extends React.Component {
 

@@ -1,8 +1,11 @@
 import React from 'react'
-import axios from 'axios'
-import {Button, Modal} from "react-bootstrap";
-import appProps from "../Utils/Properties";
+import {Button} from "react-bootstrap";
 import {TextField} from "@material-ui/core";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import Grid from "@material-ui/core/Grid";
+import DialogActions from "@material-ui/core/DialogActions";
+import Dialog from "@material-ui/core/Dialog";
 
 export default class ParseMessageDialog extends React.Component {
 
@@ -57,37 +60,43 @@ export default class ParseMessageDialog extends React.Component {
 
   render() {
 
-    let content =
-        <React.Fragment>
-
-          <TextField key={"trace_input"} variant={"outlined"}
-                     label={"Hex Trace"}
-                     fullWidth={true} value={this.state.traceMsg}
-                     error={this.state.errorMessage !== null}
-                     onChange={this.traceChanged} rows={20}
-                     helperText={this.state.errorMessage}
-                     multiline={true}/>
-
-        </React.Fragment>
-
     return (
 
-        <Modal show={this.state.show}
-               onHide={this.closeDialogFail}>
-          <Modal.Header closeButton>
-            <Modal.Title>Parse Hex Trace</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>{content}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" onClick={this.closeDialogSuccess}
-                    disabled={this.state.errorMessage !== null}>
-              OK
-            </Button>
-            <Button variant="secondary" onClick={this.closeDialogFail}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <div>
+          <Dialog open={this.state.show} onClose={this.closeDialogFail}
+                  aria-labelledby="form-dialog-title" fullWidth={true}
+                  maxWidth={"md"}>
+            <DialogTitle id="form-dialog-title" onClose={this.closeDialogFail}>Parse Trace</DialogTitle>
+            <DialogContent>
+              <div>
+                <Grid container={true} spacing={2}>
+
+                  <Grid container>
+                    <Grid item lg={12} xl={12}>
+                      <TextField key={"trace_input"} variant={"outlined"}
+                                 label={"Hex Trace"} margin={"dense"}
+                                 fullWidth={true} value={this.state.traceMsg}
+                                 error={this.state.errorMessage !== null}
+                                 onChange={this.traceChanged} rows={10}
+                                 helperText={this.state.errorMessage}
+                                 multiline={true}/>
+
+                    </Grid>
+                  </Grid>
+
+                </Grid>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.closeDialogSuccess} color="primary">
+                OK
+              </Button>
+              <Button onClick={this.closeDialogFail} color="primary">
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
 
     );
   }

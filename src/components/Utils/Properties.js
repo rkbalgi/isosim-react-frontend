@@ -8,12 +8,12 @@ export class AppProps {
   constructor() {
     this.baseUrl = 'http://localhost:8080';
     //this.baseUrl = '';
-    this.sendMsgUrl = this.baseUrl + '/iso/v0/send';
+    this.sendMsgUrl = this.baseUrl + '/iso/v1/send';
     this.loadMsgUrl = this.baseUrl + '/iso/v1/loadmsg';
     this.allSpecsUrl = this.baseUrl + '/iso/v1/specs';
     this.templateUrl = this.baseUrl + '/iso/v1/template';
-    this.parseTraceUrl = this.baseUrl + '/iso/v0/parse';
-    this.saveMsgUrl = this.baseUrl + '/iso/v0/save';
+    this.parseTraceUrl = this.baseUrl + '/iso/v5/parse';
+    this.saveMsgUrl = this.baseUrl + '/iso/v1/save';
   }
 
 }
