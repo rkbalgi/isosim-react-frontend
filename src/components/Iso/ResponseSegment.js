@@ -79,7 +79,7 @@ export default class ResponseSegment extends React.Component {
         idToField.set(f.ID, f.Value);
       });
 
-      this.state.msgTemplate.Fields.forEach(field => {
+      this.state.msgTemplate.fields.forEach(field => {
         this.collectData(field, idToField, forClipboard)
       });
       let clipboardText = "ISO Response  \n|---------------|\n"
@@ -94,7 +94,7 @@ export default class ResponseSegment extends React.Component {
       clipboardText = "ISO Request  \n|---------------|\n"
           + this.props.reqData + "\n\n" + clipboardText + "\n\n";
 
-      this.state.msgTemplate.Fields.forEach(field => {
+      this.state.msgTemplate.fields.forEach(field => {
         this.appendFieldContent(content, field, idToField, 0)
       });
 

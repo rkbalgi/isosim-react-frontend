@@ -20,6 +20,7 @@ import IconButton from "@material-ui/core/IconButton";
 import Paper from '@material-ui/core/Paper';
 import NetworkSettings from "../Utils/NetworkSettings";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
+import AlertDialog from "../Dialogs/AlertDialog";
 
 // MessageStructure is the central component that encompasses the Request and
 // the response segments along with NetworkSettings etc
@@ -161,8 +162,8 @@ export default class MessageStructure extends React.Component {
           dsName: selectedMsg
         }
       }).then(res => {
-            console.log("saved msg = ", res.data);
-            res.data.forEach(fd => {
+            console.log("saved msg = ", res.data.saved_message);
+            res.data.saved_message.forEach(fd => {
               let fieldComponent = this.state.isoMsg.get(fd.ID);
               fieldComponent.setState({selected: true, fieldValue: fd.Value});
             });
@@ -180,8 +181,12 @@ export default class MessageStructure extends React.Component {
     this.setState({errDialogVisible: true, errorMessage: msg})
   }
 
-  msgSaveSuccess(msgName) {
-    this.showInfoDialog(`Message ${msgName} saved successfully.`);
+  msgSaveSuccess(msgName,updated) {
+    let type="saved";
+    if(updated){
+      type="updated"
+    }
+    this.showInfoDialog(`Message ${msgName} ${type} successfully.`);
     this.setState({showSaveMsgDialog: false});
   }
 
@@ -198,7 +203,7 @@ export default class MessageStructure extends React.Component {
 
     // build the data and then
     let content = [];
-    this.state.msgTemplate.Fields.forEach(f => {
+    this.state.msgTemplate.fields.forEach(f => {
       this.addFieldContent(f, content);
     });
     this.setState({saveData: content, showSaveMsgDialog: true})
@@ -252,7 +257,7 @@ export default class MessageStructure extends React.Component {
     this.hideMenu()
     let content = [];
     let validationErrors = [];
-    this.state.msgTemplate.Fields.forEach(f => {
+    this.state.msgTemplate.fields.forEach(f => {
       this.addFieldContent(f, content, validationErrors);
     });
     //console.log("After gathering data = ", content, validationErrors);
@@ -387,7 +392,7 @@ export default class MessageStructure extends React.Component {
 
     let content = [];
     if (this.state.loaded === true) {
-      this.state.msgTemplate.Fields.map(field => {
+      this.state.msgTemplate.fields.map(field => {
         this.appendFieldContent(content, field, this.state.isoMsg, 0)
       })
     }
@@ -400,22 +405,9 @@ export default class MessageStructure extends React.Component {
           fill: 'aqua'
         }}>
 
-          <Modal show={this.state.errDialogVisible}
-                 onHide={this.closeErrorDialog}>
-            <Modal.Header closeButton>
-              <Modal.Title>Error</Modal.Title>
-            </Modal.Header>
-            <Modal.Body><pre style={{
-              font: "Lato",
-              fontSize: "14px"
-            }}>{this.state.errorMessage}</pre>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={this.closeErrorDialog}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
+          <AlertDialog show={this.state.errDialogVisible} msg={this.state.errorMessage}
+          onClose={this.closeErrorDialog}/>
+
 
           <SelectMessageDialog show={this.state.showLoadMessagesDialog}
                                specId={this.state.spec.ID}
@@ -427,6 +419,7 @@ export default class MessageStructure extends React.Component {
 
           <SaveMessageDialog show={this.state.showSaveMsgDialog}
                              msgId={this.state.msg.ID}
+                             initialMessage={this.state.currentDataSet}
                              specId={this.state.spec.ID}
                              data={this.state.saveData}
                              msgName={this.state.currentDataSet}

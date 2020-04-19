@@ -2,15 +2,29 @@ import React from 'react'
 import axios from 'axios'
 import {Button, Modal} from "react-bootstrap";
 import appProps from "../Utils/Properties";
+import {Checkbox} from "@material-ui/core";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Dialog from "@material-ui/core/Dialog";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogActions from "@material-ui/core/DialogActions";
 
 export default class SaveMessageDialog extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {show: props.show, msgName: ''};
+    this.state = {
+      show: props.show,
+      msgName: props.initialMessage,
+      "updateIfExists": false
+    };
     this.closeDialogSuccess = this.closeDialogSuccess.bind(this);
     this.closeDialogFail = this.closeDialogFail.bind(this);
     this.msgNameChanged = this.msgNameChanged.bind(this);
+    this.updateIfExistsChanged = this.updateIfExistsChanged.bind(this);
   }
 
   msgNameChanged(event) {
@@ -34,12 +48,13 @@ export default class SaveMessageDialog extends React.Component {
     }
 
     let postData = 'specId=' + this.props.specId + '&msgId=' + this.props.msgId
-        + '&dataSetName=' + this.state.msgName + '&msg=' + JSON.stringify(
+        + '&dataSetName=' + this.state.msgName + '&updateMsg='
+        + this.state.updateIfExists + '&msg=' + JSON.stringify(
             this.props.data);
-   // console.log(postData);
+
     axios.post(appProps.saveMsgUrl, postData).then(res => {
       console.log(res);
-      this.props.msgSaveSuccess(this.state.msgName);
+      this.props.msgSaveSuccess(this.state.msgName, this.state.updateIfExists);
       this.setState({show: false});
 
     }).catch(e => {
@@ -55,52 +70,59 @@ export default class SaveMessageDialog extends React.Component {
     this.setState({show: false});
   }
 
+  updateIfExistsChanged(event) {
+    this.setState({updateIfExists: event.target.checked});
+  }
+
   render() {
 
-    let content, errorContent;
-
-    if (this.state.show) {
-
-      console.log("before sending", this.props);
-
-      if (this.state.errorMessage) {
-        errorContent =
-            <div style={{color: 'red'}}>{this.state.errorMessage}</div>
-      }
-
-      if (!this.props.msgId || !this.props.specId) {
-        content =
-            <div>{"Error: Please load a spec/msg, set data before attempting to save"}</div>
-      } else {
-        content =
-            <React.Fragment>
-              <label style={{fontFamily: "lato-regular"}}> Message
-                Name </label>{'  '}
-              <input type={"text"} key={"msg_name_save"}
-                     value={this.state.msgName} onChange={this.msgNameChanged}/>
-              {errorContent}
-            </React.Fragment>
-      }
-    }
-
     return (
-        <Modal show={this.state.show}
-               onHide={this.closeDialogFail}>
-          <Modal.Header closeButton>
-            <Modal.Title>Save Message</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>{content}</Modal.Body>
-          <Modal.Footer>
-            <Button variant="primary" onClick={this.closeDialogSuccess}>
-              OK
-            </Button>
-            <Button variant="secondary" onClick={this.closeDialogFail}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+        <div>
+          <Dialog open={this.state.show} onClose={this.closeDialogFail}
+                  aria-labelledby="form-dialog-title" fullWidth={true} maxWidth={"sm"}>
+            <DialogTitle id="form-dialog-title" onClose={this.closeDialogFail}>Save Message</DialogTitle>
+            <DialogContent>
+              <div>
+                <Grid container={true} spacing={2}>
+
+                  <Grid container>
+                    <Grid item lg={12} xl={12}>
+                      <TextField type={"text"} key={"msg_name_save"} margin={"dense"}
+                                 fullWidth={true}
+                                 variant={"outlined"} label={"Message Name"}
+                                 value={this.state.msgName}
+                                 onChange={this.msgNameChanged}/>
+
+                    </Grid>
+                  </Grid>
+
+                  <Grid container>
+                    <Grid item xs={4}>
+                      <FormControlLabel
+                          control={<Checkbox key={"key_update_if_exists"}
+                                             size={"sm"}
+                                             checked={this.state.updateIfExists}
+                                             onChange={this.updateIfExistsChanged}/>}
+                          label={"Overwrite"}/>
+
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </div>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={this.closeDialogSuccess} color="primary">
+                OK
+              </Button>
+              <Button onClick={this.closeDialogFail} color="primary">
+                Cancel
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
 
     );
+
   }
 
 }

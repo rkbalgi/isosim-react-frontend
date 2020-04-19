@@ -8,59 +8,67 @@ export default class ParseMessageDialog extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {show: props.show, traceMsg: ''};
+    this.state = {show: props.show, traceMsg: '', errorMessage: null};
     this.closeDialogSuccess = this.closeDialogSuccess.bind(this);
     this.closeDialogFail = this.closeDialogFail.bind(this);
     this.traceChanged = this.traceChanged.bind(this);
+    this.isValidTrace = this.isValidTrace.bind(this);
+  }
+
+  isValidTrace(trace) {
+    return !!(trace.trim() !== "" && (trace.length
+        % 2 === 0
+        && trace.match("^[0-9,a-f,A-F]+$")));
+
   }
 
   traceChanged(event) {
-    this.setState({traceMsg: event.target.value});
+
+    let updatedTrace = event.target.value;
+
+    if (!this.isValidTrace(updatedTrace)) {
+      this.setState({
+        traceMsg: updatedTrace,
+        errorMessage: "Input is not valid hex"
+      });
+    } else {
+      this.setState({traceMsg: updatedTrace, errorMessage: null});
+    }
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    //console.log("smd: componentDidUpdate", this.state);
+
     if (this.props.show === true && prevState.show === false) {
       this.setState({show: true, traceMsg: ''});
     }
   }
 
   closeDialogSuccess() {
-    this.setState({show: false});
-    this.props.setTrace(this.state.traceMsg);
+    if (this.isValidTrace(this.state.traceMsg)) {
+      this.setState({show: false})
+      this.props.setTrace(this.state.traceMsg);
+    }
   }
 
   closeDialogFail() {
     this.setState({show: false});
-    //TODO:: also tell the parent that we're done
-    //and return the value of the selected saved msg
     this.props.setTrace(null);
   }
 
   render() {
 
-    let content;
+    let content =
+        <React.Fragment>
 
-    if (this.state.show) {
-      if (this.state.errorMessage) {
-        content = <div>{this.state.errorMessage}</div>
-      } else {
-        content =
-            <React.Fragment>
+          <TextField key={"trace_input"} variant={"outlined"}
+                     label={"Hex Trace"}
+                     fullWidth={true} value={this.state.traceMsg}
+                     error={this.state.errorMessage !== null}
+                     onChange={this.traceChanged} rows={20}
+                     helperText={this.state.errorMessage}
+                     multiline={true}/>
 
-              <TextField key={"trace_input"} variant={"outlined"} label={"Hex Trace"}
-                         fullWidth={true} value={this.state.traceMsg}
-                         onChange={this.traceChanged} rows={20}
-                         multiline={true}/>
-
-              {/*             <textarea key={"trace_input"} value=
-
-                        style={{fontFamily: "courier new", width: '100%'}}/>
-*/}
-
-            </React.Fragment>
-      }
-    }
+        </React.Fragment>
 
     return (
 
@@ -71,7 +79,8 @@ export default class ParseMessageDialog extends React.Component {
           </Modal.Header>
           <Modal.Body>{content}</Modal.Body>
           <Modal.Footer>
-            <Button variant="primary" onClick={this.closeDialogSuccess}>
+            <Button variant="primary" onClick={this.closeDialogSuccess}
+                    disabled={this.state.errorMessage !== null}>
               OK
             </Button>
             <Button variant="secondary" onClick={this.closeDialogFail}>

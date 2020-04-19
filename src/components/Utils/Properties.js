@@ -9,9 +9,9 @@ export class AppProps {
     this.baseUrl = 'http://localhost:8080';
     //this.baseUrl = '';
     this.sendMsgUrl = this.baseUrl + '/iso/v0/send';
-    this.loadMsgUrl = this.baseUrl + '/iso/v0/loadmsg';
-    this.allSpecsUrl = this.baseUrl + '/iso/v0/specs';
-    this.templateUrl = this.baseUrl + '/iso/v0/template';
+    this.loadMsgUrl = this.baseUrl + '/iso/v1/loadmsg';
+    this.allSpecsUrl = this.baseUrl + '/iso/v1/specs';
+    this.templateUrl = this.baseUrl + '/iso/v1/template';
     this.parseTraceUrl = this.baseUrl + '/iso/v0/parse';
     this.saveMsgUrl = this.baseUrl + '/iso/v0/save';
   }

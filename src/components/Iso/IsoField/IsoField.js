@@ -217,6 +217,18 @@ export default class IsoField extends React.Component {
       this.props.isoMsg.get(c.ID).setSelected(selected);
     });
 
+    if (selected) {
+      let errors = []
+      if (fieldValidator.validate(this.props.field, this.state.fieldValue,
+          errors)) {
+        this.setState(
+            {hasError: true, errMsg: errors[0]})
+      }
+    } else {
+      this.setState({hasError: false, errMsg: null})
+
+    }
+
   }
 
   fieldSelectionChanged(event) {
@@ -239,18 +251,24 @@ export default class IsoField extends React.Component {
   fieldValueChanged(event) {
 
     let errors = []
-    if (fieldValidator.validate(this.props.field, event.target.value, errors)) {
-      this.setState(
-          {hasError: true, errMsg: errors[0], fieldValue: event.target.value})
-    } else {
+    if (this.state.selected) {
+      if (fieldValidator.validate(this.props.field, event.target.value,
+          errors)) {
+        this.setState(
+            {hasError: true, errMsg: errors[0], fieldValue: event.target.value})
+      } else {
 
+        this.setState(
+            {hasError: false, errMsg: null, fieldValue: event.target.value});
+        let obj = {
+          fieldName: this.props.field.Name,
+          ChangeType: "ValueChanged"
+        };
+        this.props.onFieldUpdate(obj)
+      }
+    } else {
       this.setState(
-          {hasError: false, errMsg: null, fieldValue: event.target.value});
-      let obj = {
-        fieldName: this.props.field.Name,
-        ChangeType: "ValueChanged"
-      };
-      this.props.onFieldUpdate(obj)
+          {hasError: false, errMsg: null});
     }
 
   }

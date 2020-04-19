@@ -59,7 +59,7 @@ class NavBar extends React.Component {
 
     axios.get(appProps.allSpecsUrl).then(res => {
       console.log(res.data);
-      this.setState({specs: res.data, loaded: true});
+      this.setState({specs: res.data.specs, loaded: true});
     }).catch(
         err => console.log(err))
   }
