@@ -27,6 +27,8 @@ export default class IsoField extends React.Component {
     this.getBgColor = this.getBgColor.bind(this);
     this.setError = this.setError.bind(this);
     this.toggleExpanded = this.toggleExpanded.bind(this);
+    this.onFocusLost = this.onFocusLost.bind(this);
+    this.applyPadding = this.applyPadding.bind(this);
 
     //if the field is Message Type, MTI or Bitmap - it should stay selected
     //because they're mandatory fields in ISO
@@ -56,8 +58,7 @@ export default class IsoField extends React.Component {
       };
     } else {
       let defaultFieldValue = "";
-      if (["Message Type", "MTI", "Bitmap"].includes(
-          this.props.field.Name)) {
+      if (["Message Type", "MTI", "Bitmap"].includes(this.props.field.Name)) {
         this.selectable = false;
         let fieldEditable = true;
         if (this.props.field.Name === "Bitmap") {
@@ -123,15 +124,16 @@ export default class IsoField extends React.Component {
   }
 
   setNewValue(newValue) {
-    this.setState({fieldValue: newValue, showExpanded: false});
+
+    let val = this.applyPadding(this.state.selected, newValue);
+    this.setState({fieldValue: val, showExpanded: false});
     this.toggleExpanded()
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (prevProps.id2Value !== this.props.id2Value) {
       this.setState({
-        fieldValue: this.props.id2Value.get(this.props.field.ID),
-        id2Value: this.props.id2Value
+        fieldValue: this.props.id2Value.get(this.props.field.ID), id2Value: this.props.id2Value
       });
     }
   }
@@ -212,20 +214,23 @@ export default class IsoField extends React.Component {
 
   setSelected(selected) {
 
-    this.setState({selected: selected});
+    let val = this.applyPadding(selected);
+    //this.setState({fieldValue: val, selected: selected});
     this.props.field.Children.forEach(c => {
       this.props.isoMsg.get(c.ID).setSelected(selected);
     });
 
     if (selected) {
       let errors = []
-      if (fieldValidator.validate(this.props.field, this.state.fieldValue,
-          errors)) {
-        this.setState(
-            {hasError: true, errMsg: errors[0]})
+      if (fieldValidator.validate(this.props.field, val, errors)) {
+        console.log("settint to val on fail", val)
+        this.setState({fieldValue: val, hasError: true, errMsg: errors[0], selected: selected});
+      } else {
+        console.log("settint to ", val)
+        this.setState({fieldValue: val, hasError: false, errMsg: null, selected: selected});
       }
     } else {
-      this.setState({hasError: false, errMsg: null})
+      this.setState({fieldValue: val, hasError: false, errMsg: null, selected: selected});
 
     }
 
@@ -248,28 +253,87 @@ export default class IsoField extends React.Component {
     this.props.onFieldUpdate(obj)
   }
 
-  fieldValueChanged(event) {
+  onFocusLost() {
+
+    let val = this.applyPadding(this.state.selected)
 
     let errors = []
     if (this.state.selected) {
-      if (fieldValidator.validate(this.props.field, event.target.value,
-          errors)) {
-        this.setState(
-            {hasError: true, errMsg: errors[0], fieldValue: event.target.value})
+      if (fieldValidator.validate(this.props.field, val, errors)) {
+        this.setState({fieldValue: val, hasError: true, errMsg: errors[0]})
       } else {
 
-        this.setState(
-            {hasError: false, errMsg: null, fieldValue: event.target.value});
+        this.setState({fieldValue: val, hasError: false, errMsg: null});
         let obj = {
-          fieldName: this.props.field.Name,
-          ChangeType: "ValueChanged"
+          fieldName: this.props.field.Name, ChangeType: "ValueChanged", Value: val
         };
         this.props.onFieldUpdate(obj)
       }
     } else {
-      this.setState(
-          {hasError: false, errMsg: null});
+      this.setState({fieldValue: val, hasError: false, errMsg: null});
     }
+  }
+
+  //This method applied to the field if one is specified in the field definition
+  // selected - A boolean that represents if the field is currently selected (padding is applied only if the field is selected)
+  // initVal - The initial value for the field, if unspecified the current value on the state is used
+  applyPadding(selected, initVal = "") {
+
+    let val = initVal;
+    if (val === "") {
+      val = this.state.fieldValue;
+    }
+
+    let field = this.state.field;
+    if (field.Padding === "" || !selected) {
+      return
+    }
+
+    if (field.Type === 'Fixed') {
+
+      console.log("field padding = " + field.Padding, field.DataEncoding)
+
+      let padding = '';
+      switch (field.DataEncoding) {
+        case 'ASCII':
+        case 'EBCDIC': {
+
+          if (val.length < field.FixedSize) {
+            console.log("Padding required")
+            for (let i = 0; i < (field.FixedSize - val.length); i++) {
+              if (field.Padding === 'LEADING_ZEROES' || field.Padding === 'TRAILING_ZEROES') {
+                padding += '0';
+              }
+              if (field.Padding === 'LEADING_SPACES' || field.Padding === 'TRAILING_SPACES') {
+                padding += ' ';
+              }
+            }
+            console.log("Padding required = *" + padding + "*")
+            if (field.Padding.startsWith('LEADING')) {
+              val = padding + val;
+            } else {
+              val = val + padding;
+            }
+          }
+          break;
+        }//end ASCII/EBCDIC
+
+        case 'BCD': {
+          break;
+        }
+        case 'BINARY': {
+          break;
+        }
+
+      }
+
+    }
+    return val;
+
+  }
+
+  fieldValueChanged(event) {
+    this.setState({hasError: false, errMsg: null, fieldValue: event.target.value});
 
   }
 
@@ -291,20 +355,18 @@ export default class IsoField extends React.Component {
     let selectionColumnContent;
 
     if (this.selectable) {
-      selectionColumnContent =
-          <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
-                                         color={"primary"}
-                                         checked={this.state.selected}
-                                         onChange={this.fieldSelectionChanged}/>
-          </td>
+      selectionColumnContent = <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
+                                                              color={"primary"}
+                                                              checked={this.state.selected}
+                                                              onChange={this.fieldSelectionChanged}/>
+      </td>
     } else {
-      selectionColumnContent =
-          <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
-                                         color={"primary"}
-                                         disabled={true}
-                                         checked={this.state.selected}
-                                         onChange={this.fieldSelectionChanged}/>
-          </td>
+      selectionColumnContent = <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
+                                                              color={"primary"}
+                                                              disabled={true}
+                                                              checked={this.state.selected}
+                                                              onChange={this.fieldSelectionChanged}/>
+      </td>
     }
 
     let fieldSpecColumnContent;
@@ -313,45 +375,40 @@ export default class IsoField extends React.Component {
       positionInParent = "\u2937" + this.props.field.Position + " ";
     }
 
-    let fieldInfo = positionInParent + " Type: " + this.props.field.Type
-        + ' / ';
+    let fieldInfo = positionInParent + " Type: " + this.props.field.Type + ' / ';
     if (this.props.field.Type === AppProps.FixedField) {
-      fieldInfo += "Length: " + this.props.field.FixedSize + ' / '
-          + 'Encoding: '
+      fieldInfo += "Length: " + this.props.field.FixedSize + ' / ' + 'Encoding: '
           + this.props.field.DataEncoding;
     } else if (this.props.field.Type === AppProps.VariableField) {
-      fieldInfo += "Length Indicator: " + this.props.field.LengthIndicatorSize
-          + ' / ' + 'Length Encoding: ' + this.props.field.LengthEncoding
-          + ' / ' + 'Data Encoding: ' + this.props.field.DataEncoding;
+      fieldInfo += "Length Indicator: " + this.props.field.LengthIndicatorSize + ' / '
+          + 'Length Encoding: ' + this.props.field.LengthEncoding + ' / ' + 'Data Encoding: '
+          + this.props.field.DataEncoding;
     } else if (this.props.field.Type === AppProps.BitmappedField) {
     }
 
     let children = [];
 
     this.props.field.Children.forEach(
-        c => this.appendFieldContent(children, c, this.props.field,
-            this.state.id2Value, this.props.level + 1));
+        c => this.appendFieldContent(children, c, this.props.field, this.state.id2Value,
+            this.props.level + 1));
 
     let levelIndicator = "";
     for (let i = 0; i < this.props.level; i++) {
       levelIndicator += '\u2193';
     }
 
-    return (
-        <React.Fragment>
+    return (<React.Fragment>
           <tr>
             {/* selection column */}
             {selectionColumnContent}
 
             {/* field name column*/}
 
-            <OverlayTrigger overlay={(
-                <Tooltip id="hi"
-                         style={{fontSize: '10px'}}>{fieldInfo}</Tooltip>)}
+            <OverlayTrigger overlay={(<Tooltip id="hi"
+                                               style={{fontSize: '10px'}}>{fieldInfo}</Tooltip>)}
                             placement="top">
               <td style={{
-                width: "100px",
-                fontSize: "12px"
+                width: "100px", fontSize: "12px"
               }}>
                 <InputLabel style={{fontSize: "14px"}}>{levelIndicator + ' '
                 + this.props.field.Name}</InputLabel>
@@ -370,17 +427,14 @@ export default class IsoField extends React.Component {
                          helperText={this.state.errMsg}
                          onChange={this.fieldValueChanged}
                          style={{width: "70%"}}
-                         disabled={this.props.readOnly
-                         || !this.state.fieldEditable}
+                         disabled={this.props.readOnly || !this.state.fieldEditable}
                          key={"fld_value_" + this.state.field.ID}
                          onDoubleClick={this.toggleExpanded}
+                         onBlur={this.onFocusLost}
               />
 
               <Button size={"small"} variant={"contained"} style={{
-                float: 'right',
-                fontSize: '14px',
-                marginRight: '2%',
-                marginLeft: "2%"
+                float: 'right', fontSize: '14px', marginRight: '2%', marginLeft: "2%"
               }}
                       onClick={this.toggleExpanded}> {this.state.expandBtnLabel}
               </Button>
