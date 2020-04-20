@@ -289,7 +289,7 @@ export default class MessageStructure extends React.Component {
         + '&mli=' + this.state.mliType
         + '&specId=' + this.state.spec.ID + '&msgId='
         + this.state.msg.ID + "&msg=" + JSON.stringify(content);
-    console.log(postData)
+    //console.log(postData)
     axios.post(appProps.sendMsgUrl, postData).then(res => {
       console.log("Response from server", res.data.response_fields);
       this.setState(
@@ -314,9 +314,11 @@ export default class MessageStructure extends React.Component {
       return
     }
 
+    console.log(e.response)
+
     if (e.response.status === 400) {
       this.setState(
-          {errorMessage: e.response.data, errDialogVisible: true});
+          {errorMessage: e.response.data.error, errDialogVisible: true});
     } else {
       this.setState(
           {

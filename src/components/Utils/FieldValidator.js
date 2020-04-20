@@ -10,7 +10,7 @@ class FieldValidator {
 
   validate(field, fieldData, errors) {
 
-    console.log("validate", field, fieldData, errors);
+    //console.log("validate", field, fieldData, errors);
     let validationFailed = false;
 
     if (field.Type === AppProps.FixedField) {

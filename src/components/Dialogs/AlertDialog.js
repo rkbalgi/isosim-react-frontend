@@ -21,7 +21,7 @@ export default class AlertDialog extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    //console.log("smd: componentDidUpdate", this.state);
+    
     if (this.props.show === true && prevState.show === false) {
       this.setState({show: true})
     }

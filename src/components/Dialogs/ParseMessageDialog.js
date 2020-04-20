@@ -20,8 +20,7 @@ export default class ParseMessageDialog extends React.Component {
 
   isValidTrace(trace) {
     return !!(trace.trim() !== "" && (trace.length
-        % 2 === 0
-        && trace.match("^[0-9,a-f,A-F]+$")));
+        % 2 === 0 && trace.match("^[0-9,a-f,A-F]+$")));
 
   }
 
@@ -66,7 +65,8 @@ export default class ParseMessageDialog extends React.Component {
           <Dialog open={this.state.show} onClose={this.closeDialogFail}
                   aria-labelledby="form-dialog-title" fullWidth={true}
                   maxWidth={"md"}>
-            <DialogTitle id="form-dialog-title" onClose={this.closeDialogFail}>Parse Trace</DialogTitle>
+            <DialogTitle id="form-dialog-title" onClose={this.closeDialogFail}>Parse
+              Trace</DialogTitle>
             <DialogContent>
               <div>
                 <Grid container={true} spacing={2}>
