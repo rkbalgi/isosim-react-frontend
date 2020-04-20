@@ -1,8 +1,9 @@
 import React from 'react';
 import axios from 'axios'
-import MessageStructure from './MessageStructure.js'
+import MessageStructure from '../Iso/MessageStructure.js'
 import {Button, Modal} from "react-bootstrap";
-import appProps from "./Properties";
+import appProps from "../Utils/Properties";
+import SpecTree from "./SpecTree/SpecTree";
 
 class NavBar extends React.Component {
 
@@ -19,7 +20,28 @@ class NavBar extends React.Component {
     };
     this.specChanged = this.specChanged.bind(this);
     this.messageChanged = this.messageChanged.bind(this);
+    this.msgSelected = this.msgSelected.bind(this);
+    this.getSpecByID = this.getSpecByID.bind(this);
+
     this.msgTemplateRef = React.createRef();
+
+  }
+
+  msgSelected(specId, msgId) {
+
+    console.log(specId, msgId)
+    console.log(this.state.specs)
+    let spec = this.getSpecByID(parseInt(specId))
+    console.log("spec = ", spec)
+    let msg = null;
+    spec.Messages.forEach(m => {
+      if (m.ID === parseInt(msgId)) {
+        msg = m;
+      }
+    })
+
+    this.setState(
+        {loaded: true, currentSpec: spec.Name, currentSpecMsg: msg.Name});
 
   }
 
@@ -35,7 +57,7 @@ class NavBar extends React.Component {
 
     axios.get(appProps.allSpecsUrl).then(res => {
       console.log(res.data);
-      this.setState({specs: res.data, loaded: true});
+      this.setState({specs: res.data.specs, loaded: true});
     }).catch(
         err => console.log(err))
   }
@@ -61,59 +83,43 @@ class NavBar extends React.Component {
     return (
         <React.Fragment>
 
-          <Modal show={this.state.errDialogVisible}
-                 onHide={this.closeErrorDialog}>
-            <Modal.Header closeButton>
-              <Modal.Title>Error</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>{this.state.errorMessage}</Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={this.closeErrorDialog}>
-                Close
-              </Button>
-            </Modal.Footer>
-          </Modal>
 
-          <div align="center"
-               style={{
-                 verticalAlign: "baseline",
-                 backgroundColor: "#ffbe00",
-                 height: "80px"
-               }}>
+          <div>
+            <Modal show={this.state.errDialogVisible}
+                   onHide={this.closeErrorDialog}>
+              <Modal.Header closeButton>
+                <Modal.Title>Error</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>{this.state.errorMessage}</Modal.Body>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={this.closeErrorDialog}>
+                  Close
+                </Button>
+              </Modal.Footer>
+            </Modal>
 
-            <table style={{
-              fontFamily: 'lato-regular',
-              fontSize: '16px',
-              left: '50%',
-              top: '50%',
+
+            <div style={{
+              float: "left",
+              display: "inline-block",
+              marginRight: "20px",
+              marginLeft: "20px",
+              backgroundColor:'#fbfff0'
+
             }}>
-
-              <tbody>
-              <tr>
-                <td>Message Specification</td>
-                <td style={{width: "100px"}}/>
-                <td>{this.specsDropDown()}</td>
-              </tr>
-
-              <tr>
-                <td>Message</td>
-                <td style={{width: "100px"}}/>
-                <td>{this.messagesDropDown()}</td>
-              </tr>
-              </tbody>
-            </table>
-
-          </div>
-          <div align="center">
-            {
-              this.state.loaded && this.state.currentSpec !== "Select" ?
-                  <MessageStructure key={this.state.currentSpec + "_" + msg}
-                                    ref={this.msgTemplateRef}
-                                    specs={this.state.specs}
-                                    spec={this.state.currentSpec}
-                                    msg={msg}/>
-                  : null
-            }
+              <SpecTree msgSelected={this.msgSelected}/>
+            </div>
+            <div align="center" style={{backgroundColor:'#fbfff0'}}>
+              {
+                this.state.loaded && this.state.currentSpec !== "Select" ?
+                    <MessageStructure key={this.state.currentSpec + "_" + msg}
+                                      ref={this.msgTemplateRef}
+                                      specs={this.state.specs}
+                                      spec={this.state.currentSpec}
+                                      msg={this.state.currentSpecMsg}/>
+                    : null
+              }
+            </div>
           </div>
         </React.Fragment>
 
@@ -179,7 +185,7 @@ class NavBar extends React.Component {
                   onChange={this.messageChanged}>
             {
               spec.Messages.map(msg => {
-                return <option key={msg.Id}
+                return <option key={msg.ID}
                                value={msg.Name}>{msg.Name}</option>
               })
             }
@@ -206,6 +212,16 @@ class NavBar extends React.Component {
   getSpecByName(name) {
     return this.state.specs.find((s, i) => {
       if (s.Name === name) {
+        return s;
+      }
+      return null;
+    });
+  }
+
+  // returns specification given its name
+  getSpecByID(specId) {
+    return this.state.specs.find((s, i) => {
+      if (s.ID === specId) {
         return s;
       }
       return null;

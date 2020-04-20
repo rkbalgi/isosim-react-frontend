@@ -1,6 +1,8 @@
 import React from 'react';
 import {Button} from "react-bootstrap";
 
+// ExpandedText shows a field value within a large field (TextArea)
+// and is useful when editing fields with large values
 export default class ExpandedText extends React.Component {
 
   constructor(props) {
