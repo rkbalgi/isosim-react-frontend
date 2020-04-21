@@ -214,6 +214,7 @@ export default class IsoField extends React.Component {
 
   setSelected(selected) {
 
+    //console.log("Calling apply padding " + this.state.fieldValue)
     let val = this.applyPadding(selected);
     //this.setState({fieldValue: val, selected: selected});
     this.props.field.Children.forEach(c => {
@@ -223,10 +224,10 @@ export default class IsoField extends React.Component {
     if (selected) {
       let errors = []
       if (fieldValidator.validate(this.props.field, val, errors)) {
-        console.log("settint to val on fail", val)
+
         this.setState({fieldValue: val, hasError: true, errMsg: errors[0], selected: selected});
       } else {
-        console.log("settint to ", val)
+
         this.setState({fieldValue: val, hasError: false, errMsg: null, selected: selected});
       }
     } else {
@@ -280,18 +281,21 @@ export default class IsoField extends React.Component {
   applyPadding(selected, initVal = "") {
 
     let val = initVal;
+
     if (val === "") {
       val = this.state.fieldValue;
     }
 
+    if (val === undefined) {
+      val = "";
+    }
+
     let field = this.state.field;
     if (field.Padding === "" || !selected) {
-      return
+      return val
     }
 
     if (field.Type === 'Fixed') {
-
-      console.log("field padding = " + field.Padding, field.DataEncoding)
 
       let padding = '';
       switch (field.DataEncoding) {
@@ -299,7 +303,6 @@ export default class IsoField extends React.Component {
         case 'EBCDIC': {
 
           if (val.length < field.FixedSize) {
-            console.log("Padding required")
             for (let i = 0; i < (field.FixedSize - val.length); i++) {
               if (field.Padding === 'LEADING_ZEROES' || field.Padding === 'TRAILING_ZEROES') {
                 padding += '0';
@@ -308,7 +311,7 @@ export default class IsoField extends React.Component {
                 padding += ' ';
               }
             }
-            console.log("Padding required = *" + padding + "*")
+            //console.log("Padding required = *" + padding + "*")
             if (field.Padding.startsWith('LEADING')) {
               val = padding + val;
             } else {
@@ -319,10 +322,47 @@ export default class IsoField extends React.Component {
         }//end ASCII/EBCDIC
 
         case 'BCD': {
+          let padding = '';
+          let expectedLength = field.FixedSize * 2;
+          if (val.length < expectedLength) {
+            for (let i = 0; i < (expectedLength - val.length); i++) {
+              padding += '0';
+            }
+          }
+          if (field.Padding === 'LEADING_ZEROES') {
+            val = padding + val;
+          } else if (field.Padding === 'TRAILING_ZEROES') {
+            val += padding;
+          } else {
+            console.log(`Unsupported padding - ${field.Padding} for Fixed BCD field`);
+          }
+
           break;
         }
         case 'BINARY': {
+
+          let padding = '';
+          let expectedLength = field.FixedSize * 2;
+          if (val.length < expectedLength) {
+            for (let i = 0; i < (expectedLength - val.length); i++) {
+              if (field.Padding.endsWith('ZEROES')) {
+                padding += '0';
+              } else {
+                padding += 'F';
+              }
+
+            }
+          }
+          if (field.Padding.startsWith('LEADING_')) {
+            val = padding + val;
+          } else if (field.Padding.startsWith('TRAILING_')) {
+            val += padding;
+          }
+
           break;
+        }
+        default: {
+          console.log("Unsupported field encoding type -" + field.DataEncoding);
         }
 
       }
@@ -429,7 +469,6 @@ export default class IsoField extends React.Component {
                          style={{width: "70%"}}
                          disabled={this.props.readOnly || !this.state.fieldEditable}
                          key={"fld_value_" + this.state.field.ID}
-                         onDoubleClick={this.toggleExpanded}
                          onBlur={this.onFocusLost}
               />
 
