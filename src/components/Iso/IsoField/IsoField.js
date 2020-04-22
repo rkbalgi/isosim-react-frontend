@@ -1,5 +1,5 @@
 import React from "react";
-import ExpandedText from '../../Utils/ExpandedText.js'
+import FieldExtras from '../../Utils/FieldExtras.js'
 import {Button} from "@material-ui/core";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from 'react-bootstrap/Tooltip'
@@ -483,10 +483,11 @@ export default class IsoField extends React.Component {
           </tr>
           <tr>
             <td colSpan="3">
-              <ExpandedText show={this.state.showExpanded}
-                            value={this.state.fieldValue}
-                            readOnly={this.props.readOnly}
-                            onClose={this.setNewValue}/>
+              <FieldExtras show={this.state.showExpanded}
+                           field={this.state.field}
+                           value={this.state.fieldValue}
+                           readOnly={this.props.readOnly}
+                           onClose={this.setNewValue}/>
             </td>
           </tr>
           {children}

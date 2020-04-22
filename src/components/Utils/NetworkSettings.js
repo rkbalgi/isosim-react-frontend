@@ -73,6 +73,8 @@ class NetworkSettings extends React.Component {
                     onChange={this.mliTypeChanged}>
                   <MenuItem value={"2i"}>2I</MenuItem>
                   <MenuItem value={"2e"}>2E</MenuItem>
+                  <MenuItem value={"4i"}>4I</MenuItem>
+                  <MenuItem value={"4e"}>4E</MenuItem>
                 </TextField>
 
               </td>
