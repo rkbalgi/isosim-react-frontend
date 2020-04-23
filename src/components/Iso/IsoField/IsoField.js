@@ -383,7 +383,7 @@ export default class IsoField extends React.Component {
     if (this.props.readOnly) {
       key = 'response_seg_' + field.ID;
     }
-    content.push(<IsoField key={key} field={field} id2Value={id2Value}
+    content.push(<IsoField key={key} field={field} id2Value={id2Value} isoMsg={this.props.isoMsg}
                            readOnly={this.props.readOnly}
                            parentField={parentField} isoMsg={this.props.isoMsg}
                            level={level}
@@ -408,8 +408,6 @@ export default class IsoField extends React.Component {
                                                               onChange={this.fieldSelectionChanged}/>
       </td>
     }
-
-    let fieldSpecColumnContent;
     let positionInParent = "";
     if (this.props.field.ParentId > 0) {
       positionInParent = "\u2937" + this.props.field.Position + " ";
@@ -487,6 +485,7 @@ export default class IsoField extends React.Component {
                            field={this.state.field}
                            value={this.state.fieldValue}
                            readOnly={this.props.readOnly}
+                           isoMsg={this.props.isoMsg}
                            onClose={this.setNewValue}/>
             </td>
           </tr>

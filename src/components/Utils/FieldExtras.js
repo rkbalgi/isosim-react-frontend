@@ -17,6 +17,7 @@ export default class FieldExtras extends React.Component {
     this.state = {show: this.props.show, value: this.props.value};
     this.closeThis = this.closeThis.bind(this);
     this.valueChanged = this.valueChanged.bind(this);
+    this.setValue = this.setValue.bind(this);
   }
 
   valueChanged(event) {
@@ -26,6 +27,10 @@ export default class FieldExtras extends React.Component {
   closeThis() {
     this.setState({show: true});
     this.props.onClose(this.state.value);
+  }
+
+  setValue(val) {
+    this.setState({value: val})
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -39,9 +44,11 @@ export default class FieldExtras extends React.Component {
   render() {
 
     let dynamicGenerators = null;
-    //TODO:: use gen_strategy
-    if (this.props.field.Position == 52) {
-      dynamicGenerators = <PinGenBox/>
+
+
+
+    if (this.props.field.GenType === 'pin_gen') {
+      dynamicGenerators = <PinGenBox field={this.props.field} setPinBlock={this.setValue} isoMsg={this.props.isoMsg}/>
     }
 
     return (

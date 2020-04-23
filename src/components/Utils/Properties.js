@@ -14,6 +14,7 @@ export class AppProps {
     this.templateUrl = this.baseUrl + '/iso/v1/template';
     this.parseTraceUrl = this.baseUrl + '/iso/v5/parse';
     this.saveMsgUrl = this.baseUrl + '/iso/v1/save';
+    this.pinGenUrl = this.baseUrl + '/iso/v1/crypto/pin_gen';
   }
 
 }

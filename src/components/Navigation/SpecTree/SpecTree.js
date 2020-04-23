@@ -15,10 +15,7 @@ class SpecTree extends React.Component {
     super(props);
 
     this.state = {
-      specs: [],
-      loaded: false,
-      errDialogVisible: false,
-      errorMessage: ''
+      specs: [], loaded: false, errDialogVisible: false, errorMessage: ''
     };
     this.messageClicked = this.messageClicked.bind(this);
   }
@@ -35,10 +32,14 @@ class SpecTree extends React.Component {
   componentDidMount() {
 
     axios.get(appProps.allSpecsUrl).then(res => {
-      console.log("allSpecs",res.data);
+      console.log("allSpecs", res.data);
       this.setState({specs: res.data.specs, loaded: true});
-    }).catch(
-        err => console.log(err))
+      let timerId = setInterval(function () {
+        alert('Select one of the spec and message in the tree to get started!')
+        clearInterval(timerId)
+      }, 2)
+
+    }).catch(err => console.log(err))
   }
 
   buildMessages(spec) {
@@ -62,8 +63,7 @@ class SpecTree extends React.Component {
 
         content.push(<TreeItem align="left" nodeId={"nodeId_" + s.ID}
                                icon={<Folder color={"primary"}/>}
-                               label={s.Name}>{this.buildMessages(
-            s)}</TreeItem>);
+                               label={s.Name}>{this.buildMessages(s)}</TreeItem>);
 
       });
 
@@ -72,19 +72,18 @@ class SpecTree extends React.Component {
                                   label={"ISO8583 Specifications"}>{content}</TreeItem>;
 
       return (<React.Fragment>
-            <TreeView
-                defaultExpanded={['nodeId_0']}
-                defaultCollapseIcon={<ExpandMoreIcon/>}
-                defaultExpandIcon={<ChevronRightIcon/>}
-                defaultParentIcon={<Folder color={"primary"}/>}
-                defaultEndIcon={<Message color="primary"/>}
-            >
-              {treeContent}
-            </TreeView>
+        <TreeView
+            defaultExpanded={['nodeId_0']}
+            defaultCollapseIcon={<ExpandMoreIcon/>}
+            defaultExpandIcon={<ChevronRightIcon/>}
+            defaultParentIcon={<Folder color={"primary"}/>}
+            defaultEndIcon={<Message color="primary"/>}
+        >
+          {treeContent}
+        </TreeView>
 
 
-          </React.Fragment>
-      );
+      </React.Fragment>);
     } else {
       return null;
     }

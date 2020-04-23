@@ -67,7 +67,7 @@ class FieldValidator {
       }
       if (field.MaxSize > 0 && fieldData.length > field.MaxSize) {
         errors.push(
-            `\u2b55 "${field.Name} size  of ${fieldLen} is greater than required max of ${field.MinSize}" `);
+            `\u2b55 "${field.Name} size  of ${fieldLen} is greater than required max of ${field.MaxSize}" `);
         validationFailed = true;
       }
     }
