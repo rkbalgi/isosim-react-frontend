@@ -7,13 +7,13 @@ import appProps from '../Utils/Properties.js'
 import ResponseSegment from "./ResponseSegment";
 import ParseMessageDialog from "../Dialogs/ParseMessageDialog";
 import SaveMessageDialog from "../Dialogs/SaveMessageDialog";
-import fieldValidator from '../Utils/FieldValidator'
 
 import 'typeface-roboto';
 import Paper from '@material-ui/core/Paper';
 import NetworkSettings from "../Utils/NetworkSettings";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import AlertDialog from "../Dialogs/AlertDialog";
+import MsgUtils from "../Utils/MsgUtils.js";
 
 // MessageStructure is the central component that encompasses the Request and
 // the response segments along with NetworkSettings etc
@@ -21,9 +21,8 @@ export default class MessageStructure extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log(this.props);
-    console.log("$msg_structure$", this.props.specs, this.props.spec,
-        this.props.msg);
+    //console.log(this.props);
+    //console.log("$msg_structure$", this.props.specs, this.props.spec, this.props.msg);
 
     this.state = {
       msgTemplate: null,
@@ -50,7 +49,7 @@ export default class MessageStructure extends React.Component {
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
     this.appendFieldContent = this.appendFieldContent.bind(this);
     this.sendToHost = this.sendToHost.bind(this);
-    this.addFieldContent = this.addFieldContent.bind(this);
+    //this.addFieldContent = this.addFieldContent.bind(this);
     this.showErrorDialog = this.showErrorDialog.bind(this);
     this.closeErrorDialog = this.closeErrorDialog.bind(this);
     this.processError = this.processError.bind(this);
@@ -78,15 +77,13 @@ export default class MessageStructure extends React.Component {
   }
 
   networkSettingsChanged(ip, port, mliType) {
-    this.setState(
-        {targetServerIp: ip, targetServerPort: port, mliType: mliType})
+    this.setState({targetServerIp: ip, targetServerPort: port, mliType: mliType})
   }
 
   showMenu(event) {
 
     this.setState({
-      selectedReqMenuItem: event.currentTarget,
-      reqMenuVisible: true
+      selectedReqMenuItem: event.currentTarget, reqMenuVisible: true
     })
 
   }
@@ -119,21 +116,18 @@ export default class MessageStructure extends React.Component {
       //console.log("trace  = ", trace);
       // now parse this via a API call
 
-      axios.post(appProps.parseTraceUrl + '/' + this.state.spec.ID + '/'
-          + this.state.msg.ID, trace)
+      axios.post(appProps.parseTraceUrl + '/' + this.state.spec.ID + '/' + this.state.msg.ID, trace)
       .then(res => {
-            console.log("parsed msg data", res.data);
-            res.data.parsed_fields.forEach(fd => {
-              let fieldComponent = this.state.isoMsg.get(fd.ID);
-              fieldComponent.setState({selected: true, fieldValue: fd.Value});
-            });
-          }
-      ).catch(e => {
+        console.log("parsed msg data", res.data);
+        res.data.parsed_fields.forEach(fd => {
+          let fieldComponent = this.state.isoMsg.get(fd.ID);
+          fieldComponent.setState({selected: true, fieldValue: fd.Value});
+        });
+      }).catch(e => {
 
-            console.log("errr",e);
-            this.processError(e)
-          }
-      )
+        console.log("error", e);
+        this.processError(e)
+      })
 
     }
     this.setState({showTraceInputDialog: false})
@@ -152,22 +146,18 @@ export default class MessageStructure extends React.Component {
     if (selectedMsg != null) {
       axios.get(appProps.loadMsgUrl, {
         params: {
-          specId: this.state.spec.ID,
-          msgId: this.state.msg.ID,
-          dsName: selectedMsg
+          specId: this.state.spec.ID, msgId: this.state.msg.ID, dsName: selectedMsg
         }
       }).then(res => {
-            console.log("saved msg = ", res.data.saved_message);
-            res.data.saved_message.forEach(fd => {
-              let fieldComponent = this.state.isoMsg.get(fd.ID);
-              fieldComponent.setState({selected: true, fieldValue: fd.Value});
-            });
-          }
-      ).catch(e => {
-            console.log(e);
-            this.processError(e)
-          }
-      )
+        console.log("saved msg = ", res.data.saved_message);
+        res.data.saved_message.forEach(fd => {
+          let fieldComponent = this.state.isoMsg.get(fd.ID);
+          fieldComponent.setState({selected: true, fieldValue: fd.Value});
+        });
+      }).catch(e => {
+        console.log(e);
+        this.processError(e)
+      })
     }
 
   }
@@ -198,9 +188,8 @@ export default class MessageStructure extends React.Component {
 
     // build the data and then
     let content = [];
-    this.state.msgTemplate.fields.forEach(f => {
-      this.addFieldContent(f, content);
-    });
+    let validationErrors = [];
+    MsgUtils.getMsgContent(this.state.isoMsg, content, validationErrors)
     this.setState({saveData: content, showSaveMsgDialog: true})
   }
 
@@ -224,38 +213,15 @@ export default class MessageStructure extends React.Component {
     this.setState({errDialogVisible: true});
   }
 
-  addFieldContent(field, content, validationErrors) {
-
-    let fData = this.state.isoMsg.get(field.ID);
-    if (fData.state.selected) {
-      if (fieldValidator.validate(field, fData.state.fieldValue,
-          validationErrors)) {
-        fData.setError(true);
-      } else {
-        fData.setError(false);
-      }
-      content.push(
-          {ID: field.ID, Name: field.Name, Value: fData.state.fieldValue});
-    }
-
-    field.Children.forEach(cf => {
-      if (fData.state.selected) {
-        this.addFieldContent(cf, content, validationErrors);
-      }
-    });
-
-  }
-
   //sends the message (as JSON) to the API server to be sent to the ISO host
   sendToHost() {
 
     this.hideMenu()
+
     let content = [];
     let validationErrors = [];
-    this.state.msgTemplate.fields.forEach(f => {
-      this.addFieldContent(f, content, validationErrors);
-    });
-    //console.log("After gathering data = ", content, validationErrors);
+
+    MsgUtils.getMsgContent(this.state.isoMsg, content, validationErrors)
 
     if (validationErrors.length > 0) {
       let errMsg = "";
@@ -279,27 +245,21 @@ export default class MessageStructure extends React.Component {
 
     //lets not hide and then show the response segment again
     this.setState({
-      showResponse: false,
-      responseData: null,
-      reqClipboardData: reqClipboardData
+      showResponse: false, responseData: null, reqClipboardData: reqClipboardData
     });
 
-    let postData = 'host=' +
-        this.state.targetServerIp + "&port=" + this.state.targetServerPort
-        + '&mli=' + this.state.mliType
-        + '&specId=' + this.state.spec.ID + '&msgId='
+    let postData = 'host=' + this.state.targetServerIp + "&port=" + this.state.targetServerPort
+        + '&mli=' + this.state.mliType + '&specId=' + this.state.spec.ID + '&msgId='
         + this.state.msg.ID + "&msg=" + JSON.stringify(content);
     //console.log(postData)
     axios.post(appProps.sendMsgUrl, postData).then(res => {
       console.log("Response from server", res.data.response_fields);
-      this.setState(
-          {showResponse: true, responseData: res.data.response_fields});
+      this.setState({showResponse: true, responseData: res.data.response_fields});
 
-    }).catch(
-        e => {
-          console.log("error = ", e);
-          this.processError(e)
-        })
+    }).catch(e => {
+      console.log("error = ", e);
+      this.processError(e)
+    })
 
   }
 
@@ -308,8 +268,7 @@ export default class MessageStructure extends React.Component {
     if (!e.response) {
       console.log("Error = ", e);
       this.setState({
-        errorMessage: 'Error: Unable to reach API server',
-        errDialogVisible: true
+        errorMessage: 'Error: Unable to reach API server', errDialogVisible: true
       });
       return
     }
@@ -317,14 +276,11 @@ export default class MessageStructure extends React.Component {
     console.log(e.response)
 
     if (e.response.status === 400) {
-      this.setState(
-          {errorMessage: e.response.data.error, errDialogVisible: true});
+      this.setState({errorMessage: e.response.data.error, errDialogVisible: true});
     } else {
-      this.setState(
-          {
-            errorMessage: 'Unexpected error from server - '
-                + e.response.status, errDialogVisible: true
-          });
+      this.setState({
+        errorMessage: 'Unexpected error from server - ' + e.response.status, errDialogVisible: true
+      });
     }
   }
 
@@ -358,26 +314,21 @@ export default class MessageStructure extends React.Component {
 
     let url = appProps.templateUrl + '/' + spec.ID + "/" + msg.ID;
     console.log(url);
-    axios.get(url).then(
-        res => {
-          console.log(res.data);
-          let isoMsg = new Map();
-          isoMsg.set("msg_template", res.data);
-          this.setState(
-              {
-                spec: spec,
-                msg: msg,
-                msgTemplate: res.data,
-                loaded: true,
-                isoMsg: isoMsg
-              });
+    axios.get(url).then(res => {
+      //console.log(res.data);
+      let isoMsg = new Map();
+      isoMsg.set("msg_template", res.data);
+      isoMsg.set("spec_id", spec.ID);
+      isoMsg.set("msg_id", msg.ID);
+      this.setState({
+        spec: spec, msg: msg, msgTemplate: res.data, loaded: true, isoMsg: isoMsg
+      });
 
-          console.log("MsgTemplate = ", this.state.msgTemplate);
-        }).catch(
-        err => {
-          console.log(err)
-          this.setState({errorMessage: err, errDialogVisible: true})
-        });
+      console.log("MsgTemplate = ", this.state.msgTemplate);
+    }).catch(err => {
+      console.log(err)
+      this.setState({errorMessage: err, errDialogVisible: true})
+    });
   }
 
   appendFieldContent(content, field, isoMsg, level) {
@@ -398,9 +349,7 @@ export default class MessageStructure extends React.Component {
     return (
 
         <div style={{
-          fontFamily: 'lato-regular',
-          fontSize: '12px',
-          fill: 'aqua'
+          fontFamily: 'lato-regular', fontSize: '12px', fill: 'aqua'
         }}>
 
           <AlertDialog show={this.state.errDialogVisible}
@@ -431,11 +380,7 @@ export default class MessageStructure extends React.Component {
 
           <div align={"left"}
                style={{
-                 align: "left",
-                 display: "inline-block",
-                 width: "40%",
-                 float: "left",
-                 fill: 'aqua'
+                 align: "left", display: "inline-block", width: "40%", float: "left", fill: 'aqua'
                }}>
 
             <div>
@@ -511,9 +456,7 @@ export default class MessageStructure extends React.Component {
                   </td>
                 </tr>
                 <tr style={{
-                  fontFamily: "lato-regular",
-                  backgroundColor: "#ff8f5b",
-                  fontSize: "14px",
+                  fontFamily: "lato-regular", backgroundColor: "#ff8f5b", fontSize: "14px",
                 }}>
                   <td align={"center"}>Selection</td>
                   <td align={"center"} style={{width: '35%'}}> Field</td>
@@ -532,8 +475,7 @@ export default class MessageStructure extends React.Component {
                              reqData={this.state.reqClipboardData}
                              onClose={this.hideResponse}
                              data={this.state.responseData}
-                             dialogTitle={"Response - ["
-                             + this.getTemplateLabel() + "]"}
+                             dialogTitle={"Response - [" + this.getTemplateLabel() + "]"}
                              msgTemplate={this.state.msgTemplate}/>
 
           </div>

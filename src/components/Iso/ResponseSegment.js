@@ -14,9 +14,7 @@ export default class ResponseSegment extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      show: props.show,
-      data: this.props.data,
-      msgTemplate: this.props.msgTemplate
+      show: props.show, data: this.props.data, msgTemplate: this.props.msgTemplate
     }
     this.hideResponseSegment = this.hideResponseSegment.bind(this);
     this.copyToClipboard = this.copyToClipboard.bind(this);
@@ -54,9 +52,7 @@ export default class ResponseSegment extends React.Component {
 
     if (prevProps.show === false && this.props.show === true) {
       this.setState({
-        show: true,
-        data: this.props.data,
-        msgTemplate: this.props.msgTemplate
+        show: true, data: this.props.data, msgTemplate: this.props.msgTemplate
       })
     }
   }
@@ -82,8 +78,8 @@ export default class ResponseSegment extends React.Component {
       this.state.msgTemplate.fields.forEach(field => {
         this.collectData(field, idToField, forClipboard)
       });
-      let clipboardText = "ISO Response  \n|---------------|\n"
-          + forClipboard.reduce((p, c, currentIndex) => {
+      let clipboardText = "ISO Response  \n|---------------|\n" + forClipboard.reduce(
+          (p, c, currentIndex) => {
             if (currentIndex === 1) {
               return p + "\n" + c + "\n";
             } else {
@@ -91,8 +87,8 @@ export default class ResponseSegment extends React.Component {
             }
           })
 
-      clipboardText = "ISO Request  \n|---------------|\n"
-          + this.props.reqData + "\n\n" + clipboardText + "\n\n";
+      clipboardText = "ISO Request  \n|---------------|\n" + this.props.reqData + "\n\n"
+          + clipboardText + "\n\n";
 
       this.state.msgTemplate.fields.forEach(field => {
         this.appendFieldContent(content, field, idToField, 0)
@@ -100,76 +96,68 @@ export default class ResponseSegment extends React.Component {
 
       //console.log(content);
 
-      return (
-          <React.Fragment>
+      return (<React.Fragment>
 
 
-            {this.state.show ?
-                <Dialog open={this.state.show}
-                        onClose={this.hideResponseSegment} scroll={"paper"}
-                        PaperComponent={PaperComponent}
-                        aria-labelledby="draggable-dialog-title"
-                        maxWidth={"sm"} fullWidth={true}
-                        disableBackdropClick={true}>
-                  <DialogTitle style={{cursor: 'move'}}
-                               id="draggable-dialog-title">{this.props.dialogTitle}</DialogTitle>
-                  <DialogContent dividers={true}>
+        {this.state.show ? <Dialog open={this.state.show}
+                                   onClose={this.hideResponseSegment} scroll={"paper"}
+                                   PaperComponent={PaperComponent}
+                                   aria-labelledby="draggable-dialog-title"
+                                   maxWidth={"sm"} fullWidth={true}
+                                   disableBackdropClick={true}>
+          <DialogTitle style={{cursor: 'move'}}
+                       id="draggable-dialog-title">{this.props.dialogTitle}</DialogTitle>
+          <DialogContent dividers={true}>
 
-                    <Paper>
-<textarea ref={this.textAreaRef}
-          style={{
-            opacity: "0.01",
-            position: "absolute",
-            zIndex: -9999,
-            height: 0
-          }}>{clipboardText}
-                  </textarea>
+            <Paper>
+          <textarea ref={this.textAreaRef}
+                    style={{
+                      opacity: "0.01", position: "absolute", zIndex: -9999, height: 0
+                    }} value={clipboardText}/>
 
-                      <table border="0" align={"center"}>
-                        <thead>
-                        <tr style={{
-                          fontFamily: "lato-regular",
-                          backgroundColor: "#eed143",
-                          fontSize: "15px",
-                          align: "center",
-                          borderBottom: 'solid',
-                          borderColor: 'blue'
-                        }}>
-                          <td colSpan="3"
-                              align={"center"}>{"Response Segment"}</td>
-                        </tr>
-                        <tr style={{
-                          fontFamily: "lato-regular",
-                          backgroundColor: "#3effba",
-                          fontSize: "14px",
-                        }}>
-                          <td align={"center"}>Selection</td>
-                          <td align={"center"} style={{width: "35%"}}>Field</td>
-                          <td align={"center"} style={{width: "50%"}}>Field Data
-                          </td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {content}
-                        </tbody>
-                      </table>
-                    </Paper>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={this.copyToClipboard} size="small"
-                            color="primary"
-                            variant={"contained"}>
-                      Copy To Clipboard
-                    </Button>
-                    <Button onClick={this.hideResponseSegment} size="small"
-                            color="primary"
-                            variant={"contained"}>
-                      Close
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-                : null}
-          </React.Fragment>);
+
+              <table border="0" align={"center"}>
+                <thead>
+                <tr style={{
+                  fontFamily: "lato-regular",
+                  backgroundColor: "#eed143",
+                  fontSize: "15px",
+                  align: "center",
+                  borderBottom: 'solid',
+                  borderColor: 'blue'
+                }}>
+                  <td colSpan="3"
+                      align={"center"}>{"Response Segment"}</td>
+                </tr>
+                <tr style={{
+                  fontFamily: "lato-regular", backgroundColor: "#3effba", fontSize: "14px",
+                }}>
+                  <td align={"center"}>Selection</td>
+                  <td align={"center"} style={{width: "35%"}}>Field</td>
+                  <td align={"center"} style={{width: "50%"}}>Field Data
+                  </td>
+                </tr>
+                </thead>
+                <tbody>
+                {content}
+                </tbody>
+              </table>
+            </Paper>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.copyToClipboard} size="small"
+                    color="primary"
+                    variant={"contained"}>
+              Copy To Clipboard
+            </Button>
+            <Button onClick={this.hideResponseSegment} size="small"
+                    color="primary"
+                    variant={"contained"}>
+              Close
+            </Button>
+          </DialogActions>
+        </Dialog> : null}
+      </React.Fragment>);
 
     } else {
       return null;
@@ -179,10 +167,8 @@ export default class ResponseSegment extends React.Component {
 }
 
 function PaperComponent(props) {
-  return (
-      <Draggable handle="#draggable-dialog-title"
-                 cancel={'[class*="MuiDialogContent-root"]'}>
-        <Paper {...props} />
-      </Draggable>
-  );
+  return (<Draggable handle="#draggable-dialog-title"
+                     cancel={'[class*="MuiDialogContent-root"]'}>
+    <Paper {...props} />
+  </Draggable>);
 }

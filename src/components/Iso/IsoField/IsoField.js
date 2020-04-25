@@ -1,14 +1,12 @@
 import React from "react";
 import FieldExtras from '../../Utils/FieldExtras.js'
-import {Button} from "@material-ui/core";
+import {Button, TextField} from "@material-ui/core";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from 'react-bootstrap/Tooltip'
-import {TextField} from "@material-ui/core";
 import Checkbox from "@material-ui/core/Checkbox";
 import InputLabel from "@material-ui/core/InputLabel";
 import fieldValidator from "../../Utils/FieldValidator";
 import {AppProps} from "../../Utils/Properties";
-import appProps from "../../Utils/Properties";
 
 // IsoField represents a single field from a ISO8583 specification
 export default class IsoField extends React.Component {
@@ -126,7 +124,7 @@ export default class IsoField extends React.Component {
   setNewValue(newValue) {
 
     let val = this.applyPadding(this.state.selected, newValue);
-    this.setState({fieldValue: val, showExpanded: false});
+    this.setState({fieldValue: val, showExpanded: false, selected: true});
     this.toggleExpanded()
   }
 
@@ -385,7 +383,7 @@ export default class IsoField extends React.Component {
     }
     content.push(<IsoField key={key} field={field} id2Value={id2Value} isoMsg={this.props.isoMsg}
                            readOnly={this.props.readOnly}
-                           parentField={parentField} isoMsg={this.props.isoMsg}
+                           parentField={parentField}
                            level={level}
                            onFieldUpdate={this.onFieldUpdate}/>);
   }

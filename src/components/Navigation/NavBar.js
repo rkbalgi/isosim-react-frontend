@@ -136,7 +136,6 @@ class NavBar extends React.Component {
     console.log(event.target.value);
     if (this.state.loaded && event.target.value !== "Select") {
       console.log("calling update - specChanged");
-      let spec = this.getSpecByName(event.target.value);
     }
   }
 

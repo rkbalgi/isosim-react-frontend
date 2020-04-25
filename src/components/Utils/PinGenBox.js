@@ -7,6 +7,7 @@ import Box from "@material-ui/core/Box";
 
 import axios from "axios";
 import appProps from "./Properties";
+import AlertDialog from "../Dialogs/AlertDialog";
 
 export default class PinGenBox extends React.Component {
 
@@ -51,7 +52,9 @@ export default class PinGenBox extends React.Component {
         pan: initialPan,
         originalPan: originalPan,
         clearPin: this.field.PinGenProps.PINClear,
-        pinKey: this.field.PinGenProps.PINKey
+        pinKey: this.field.PinGenProps.PINKey,
+        hasError: false,
+        errorMsg: null
       }
     } else {
       this.state = {pinFormat: "ISO0", pan: initialPan, clearPin: "", pinKey: ""}
@@ -62,7 +65,11 @@ export default class PinGenBox extends React.Component {
     this.formatChanged = this.formatChanged.bind(this);
     this.keyValueChanged = this.keyValueChanged.bind(this);
     this.pinValueChanged = this.pinValueChanged.bind(this);
+    this.doNothing = this.doNothing.bind(this);
 
+  }
+
+  doNothing() {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
@@ -116,12 +123,19 @@ export default class PinGenBox extends React.Component {
       PAN: this.state.pan
     };
 
-    console.log(JSON.stringify(data))
+    //console.log(JSON.stringify(data))
     axios.post(appProps.pinGenUrl, JSON.stringify(data)).then(res => {
       this.props.setPinBlock(res.data.PinBlock);
     }).catch(err => {
+      let errorMsg = "Failed to generate PIN block: ";
+      if (err.error) {
+        errorMsg = errorMsg + err.error
+      } else {
+        errorMsg = errorMsg + err;
+      }
 
-      console.log(err);
+      this.setState({hasError: true, errorMsg: errorMsg});
+      console.log("error= ", err);
     })
 
   }
@@ -150,54 +164,62 @@ export default class PinGenBox extends React.Component {
 
     return (
 
-        <Box border={1} borderColor={"primary.main"} borderRadius={4}>
-          <div style={{paddingBottom: "10px", padding: "5px"}}>
-            <Grid container spacing={0}>
+        <React.Fragment>
 
-              <Grid container spacing={1} alignItems={"flex-start"}>
-                <Grid item xs={3}>
-                  <TextField size={"small"} label={"Clear PIN"} value={this.state.clearPin}
-                             onChange={this.pinValueChanged} error={this.state.pinError}
-                             variant={"outlined"} margin={"dense"}/>
+          <AlertDialog show={this.state.hasError} msg={this.state.errorMsg}
+                       onClose={this.doNothing}/>
+
+          <Box border={1} borderColor={"primary.main"} borderRadius={4}>
+            <div style={{paddingBottom: "10px", padding: "5px"}}>
+              <Grid container spacing={0}>
+
+                <Grid container spacing={1} alignItems={"flex-start"}>
+                  <Grid item xs={3}>
+                    <TextField size={"small"} label={"Clear PIN"} value={this.state.clearPin}
+                               onChange={this.pinValueChanged} error={this.state.pinError}
+                               variant={"outlined"} margin={"dense"}/>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField label={"PIN Key"} value={this.state.pinKey} variant={"outlined"}
+                               onChange={this.keyValueChanged} error={this.state.keyError}
+                               margin={"dense"} fullWidth={true}/>
+                  </Grid>
+                  <Grid item xs={3}>
+                    <TextField size={"small"} value={this.state.pinFormat} select={true}
+                               fullWidth={true}
+                               label={"Format"} onChange={this.formatChanged}
+                               variant={"outlined"} margin={"dense"}>
+                      <MenuItem value={"ISO0"}>ISO-0</MenuItem>
+                      <MenuItem value={"ISO1"}>ISO-1</MenuItem>
+                      <MenuItem value={"ISO3"}>ISO-3</MenuItem>
+                      <MenuItem value={"IBM3264"}>IBM-3264</MenuItem>
+                    </TextField>
+                  </Grid>
                 </Grid>
-                <Grid item xs={6}>
-                  <TextField label={"PIN Key"} value={this.state.pinKey} variant={"outlined"}
-                             onChange={this.keyValueChanged} error={this.state.keyError}
-                             margin={"dense"} fullWidth={true}/>
+
+                <Grid container spacing={1} alignItems={"flex-start"}>
+                  <Grid item xs={12}>
+                    <TextField label={"PAN"} value={this.state.pan} variant={"outlined"}
+                               onChange={this.panValueChanged} error={this.state.panError}
+                               margin={"dense"}/>
+                  </Grid>
                 </Grid>
-                <Grid item xs={3}>
-                  <TextField size={"small"} value={this.state.pinFormat} select={true}
-                             fullWidth={true}
-                             label={"Format"} onChange={this.formatChanged}
-                             variant={"outlined"} margin={"dense"}>
-                    <MenuItem value={"ISO0"}>ISO-0</MenuItem>
-                    <MenuItem value={"ISO1"}>ISO-1</MenuItem>
-                    <MenuItem value={"ISO3"}>ISO-3</MenuItem>
-                    <MenuItem value={"IBM3264"}>IBM-3264</MenuItem>
-                  </TextField>
+
+                <Grid container spacing={0} justify={"flex-end"} alignItems={"flex-end"}>
+                  <Grid item xs>
+                    <div style={{float: "right"}}>
+                      <Button size={"small"} variant={"contained"} onClick={this.generatePinBlock}
+                              color={"primary"}>Generate</Button>
+                    </div>
+                  </Grid>
+
                 </Grid>
+
               </Grid>
+            </div>
+          </Box>
+        </React.Fragment>
 
-              <Grid container spacing={1} alignItems={"flex-start"}>
-                <Grid item xs={12}>
-                  <TextField label={"PAN"} value={this.state.pan} variant={"outlined"}
-                             onChange={this.panValueChanged} error={this.state.panError}
-                             margin={"dense"}/>
-                </Grid>
-              </Grid>
-
-              <Grid container spacing={0} justify={"flex-end"} alignItems={"flex-end"}>
-                <Grid item xs>
-                  <div style={{float: "right"}}>
-                    <Button size={"small"} variant={"contained"} onClick={this.generatePinBlock}
-                            color={"primary"}>Generate</Button>
-                  </div>
-                </Grid>
-
-              </Grid>
-
-            </Grid>
-          </div>
-        </Box>);
+    );
   }
 }

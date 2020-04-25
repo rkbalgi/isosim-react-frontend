@@ -1,14 +1,12 @@
 import React from 'react'
 import axios from 'axios'
-import {Button, Modal} from "react-bootstrap";
+import {Button} from "react-bootstrap";
 import appProps from "../Utils/Properties";
 import Dialog from "@material-ui/core/Dialog";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import DialogContent from "@material-ui/core/DialogContent";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import {Checkbox} from "@material-ui/core";
 import DialogActions from "@material-ui/core/DialogActions";
 import MenuItem from "@material-ui/core/MenuItem";
 

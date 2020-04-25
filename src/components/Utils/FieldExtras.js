@@ -1,11 +1,8 @@
 import React from 'react';
 import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Box from "@material-ui/core/Box";
-import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import PinGenBox from "./PinGenBox";
+import MacGenBox from "./MacGenBox";
 
 // FieldExtras shows additional options for a field and an option to view/edit
 // field value within a large field (TextArea) and is useful when editing fields with large values
@@ -45,10 +42,16 @@ export default class FieldExtras extends React.Component {
 
     let dynamicGenerators = null;
 
+    if (!this.props.readOnly) {
+      //only for request fields
 
-
-    if (this.props.field.GenType === 'pin_gen') {
-      dynamicGenerators = <PinGenBox field={this.props.field} setPinBlock={this.setValue} isoMsg={this.props.isoMsg}/>
+      if (this.props.field.GenType === 'pin_gen') {
+        dynamicGenerators = <PinGenBox field={this.props.field} setPinBlock={this.setValue}
+                                       isoMsg={this.props.isoMsg}/>
+      } else if (this.props.field.GenType === 'mac_gen') {
+        dynamicGenerators =
+            <MacGenBox field={this.props.field} setMac={this.setValue} isoMsg={this.props.isoMsg}/>
+      }
     }
 
     return (
