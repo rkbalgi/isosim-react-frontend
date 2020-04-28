@@ -13,14 +13,14 @@ import Paper from '@material-ui/core/Paper';
 import NetworkSettings from "../Utils/NetworkSettings";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import AlertDialog from "../Dialogs/AlertDialog";
-import MsgUtils from "../Utils/MsgUtils.js";
+import MsgHistPanel from "../Utils/MsgHistory.js";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
 import Tab from "@material-ui/core/Tab";
 import CryptoUtilsBox from "../Utils/CryptoUtils";
 import * as PropTypes from "prop-types";
+import MsgUtils from "../Utils/MsgUtils";
 
 // MessageStructure is the central component that encompasses the Request and
 // the response segments along with NetworkSettings etc
@@ -81,7 +81,7 @@ export default class MessageStructure extends React.Component {
     this.getTemplateLabel = this.getTemplateLabel.bind(this);
     this.networkSettingsChanged = this.networkSettingsChanged.bind(this);
     this.hideResponse = this.hideResponse.bind(this);
-    this.tabChanged = this.tabChanged.bind(this)
+    this.tabChanged = this.tabChanged.bind(this);
 
   }
 
@@ -468,7 +468,11 @@ export default class MessageStructure extends React.Component {
 
           </TabPanel>
           <TabPanel value={this.state.selectedTab} index={1}>
-            <div style={{width: "100px"}}>TODO</div>
+            <div style={{alignItems: "left", width: "100%"}}>
+              <MsgHistPanel specId={this.state.spec.ID}
+                            msgId={this.state.msg.ID}/>
+
+            </div>
           </TabPanel>
           <TabPanel value={this.state.selectedTab} index={2}>
 
@@ -485,6 +489,8 @@ export default class MessageStructure extends React.Component {
   }
 
 }
+
+//copied right out from the Material UI demos :-)
 
 function TabPanel(props) {
   const {children, value, index, ...other} = props;

@@ -30,7 +30,14 @@ export default class CryptoUtilsBox extends React.Component {
   render() {
     return (
 
-        <div style={{marginTop: "5%", width: "50%", float: "left", height: "100%"}}>
+        <div style={{
+          textAlign: "left",
+          marginTop: "5%",
+          width: "50%",
+          float: "left",
+          height: "100%"
+        }}>
+
           <PinGenBox field={this.pinField} setPinBlock={this.setPinValue}/>
           <TextField size={"small"} label={"PIN Block"} variant={"outlined"} margin={"dense"}
                      fullWidth={true}

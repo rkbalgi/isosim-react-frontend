@@ -1,6 +1,8 @@
 import React from "react";
 import TextField from "@material-ui/core/TextField";
 import MenuItem from "@material-ui/core/MenuItem";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
 
 // NetworkSettings is a component that manages the ip, port and MLI type
 // used when sending a message
@@ -34,44 +36,46 @@ class NetworkSettings extends React.Component {
   }
 
   render() {
-    return (<div align={"left"}
-                 style={{
-                   verticalAlign: "baseline", margin: "10px", width: "100%"
-                 }}>
+    return (
+
+        <Box border={1} borderColor={"#1228B6"} borderRadius={8} style={{backgroundColor: "#E3C4A7", marginBottom: "1%"}}>
+          <div style={{
+            textAlign: "left",
+            verticalAlign: "baseline",
+            marginBottom: "2%",
+            marginTop: "2%",
+            width: "100%"
+          }}>
+            <Grid container={true} spacing={3} justify={"space-around"}>
+
+              <Grid item={true} justify={"space-evenly"} lg={6}>
+                <TextField id="ns_ip" label="Host IP/Name" size={"small"} fullWidth={true}
+                           variant="outlined"
+                           value={this.state.targetServerIp}
+                           onChange={this.serverIpChanged}/>
+              </Grid>
+
+              <Grid item={true} lg={4}>
+                <TextField id="ns_port" label="Port" size={"small"} fullWidth={true}
+                           variant="outlined" value={this.state.targetServerPort}
+                           onChange={this.serverPortChanged}/>
+              </Grid>
+              <Grid item={true} log={4}>
+                <TextField select size={"small"} fullWidth={true}
+                           value={this.state.mliType} variant={"outlined"} label={"MLI"}
+                           onChange={this.mliTypeChanged}>
+                  <MenuItem value={"2i"}>2I</MenuItem>
+                  <MenuItem value={"2e"}>2E</MenuItem>
+                  <MenuItem value={"4i"}>4I</MenuItem>
+                  <MenuItem value={"4e"}>4E</MenuItem>
+                </TextField>
+
+              </Grid>
 
 
-      <table>
-        <tr>
-          <td>
-            <TextField id="ns_ip" label="IP" size={"small"}
-                       variant="outlined" defaultValue={"127.0.0.1"}
-                       value={this.state.targetServerIp}
-                       onChange={this.serverIpChanged}/>
-          </td>
-          <td>
-
-            <TextField id="ns_port" label="Port" size={"small"}
-                       variant="outlined" defaultValue={"6666"} value={this.state.targetServerPort}
-                       onChange={this.serverPortChanged}/>
-          </td>
-
-          <td>
-            <TextField select size={"small"}
-                       value={this.state.mliType} variant={"outlined"} label={"MLI"}
-                       onChange={this.mliTypeChanged}>
-              <MenuItem value={"2i"}>2I</MenuItem>
-              <MenuItem value={"2e"}>2E</MenuItem>
-              <MenuItem value={"4i"}>4I</MenuItem>
-              <MenuItem value={"4e"}>4E</MenuItem>
-            </TextField>
-
-          </td>
-
-        </tr>
-      </table>
-
-
-    </div>);
+            </Grid>
+          </div>
+        </Box>);
   }
 }
 

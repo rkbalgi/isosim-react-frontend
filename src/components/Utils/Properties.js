@@ -6,8 +6,8 @@ export class AppProps {
   static BitmappedField = "Bitmapped";
 
   constructor() {
-    //this.baseUrl = 'http://localhost:8080';
-    this.baseUrl = '';
+    this.baseUrl = 'http://localhost:8080';
+    //this.baseUrl = '';
     this.sendMsgUrl = this.baseUrl + '/iso/v1/send';
     this.loadMsgUrl = this.baseUrl + '/iso/v1/loadmsg';
     this.allSpecsUrl = this.baseUrl + '/iso/v1/specs';
@@ -16,6 +16,8 @@ export class AppProps {
     this.saveMsgUrl = this.baseUrl + '/iso/v1/save';
     this.pinGenUrl = this.baseUrl + '/iso/v1/crypto/pin_gen';
     this.macGenUrl = this.baseUrl + '/iso/v1/crypto/mac_gen';
+
+    this.logHistUrl = this.baseUrl + '/iso/v1/websim/msg_hist/last_n';
   }
 
 }
