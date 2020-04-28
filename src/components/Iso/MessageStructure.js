@@ -14,6 +14,13 @@ import NetworkSettings from "../Utils/NetworkSettings";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import AlertDialog from "../Dialogs/AlertDialog";
 import MsgUtils from "../Utils/MsgUtils.js";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+import Tab from "@material-ui/core/Tab";
+import CryptoUtilsBox from "../Utils/CryptoUtils";
+import * as PropTypes from "prop-types";
 
 // MessageStructure is the central component that encompasses the Request and
 // the response segments along with NetworkSettings etc
@@ -32,7 +39,7 @@ export default class MessageStructure extends React.Component {
       shouldShow: props.showMsgTemplate,
       targetServerIp: '127.0.0.1',
       targetServerPort: '6666',
-      mliType: "2I",
+      mliType: "2i",
       currentDataSet: '',
       errDialogVisible: false,
       errorMessage: '',
@@ -43,7 +50,8 @@ export default class MessageStructure extends React.Component {
       responseData: null,
       reqMenuVisible: false,
       selectedReqMenuItem: null,
-      reqClipboardData: null
+      reqClipboardData: null,
+      selectedTab: 0
     };
 
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
@@ -73,7 +81,12 @@ export default class MessageStructure extends React.Component {
     this.getTemplateLabel = this.getTemplateLabel.bind(this);
     this.networkSettingsChanged = this.networkSettingsChanged.bind(this);
     this.hideResponse = this.hideResponse.bind(this);
+    this.tabChanged = this.tabChanged.bind(this)
 
+  }
+
+  tabChanged(event, newValue) {
+    this.setState({selectedTab: newValue})
   }
 
   networkSettingsChanged(ip, port, mliType) {
@@ -341,17 +354,14 @@ export default class MessageStructure extends React.Component {
 
     let content = [];
     if (this.state.loaded === true) {
-      this.state.msgTemplate.fields.map(field => {
+      this.state.msgTemplate.fields.forEach(field => {
         this.appendFieldContent(content, field, this.state.isoMsg, 0)
       })
     }
 
     return (
 
-        <div style={{
-          fontFamily: 'lato-regular', fontSize: '12px', fill: 'aqua'
-        }}>
-
+        <React.Fragment>
           <AlertDialog show={this.state.errDialogVisible}
                        msg={this.state.errorMessage}
                        onClose={this.closeErrorDialog}/>
@@ -375,120 +385,124 @@ export default class MessageStructure extends React.Component {
                              msgSaveFailed={this.msgSaveFailed}
                              msgSaveCancelled={this.msgSaveCancelled}/>
 
-          <NetworkSettings onChange={this.networkSettingsChanged}/>
 
+          <AppBar position="static" variant={"elevation"} style={{width: "80%", float: "left"}}>
+            <Tabs value={this.state.selectedTab} onChange={this.tabChanged} aria-label="IsoSim Tabs"
+                  centered={true}>
+              <Tab label="Messaging"/>
+              <Tab label="History"/>
+              <Tab label="Utilities"/>
+            </Tabs>
+          </AppBar>
+          <TabPanel value={this.state.selectedTab} index={0}>
 
-          <div align={"left"}
-               style={{
-                 align: "left", display: "inline-block", width: "40%", float: "left", fill: 'aqua'
-               }}>
+            <div style={{
+              display: "inline-block", width: "50%", fill: 'aqua', float: "left", marginTop: "20px"
+            }}>
 
-            <div>
+              <div>
 
-              <ButtonGroup size={"small"} color={"primary"} fullWidth={true}
-                           variant={"contained"}>
-                <Button
-                    onClick={this.showTraceInputsDialog}>Parse</Button>
-                <Button
-                    onClick={this.showLoadMessagesDialog}>Load</Button>
-                <Button
-                    onClick={this.showSaveMsgDialog}>Save</Button>
-                <Button onClick={this.sendToHost}>Send</Button>
-                <Button onClick={this.showResponseDialog}
-                        disabled={this.state.responseData == null}>Show
-                  Response</Button>
-              </ButtonGroup>
+                <NetworkSettings onChange={this.networkSettingsChanged}
+                                 serverIP={this.state.targetServerIp}
+                                 port={this.state.targetServerPort} mliType={this.state.mliType}/>
+
+                <ButtonGroup size={"small"} color={"primary"} fullWidth={true}
+                             variant={"contained"}>
+                  <Button
+                      onClick={this.showTraceInputsDialog}>Parse</Button>
+                  <Button
+                      onClick={this.showLoadMessagesDialog}>Load</Button>
+                  <Button
+                      onClick={this.showSaveMsgDialog}>Save</Button>
+                  <Button onClick={this.sendToHost}>Send</Button>
+                  <Button onClick={this.showResponseDialog}
+                          disabled={this.state.responseData == null}>Show
+                    Response</Button>
+                </ButtonGroup>
+
+              </div>
+
+              {/*TODO:: pull this into a separate component*/}
+              <Paper variation={"outlined"} style={{verticalAlign: "middle"}}>
+                <table border="0" align={"center"}
+                       style={{align: "center", marginTop: "10px", width: "80%"}}>
+                  <thead>
+                  <tr style={{
+                    fontFamily: "lato-regular",
+                    backgroundColor: "#ff8f5b",
+                    fontSize: "15px",
+                    borderBottom: 'solid',
+                    borderColor: 'blue'
+                  }}>
+                    <td colSpan="3" align={"center"}>
+
+                      <div
+                          style={{display: "inline-block"}}>{this.getTemplateLabel()}</div>
+                    </td>
+                  </tr>
+                  <tr style={{
+                    fontFamily: "lato-regular", backgroundColor: "#ff8f5b", fontSize: "14px",
+                  }}>
+                    <td align={"center"}>Selection</td>
+                    <td align={"center"} style={{width: '35%'}}> Field</td>
+                    <td align={"center"} style={{width: '70%'}}>Field Data
+                    </td>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {content}
+                  </tbody>
+                </table>
+              </Paper>
+
+              {/*<div style={{float: "right"}}>*/}
+              <ResponseSegment show={this.state.showResponse}
+                               reqData={this.state.reqClipboardData}
+                               onClose={this.hideResponse}
+                               data={this.state.responseData}
+                               dialogTitle={"Response - [" + this.getTemplateLabel() + "]"}
+                               msgTemplate={this.state.msgTemplate}/>
 
             </div>
 
-            {/*TODO:: pull this into a separate component*/}
-            <Paper variation={"outlined"} style={{verticalAlign: "middle"}}>
-              <table border="0" align={"center"}
-                     style={{align: "center", marginTop: "10px", width: "80%"}}>
-                <thead>
-                <tr style={{
-                  fontFamily: "lato-regular",
-                  backgroundColor: "#ff8f5b",
-                  fontSize: "15px",
-                  borderBottom: 'solid',
-                  borderColor: 'blue'
-                }}>
-                  <td colSpan="3" align={"center"}>
 
-                    {/*
-                      <div style={{display: "inline-block", float: "left"}}>
-                        <IconButton
-                            aria-label="more"
-                            aria-controls="long-menu"
-                            aria-haspopup="true"
-                            onClick={this.showMenu}
-                        >
-                          <MoreVert/>
-                        </IconButton>
+          </TabPanel>
+          <TabPanel value={this.state.selectedTab} index={1}>
+            <div style={{width: "100px"}}>TODO</div>
+          </TabPanel>
+          <TabPanel value={this.state.selectedTab} index={2}>
 
-                        <Menu
-                            id="fade-menu"
-                            anchorEl={this.state.selectedReqMenuItem}
-                            getContentAnchorEl={null}
-                            keepMounted
-                            open={this.state.reqMenuVisible}
-                            onClose={this.hideMenu}
-                            TransitionComponent={Fade}
-                        >
-                          <MenuItem dense={true}
-                                    onClick={this.showTraceInputsDialog}>Parse</MenuItem>
-                          <MenuItem dense={true}
-                                    onClick={this.showLoadMessagesDialog}>Load
-                            Message</MenuItem>
-                          <MenuItem dense={true}
-                                    onClick={this.showSaveMsgDialog}>Save
-                            Message</MenuItem>
-                          <MenuItem dense={true} onClick={this.sendToHost}>Send
-                            Message</MenuItem>
-                          <MenuItem dense={true}
-                                    onClick={this.showResponseDialog}>Show
-                            Response</MenuItem>
-                        </Menu>
-                      </div>
-                    */}
-                    <div
-                        style={{display: "inline-block"}}>{this.getTemplateLabel()}</div>
-                  </td>
-                </tr>
-                <tr style={{
-                  fontFamily: "lato-regular", backgroundColor: "#ff8f5b", fontSize: "14px",
-                }}>
-                  <td align={"center"}>Selection</td>
-                  <td align={"center"} style={{width: '35%'}}> Field</td>
-                  <td align={"center"} style={{width: '70%'}}>Field Data
-                  </td>
-                </tr>
-                </thead>
-                <tbody>
-                {content}
-                </tbody>
-              </table>
-            </Paper>
-
-            {/*<div style={{float: "right"}}>*/}
-            <ResponseSegment show={this.state.showResponse}
-                             reqData={this.state.reqClipboardData}
-                             onClose={this.hideResponse}
-                             data={this.state.responseData}
-                             dialogTitle={"Response - [" + this.getTemplateLabel() + "]"}
-                             msgTemplate={this.state.msgTemplate}/>
-
-          </div>
+            <div style={{width: "100%"}}>
+              <CryptoUtilsBox/>
+            </div>
+          </TabPanel>
 
 
-          <div style={{height: "10px"}}>{' '}</div>
-
-
-        </div>
+        </React.Fragment>
 
     );
 
   }
 
 }
+
+function TabPanel(props) {
+  const {children, value, index, ...other} = props;
+
+  return (<div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+  >
+    {value === index && (<Box>
+      {children}
+    </Box>)}
+  </div>);
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node, index: PropTypes.any.isRequired, value: PropTypes.any.isRequired,
+};
 

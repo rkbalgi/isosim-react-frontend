@@ -40,8 +40,7 @@ class NavBar extends React.Component {
       }
     })
 
-    this.setState(
-        {loaded: true, currentSpec: spec.Name, currentSpecMsg: msg.Name});
+    this.setState({loaded: true, currentSpec: spec.Name, currentSpecMsg: msg.Name});
 
   }
 
@@ -58,8 +57,7 @@ class NavBar extends React.Component {
     axios.get(appProps.allSpecsUrl).then(res => {
       console.log(res.data);
       this.setState({specs: res.data.specs, loaded: true});
-    }).catch(
-        err => console.log(err))
+    }).catch(err => console.log(err))
   }
 
   render() {
@@ -80,8 +78,7 @@ class NavBar extends React.Component {
       }
     }
 
-    return (
-        <React.Fragment>
+    return (<React.Fragment>
 
 
           <div>
@@ -104,21 +101,18 @@ class NavBar extends React.Component {
               display: "inline-block",
               marginRight: "20px",
               marginLeft: "20px",
-              backgroundColor:'#fbfff0'
+              backgroundColor: '#fbfff0'
 
             }}>
               <SpecTree msgSelected={this.msgSelected}/>
             </div>
-            <div align="center" style={{backgroundColor:'#fbfff0'}}>
-              {
-                this.state.loaded && this.state.currentSpec !== "Select" ?
-                    <MessageStructure key={this.state.currentSpec + "_" + msg}
-                                      ref={this.msgTemplateRef}
-                                      specs={this.state.specs}
-                                      spec={this.state.currentSpec}
-                                      msg={this.state.currentSpecMsg}/>
-                    : null
-              }
+            <div align="center" style={{backgroundColor: '#fbfff0', float: "right", width: "80%"}}>
+              {this.state.loaded && this.state.currentSpec !== "Select" ? <MessageStructure
+                  key={this.state.currentSpec + "_" + msg}
+                  ref={this.msgTemplateRef}
+                  specs={this.state.specs}
+                  spec={this.state.currentSpec}
+                  msg={this.state.currentSpecMsg}/> : null}
             </div>
           </div>
         </React.Fragment>
@@ -129,8 +123,7 @@ class NavBar extends React.Component {
   specChanged(event) {
 
     this.setState({
-      currentSpec: event.target.value,
-      currentSpecMsg: ""
+      currentSpec: event.target.value, currentSpecMsg: ""
     });
 
     console.log(event.target.value);
@@ -150,17 +143,14 @@ class NavBar extends React.Component {
 
   // builds a combo box for specifications
   specsDropDown() {
-    return (
-        <select style={{fontFamily: "lato-regular", width: "200px",}}
-                onChange={this.specChanged}>
-          <option key={"Select"} value={"Select"}>Select</option>
-          {
-            this.state.specs.map((s) => {
-              return <option key={s.Name} value={s.Name}>{s.Name}</option>
-            })
-          }
+    return (<select style={{fontFamily: "lato-regular", width: "200px",}}
+                    onChange={this.specChanged}>
+      <option key={"Select"} value={"Select"}>Select</option>
+      {this.state.specs.map((s) => {
+        return <option key={s.Name} value={s.Name}>{s.Name}</option>
+      })}
 
-        </select>);
+    </select>);
   }
 
   // builds and returns a combo box for messages for the current spec
@@ -182,12 +172,10 @@ class NavBar extends React.Component {
           <select value={this.state.currentSpecMsg}
                   style={{fontFamily: "lato-regular", width: "150px"}}
                   onChange={this.messageChanged}>
-            {
-              spec.Messages.map(msg => {
-                return <option key={msg.ID}
-                               value={msg.Name}>{msg.Name}</option>
-              })
-            }
+            {spec.Messages.map(msg => {
+              return <option key={msg.ID}
+                             value={msg.Name}>{msg.Name}</option>
+            })}
 
           </select>
 

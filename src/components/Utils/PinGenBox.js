@@ -36,14 +36,18 @@ export default class PinGenBox extends React.Component {
     }
 
     let originalPan = "";
-    let panField = this.props.isoMsg.get(this.panID);
-    if (panField) {
-      originalPan = panField.state.fieldValue;
-      initialPan = originalPan;
+    if (this.props.isoMsg) {
+      let panField = this.props.isoMsg.get(this.panID);
+      if (panField) {
+        originalPan = panField.state.fieldValue;
+        initialPan = originalPan;
 
-      if (this.from >= 0 && this.to > this.from) {
-        initialPan = panField.state.fieldValue.substring(this.from, this.to);
+        if (this.from >= 0 && this.to > this.from) {
+          initialPan = panField.state.fieldValue.substring(this.from, this.to);
+        }
       }
+    } else {
+      this.state = {pinFormat: "ISO0", pan: initialPan, clearPin: "", pinKey: ""}
     }
 
     if (this.field.GenType === 'pin_gen') {
@@ -56,8 +60,6 @@ export default class PinGenBox extends React.Component {
         hasError: false,
         errorMsg: null
       }
-    } else {
-      this.state = {pinFormat: "ISO0", pan: initialPan, clearPin: "", pinKey: ""}
     }
 
     this.generatePinBlock = this.generatePinBlock.bind(this);
@@ -73,6 +75,10 @@ export default class PinGenBox extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
+
+    if (!this.props.isoMsg) {
+      return
+    }
 
     let tmp = this.props.isoMsg.get(this.panID);
     if (tmp) {
