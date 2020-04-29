@@ -13,7 +13,7 @@ export default class MsgHistPanel extends React.Component {
     super(props);
 
     console.log("New MsgHist")
-    this.state = {maxItems: 5, logData: ""}
+    this.state = {maxItems: props.initialMaxItems, logData: props.initialLogData}
 
     this.maxItemsChanged = this.maxItemsChanged.bind(this);
     this.fetchLogs = this.fetchLogs.bind(this);
@@ -36,13 +36,13 @@ export default class MsgHistPanel extends React.Component {
           });
 
           this.setState({logData: displayData})
+          this.props.saveState({maxItems: this.state.maxItems, logData: this.state.logData})
 
         }).catch(e => {
       console.log(e)
     })
 
   }
-
 
   render() {
     return (<div style={{textAlign: "left", marginTop: "5%"}}>

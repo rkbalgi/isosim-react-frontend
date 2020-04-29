@@ -21,7 +21,7 @@ class NetworkSettings extends React.Component {
   }
 
   mliTypeChanged(e) {
-    this.setState({mliType: e.target.value});
+    this.setStateAndPushUp({mliType: e.target.value});
     this.props.onChange(this.state.targetServerIp, this.state.targetServerPort, e.target.value)
   }
 
@@ -38,7 +38,8 @@ class NetworkSettings extends React.Component {
   render() {
     return (
 
-        <Box border={1} borderColor={"#1228B6"} borderRadius={8} style={{backgroundColor: "#E3C4A7", marginBottom: "1%"}}>
+        <Box border={1} borderColor={"#1228B6"} borderRadius={8}
+             style={{backgroundColor: "#E5E4E3", marginBottom: "1%"}}>
           <div style={{
             textAlign: "left",
             verticalAlign: "baseline",
@@ -48,7 +49,7 @@ class NetworkSettings extends React.Component {
           }}>
             <Grid container={true} spacing={3} justify={"space-around"}>
 
-              <Grid item={true} justify={"space-evenly"} lg={6}>
+              <Grid item={true} lg={6}>
                 <TextField id="ns_ip" label="Host IP/Name" size={"small"} fullWidth={true}
                            variant="outlined"
                            value={this.state.targetServerIp}

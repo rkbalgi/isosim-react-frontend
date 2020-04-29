@@ -1,15 +1,19 @@
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import TreeItem from "@material-ui/lab/TreeItem";
+
 import TreeView from "@material-ui/lab/TreeView";
 import React from "react";
 import axios from "axios";
 import appProps from "../../Utils/Properties";
 import {Folder, Home, Message} from "@material-ui/icons"
+import StyledTreeItem from "./StyledTreeItem";
+
 
 // SpecTree displays a tree of all the available specifications and the messages
 // defined under the spec
 class SpecTree extends React.Component {
+
+  treeInstance;
 
   constructor(props) {
     super(props);
@@ -17,17 +21,32 @@ class SpecTree extends React.Component {
     this.state = {
       specs: [], loaded: false, errDialogVisible: false, errorMessage: ''
     };
-    this.messageClicked = this.messageClicked.bind(this);
+    //this.messageClicked = this.messageClicked.bind(this);
+    this.nodeSelected = this.nodeSelected.bind(this);
   }
 
-  messageClicked(event) {
-    // FIXME:: This is a hack! There needs to be a better way like onSelect
-    let specId = event.target.parentElement.parentElement.getAttribute("sid");
-    let msgId = event.target.parentElement.parentElement.getAttribute("mid");
+  nodeSelected(event, selectedNode) {
+    // console.log("selected node - ", selectedNode)
 
-    this.props.msgSelected(specId, msgId);
+    let matches = selectedNode.match("nodeId_([0-9]+)_([0-9]+)");
+    if (matches) {
+      console.log("matched", this.treeInstance);
+      this.props.msgSelected(matches[1], matches[2]);
+    }
 
   }
+
+  /*
+    messageClicked(event, selectedNode) {
+
+      // FIXME:: This is a hack! There needs to be a better way like onSelect
+      let specId = event.target.parentElement.parentElement.getAttribute("sid");
+      let msgId = event.target.parentElement.parentElement.getAttribute("mid");
+
+      this.props.msgSelected(specId, msgId);
+
+    }
+  */
 
   componentDidMount() {
 
@@ -44,11 +63,13 @@ class SpecTree extends React.Component {
 
   buildMessages(spec) {
     let content = []
+
+
     spec.Messages.forEach(m => {
-      content.push(<TreeItem nodeId={"nodeId_" + spec.ID + "_" + m.ID}
+      content.push(<StyledTreeItem nodeId={"nodeId_" + spec.ID + "_" + m.ID}
                              sid={spec.ID} mid={m.ID}
                              label={m.Name}
-                             onClick={this.messageClicked}/>)
+      />)
     });
     return content
 
@@ -61,27 +82,28 @@ class SpecTree extends React.Component {
       let content = [];
       this.state.specs.forEach(s => {
 
-        content.push(<TreeItem align="left" nodeId={"nodeId_" + s.ID}
+        content.push(<StyledTreeItem align="left" nodeId={"nodeId_" + s.ID}
                                icon={<Folder color={"primary"}/>}
-                               label={s.Name}>{this.buildMessages(s)}</TreeItem>);
+                               label={s.Name}>{this.buildMessages(s)}</StyledTreeItem>);
 
       });
 
-      let treeContent = <TreeItem nodeId={"nodeId_0"}
+      let treeContent = <StyledTreeItem nodeId={"nodeId_0"}
                                   icon={<Home color={"primary"}/>}
-                                  label={"ISO8583 Specifications"}>{content}</TreeItem>;
+                                  label={"ISO8583 Specifications"}>{content}</StyledTreeItem>;
 
+      this.treeInstance = <TreeView
+          onNodeSelect={this.nodeSelected}
+          defaultExpanded={['nodeId_0']}
+          defaultCollapseIcon={<ExpandMoreIcon/>}
+          defaultExpandIcon={<ChevronRightIcon/>}
+          defaultParentIcon={<Folder color={"primary"}/>}
+          defaultEndIcon={<Message color="primary"/>}
+      >
+        {treeContent}
+      </TreeView>;
       return (<React.Fragment>
-        <TreeView
-            defaultExpanded={['nodeId_0']}
-            defaultCollapseIcon={<ExpandMoreIcon/>}
-            defaultExpandIcon={<ChevronRightIcon/>}
-            defaultParentIcon={<Folder color={"primary"}/>}
-            defaultEndIcon={<Message color="primary"/>}
-        >
-          {treeContent}
-        </TreeView>
-
+        {this.treeInstance}
 
       </React.Fragment>);
     } else {
@@ -91,4 +113,8 @@ class SpecTree extends React.Component {
   }
 }
 
-export default SpecTree;
+
+
+
+
+export default SpecTree

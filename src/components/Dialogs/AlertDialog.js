@@ -21,7 +21,7 @@ export default class AlertDialog extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    
+
     if (this.props.show === true && prevState.show === false) {
       this.setState({show: true})
     }
@@ -36,7 +36,7 @@ export default class AlertDialog extends React.Component {
         aria-describedby="alert-dialog-description"
     >
       <DialogTitle
-          id="alert-dialog-title">{"Error"}</DialogTitle>
+          id="alert-dialog-title">{"Alert!"}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-description">
           {this.props.msg}

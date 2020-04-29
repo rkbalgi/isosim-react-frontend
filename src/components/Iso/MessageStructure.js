@@ -13,7 +13,7 @@ import Paper from '@material-ui/core/Paper';
 import NetworkSettings from "../Utils/NetworkSettings";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import AlertDialog from "../Dialogs/AlertDialog";
-import MsgHistPanel from "../Utils/MsgHistory.js";
+import MsgHistPanel from "../Utils/MsgHistPanel.js";
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Box from "@material-ui/core/Box";
@@ -51,7 +51,8 @@ export default class MessageStructure extends React.Component {
       reqMenuVisible: false,
       selectedReqMenuItem: null,
       reqClipboardData: null,
-      selectedTab: 0
+      selectedTab: 0,
+      msgHist: {maxItems: 5, logData: ''}
     };
 
     this.onFieldUpdate = this.onFieldUpdate.bind(this);
@@ -82,44 +83,60 @@ export default class MessageStructure extends React.Component {
     this.networkSettingsChanged = this.networkSettingsChanged.bind(this);
     this.hideResponse = this.hideResponse.bind(this);
     this.tabChanged = this.tabChanged.bind(this);
+    this.saveHistState = this.saveHistState.bind(this);
+
+    this.setStateAndPushUp = this.setStateAndPushUp.bind(this);
+
+  }
+
+  //some day let's use Redux
+  setStateAndPushUp(stateObj) {
+
+    this.setState(stateObj)
+
+  }
+
+  saveHistState(histState) {
+    console.log("Received ", histState)
+    this.setStateAndPushUp({msgHist: histState})
 
   }
 
   tabChanged(event, newValue) {
-    this.setState({selectedTab: newValue})
+    this.setStateAndPushUp({selectedTab: newValue})
   }
 
   networkSettingsChanged(ip, port, mliType) {
-    this.setState({targetServerIp: ip, targetServerPort: port, mliType: mliType})
+    this.setStateAndPushUp({targetServerIp: ip, targetServerPort: port, mliType: mliType})
   }
 
   showMenu(event) {
 
-    this.setState({
+    this.setStateAndPushUp({
       selectedReqMenuItem: event.currentTarget, reqMenuVisible: true
     })
 
   }
 
   hideMenu() {
-    this.setState({reqMenuVisible: false})
-    this.setState({selectedReqMenuItem: null})
+    this.setStateAndPushUp({reqMenuVisible: false})
+    this.setStateAndPushUp({selectedReqMenuItem: null})
   }
 
   showResponseDialog() {
     this.hideMenu()
-    this.setState({showResponse: true})
+    this.setStateAndPushUp({showResponse: true})
   }
 
   hideResponse() {
-    this.setState({showResponse: false})
+    this.setStateAndPushUp({showResponse: false})
 
   }
 
   handleMenuClick(event) {
     alert(event.currentTarget)
 
-    this.setState({selectedReqMenuItem: event.currentTarget})
+    this.setStateAndPushUp({selectedReqMenuItem: event.currentTarget})
     this.hideMenu()
   }
 
@@ -143,18 +160,18 @@ export default class MessageStructure extends React.Component {
       })
 
     }
-    this.setState({showTraceInputDialog: false})
+    this.setStateAndPushUp({showTraceInputDialog: false})
   }
 
   showUnImplementedError() {
-    this.setState({
+    this.setStateAndPushUp({
       errorMessage: 'This functionality has not been implemented. Please try the old version of application.',
       errDialogVisible: true
     })
   }
 
   closeLoadMsgDialog(selectedMsg) {
-    this.setState({showLoadMessagesDialog: false, currentDataSet: selectedMsg});
+    this.setStateAndPushUp({showLoadMessagesDialog: false, currentDataSet: selectedMsg});
 
     if (selectedMsg != null) {
       axios.get(appProps.loadMsgUrl, {
@@ -176,7 +193,7 @@ export default class MessageStructure extends React.Component {
   }
 
   showInfoDialog(msg) {
-    this.setState({errDialogVisible: true, errorMessage: msg})
+    this.setStateAndPushUp({errDialogVisible: true, errorMessage: msg})
   }
 
   msgSaveSuccess(msgName, updated) {
@@ -185,16 +202,16 @@ export default class MessageStructure extends React.Component {
       type = "updated"
     }
     this.showInfoDialog(`Message ${msgName} ${type} successfully.`);
-    this.setState({showSaveMsgDialog: false});
+    this.setStateAndPushUp({showSaveMsgDialog: false});
   }
 
   msgSaveFailed(e) {
     this.processError(e);
-    this.setState({showSaveMsgDialog: false});
+    this.setStateAndPushUp({showSaveMsgDialog: false});
   }
 
   msgSaveCancelled() {
-    this.setState({showSaveMsgDialog: false});
+    this.setStateAndPushUp({showSaveMsgDialog: false});
   }
 
   showSaveMsgDialog() {
@@ -203,27 +220,27 @@ export default class MessageStructure extends React.Component {
     let content = [];
     let validationErrors = [];
     MsgUtils.getMsgContent(this.state.isoMsg, content, validationErrors)
-    this.setState({saveData: content, showSaveMsgDialog: true})
+    this.setStateAndPushUp({saveData: content, showSaveMsgDialog: true})
   }
 
   showTraceInputsDialog() {
     this.hideMenu()
-    this.setState({showTraceInputDialog: true})
+    this.setStateAndPushUp({showTraceInputDialog: true})
 
   }
 
   showLoadMessagesDialog() {
     this.hideMenu()
-    this.setState({showLoadMessagesDialog: true})
+    this.setStateAndPushUp({showLoadMessagesDialog: true})
 
   }
 
   closeErrorDialog() {
-    this.setState({errDialogVisible: false})
+    this.setStateAndPushUp({errDialogVisible: false})
   }
 
   showErrorDialog() {
-    this.setState({errDialogVisible: true});
+    this.setStateAndPushUp({errDialogVisible: true});
   }
 
   //sends the message (as JSON) to the API server to be sent to the ISO host
@@ -239,7 +256,7 @@ export default class MessageStructure extends React.Component {
     if (validationErrors.length > 0) {
       let errMsg = "";
       validationErrors.forEach(e => errMsg += e + "\n");
-      this.setState({errorMessage: errMsg});
+      this.setStateAndPushUp({errorMessage: errMsg});
       this.showErrorDialog();
       return
     }
@@ -257,7 +274,7 @@ export default class MessageStructure extends React.Component {
     //alert(reqClipboardData)
 
     //lets not hide and then show the response segment again
-    this.setState({
+    this.setStateAndPushUp({
       showResponse: false, responseData: null, reqClipboardData: reqClipboardData
     });
 
@@ -267,7 +284,7 @@ export default class MessageStructure extends React.Component {
     //console.log(postData)
     axios.post(appProps.sendMsgUrl, postData).then(res => {
       console.log("Response from server", res.data.response_fields);
-      this.setState({showResponse: true, responseData: res.data.response_fields});
+      this.setStateAndPushUp({showResponse: true, responseData: res.data.response_fields});
 
     }).catch(e => {
       console.log("error = ", e);
@@ -280,7 +297,7 @@ export default class MessageStructure extends React.Component {
 
     if (!e.response) {
       console.log("Error = ", e);
-      this.setState({
+      this.setStateAndPushUp({
         errorMessage: 'Error: Unable to reach API server', errDialogVisible: true
       });
       return
@@ -289,9 +306,9 @@ export default class MessageStructure extends React.Component {
     console.log(e.response)
 
     if (e.response.status === 400) {
-      this.setState({errorMessage: e.response.data.error, errDialogVisible: true});
+      this.setStateAndPushUp({errorMessage: e.response.data.error, errDialogVisible: true});
     } else {
-      this.setState({
+      this.setStateAndPushUp({
         errorMessage: 'Unexpected error from server - ' + e.response.status, errDialogVisible: true
       });
     }
@@ -310,6 +327,7 @@ export default class MessageStructure extends React.Component {
     this.getMessageTemplate(this.props.spec, this.props.msg)
   }
 
+  // Reads and sets up the msgTemplate in state.isoMsg
   getMessageTemplate(pSpec, pMsg) {
     let spec = this.props.specs.find(s => {
       if (s.Name === pSpec) {
@@ -328,19 +346,20 @@ export default class MessageStructure extends React.Component {
     let url = appProps.templateUrl + '/' + spec.ID + "/" + msg.ID;
     console.log(url);
     axios.get(url).then(res => {
-      //console.log(res.data);
+
       let isoMsg = new Map();
       isoMsg.set("msg_template", res.data);
       isoMsg.set("spec_id", spec.ID);
       isoMsg.set("msg_id", msg.ID);
-      this.setState({
+
+      this.setStateAndPushUp({
         spec: spec, msg: msg, msgTemplate: res.data, loaded: true, isoMsg: isoMsg
       });
 
       console.log("MsgTemplate = ", this.state.msgTemplate);
     }).catch(err => {
       console.log(err)
-      this.setState({errorMessage: err, errDialogVisible: true})
+      this.setStateAndPushUp({errorMessage: err, errDialogVisible: true})
     });
   }
 
@@ -469,8 +488,10 @@ export default class MessageStructure extends React.Component {
           </TabPanel>
           <TabPanel value={this.state.selectedTab} index={1}>
             <div style={{alignItems: "left", width: "100%"}}>
-              <MsgHistPanel specId={this.state.spec.ID}
-                            msgId={this.state.msg.ID}/>
+              <MsgHistPanel specId={this.state.spec.ID} msgId={this.state.msg.ID}
+                            initialMaxItems={this.state.msgHist.maxItems}
+                            initialLogData={this.state.msgHist.logData}
+                            saveState={this.saveHistState}/>
 
             </div>
           </TabPanel>

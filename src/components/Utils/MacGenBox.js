@@ -44,29 +44,54 @@ export default class MacGenBox extends React.Component {
       return
     }
 
-    this.setState({keyError: false, pinError: false, panError: false});
+    this.setState({keyError: false});
 
     let content = []
     let validationErrors = []
 
-    MsgUtils.getMsgContent(this.props.isoMsg, content, validationErrors);
+    let reqData = {};
 
-    if (validationErrors.length > 0) {
-      let errMsg = "";
-      validationErrors.forEach(e => errMsg += e + "\n");
-      this.setState({hasError: true, errorMsg: errMsg});
-      return
+    if (this.props.macData !== undefined) {
+
+      //if mac-data has been provided
+
+      if (this.props.macData.length === 0) {
+        this.setState({hasError: true, errorMsg: "Invalid MacData supplied."});
+        return
+      } else {
+
+        this.setState({hasError: false, errorMsg: null});
+
+        let macData = this.props.macData;
+
+        reqData = {
+          mac_algo: this.state.macAlgo, mac_key: this.state.macKey, mac_data: macData
+        };
+      }
+
+    } else {
+
+      //mac_data is to be computed on the server-side
+
+      MsgUtils.getMsgContent(this.props.isoMsg, content, validationErrors);
+
+      if (validationErrors.length > 0) {
+        let errMsg = "";
+        validationErrors.forEach(e => errMsg += e + "\n");
+        this.setState({hasError: true, errorMsg: errMsg});
+        return
+      }
+
+      reqData = {
+        mac_algo: this.state.macAlgo,
+        mac_key: this.state.macKey,
+        spec_id: this.props.isoMsg.get("spec_id"),
+        msg_id: this.props.isoMsg.get("msg_id"),
+        parsed_fields: content
+      };
     }
 
-    let data = {
-      MacAlgo: this.state.macAlgo,
-      MacKey: this.state.macKey,
-      spec_id: this.props.isoMsg.get("spec_id"),
-      msg_id: this.props.isoMsg.get("msg_id"),
-      parsed_fields: content
-    };
-
-    axios.post(appProps.macGenUrl, JSON.stringify(data)).then(res => {
+    axios.post(appProps.macGenUrl, JSON.stringify(reqData)).then(res => {
       this.setState({hasError: false, errorMsg: null});
       this.props.setMac(res.data.Mac);
 

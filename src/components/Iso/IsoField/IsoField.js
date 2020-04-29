@@ -33,8 +33,10 @@ export default class IsoField extends React.Component {
 
     let initialExpandBtnLabel = '+';
     this.selectable = true;
-    //readOnly is true when displaying a response segment
+
     if (this.props.readOnly) {
+      //readOnly is true when displaying a response segment
+
       this.selectable = false;
 
       let selected = false;
@@ -55,13 +57,26 @@ export default class IsoField extends React.Component {
         field: this.props.field
       };
     } else {
+
+      // for request segment
+
       let defaultFieldValue = "";
+      let selected = false;
+
+      if (this.props.isoMsg.has(this.props.field.ID)) {
+        let tmpField = this.props.isoMsg.get(this.props.field.ID)
+        defaultFieldValue = tmpField.state.fieldValue;
+        selected = tmpField.state.selected;
+      }
+
       if (["Message Type", "MTI", "Bitmap"].includes(this.props.field.Name)) {
         this.selectable = false;
         let fieldEditable = true;
-        if (this.props.field.Name === "Bitmap") {
+        if (defaultFieldValue === "" && this.props.field.Name === "Bitmap") {
           defaultFieldValue = Array(128).fill('0').reduce((p = "", c) => p + c);
-          // Bitmap should not be editable
+        }
+
+        if (this.props.field.Name === "Bitmap") {
           fieldEditable = false;
         }
 
@@ -75,11 +90,12 @@ export default class IsoField extends React.Component {
           showExpanded: false,
           field: this.props.field
         };
+
       } else {
         this.state = {
           fieldEditable: true,
           bgColor: "white",
-          selected: false,
+          selected: selected,
           hasError: false,
           fieldValue: defaultFieldValue,
           expandBtnLabel: initialExpandBtnLabel,
