@@ -8,46 +8,46 @@ import Button from "@material-ui/core/Button";
 
 export default class AlertDialog extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {show: props.show};
+    constructor(props) {
+        super(props);
+        this.state = {show: props.show};
 
-    this.handleClose = this.handleClose.bind(this);
-  }
-
-  handleClose() {
-    this.setState({show: false})
-    this.props.onClose();
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-
-    if (this.props.show === true && prevState.show === false) {
-      this.setState({show: true})
+        this.handleClose = this.handleClose.bind(this);
     }
-  }
 
-  render() {
+    handleClose() {
+        this.setState({show: false})
+        this.props.onClose();
+    }
 
-    return (<Dialog
-        open={this.state.show}
-        onClose={this.handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle
-          id="alert-dialog-title">{"Alert!"}</DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          {this.props.msg}
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={this.handleClose} color="primary">
-          OK
-        </Button>
-      </DialogActions>
-    </Dialog>);
+    componentDidUpdate(prevProps, prevState, snapshot) {
 
-  }
+        if (this.props.show === true && prevState.show === false) {
+            this.setState({show: true})
+        }
+    }
+
+    render() {
+
+        return (<Dialog
+            open={this.state.show}
+            onClose={this.handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle
+                id="alert-dialog-title">{"Alert!"}</DialogTitle>
+            <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                    {this.props.msg}
+                </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={this.handleClose} color="primary">
+                    OK
+                </Button>
+            </DialogActions>
+        </Dialog>);
+
+    }
 }

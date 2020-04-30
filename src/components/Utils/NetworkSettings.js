@@ -8,76 +8,76 @@ import Box from "@material-ui/core/Box";
 // used when sending a message
 class NetworkSettings extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      targetServerIp: props.serverIP, targetServerPort: props.port, mliType: props.mliType
+    constructor(props) {
+        super(props);
+        this.state = {
+            targetServerIp: props.serverIP, targetServerPort: props.port, mliType: props.mliType
+        }
+
+        this.serverIpChanged = this.serverIpChanged.bind(this);
+        this.serverPortChanged = this.serverPortChanged.bind(this);
+        this.mliTypeChanged = this.mliTypeChanged.bind(this);
+
     }
 
-    this.serverIpChanged = this.serverIpChanged.bind(this);
-    this.serverPortChanged = this.serverPortChanged.bind(this);
-    this.mliTypeChanged = this.mliTypeChanged.bind(this);
+    mliTypeChanged(e) {
+        this.setStateAndPushUp({mliType: e.target.value});
+        this.props.onChange(this.state.targetServerIp, this.state.targetServerPort, e.target.value)
+    }
 
-  }
+    serverIpChanged(e) {
+        this.setState({targetServerIp: e.target.value});
+        this.props.onChange(e.target.value, this.state.targetServerPort, this.state.mliType)
+    }
 
-  mliTypeChanged(e) {
-    this.setStateAndPushUp({mliType: e.target.value});
-    this.props.onChange(this.state.targetServerIp, this.state.targetServerPort, e.target.value)
-  }
+    serverPortChanged(e) {
+        this.setState({targetServerPort: e.target.value});
+        this.props.onChange(this.state.targetServerIp, e.target.value, this.state.mliType)
+    }
 
-  serverIpChanged(e) {
-    this.setState({targetServerIp: e.target.value});
-    this.props.onChange(e.target.value, this.state.targetServerPort, this.state.mliType)
-  }
+    render() {
+        return (
 
-  serverPortChanged(e) {
-    this.setState({targetServerPort: e.target.value});
-    this.props.onChange(this.state.targetServerIp, e.target.value, this.state.mliType)
-  }
+            <Box border={1} borderColor={"#1228B6"} borderRadius={8}
+                 style={{backgroundColor: "#E5E4E3", marginBottom: "1%"}}>
+                <div style={{
+                    textAlign: "left",
+                    verticalAlign: "baseline",
+                    marginBottom: "2%",
+                    marginTop: "2%",
+                    width: "100%"
+                }}>
+                    <Grid container={true} spacing={3} justify={"space-around"}>
 
-  render() {
-    return (
+                        <Grid item={true} lg={6}>
+                            <TextField id="ns_ip" label="Host IP/Name" size={"small"} fullWidth={true}
+                                       variant="outlined"
+                                       value={this.state.targetServerIp}
+                                       onChange={this.serverIpChanged}/>
+                        </Grid>
 
-        <Box border={1} borderColor={"#1228B6"} borderRadius={8}
-             style={{backgroundColor: "#E5E4E3", marginBottom: "1%"}}>
-          <div style={{
-            textAlign: "left",
-            verticalAlign: "baseline",
-            marginBottom: "2%",
-            marginTop: "2%",
-            width: "100%"
-          }}>
-            <Grid container={true} spacing={3} justify={"space-around"}>
+                        <Grid item={true} lg={4}>
+                            <TextField id="ns_port" label="Port" size={"small"} fullWidth={true}
+                                       variant="outlined" value={this.state.targetServerPort}
+                                       onChange={this.serverPortChanged}/>
+                        </Grid>
+                        <Grid item={true} log={4}>
+                            <TextField select size={"small"} fullWidth={true}
+                                       value={this.state.mliType} variant={"outlined"} label={"MLI"}
+                                       onChange={this.mliTypeChanged}>
+                                <MenuItem value={"2i"}>2I</MenuItem>
+                                <MenuItem value={"2e"}>2E</MenuItem>
+                                <MenuItem value={"4i"}>4I</MenuItem>
+                                <MenuItem value={"4e"}>4E</MenuItem>
+                            </TextField>
 
-              <Grid item={true} lg={6}>
-                <TextField id="ns_ip" label="Host IP/Name" size={"small"} fullWidth={true}
-                           variant="outlined"
-                           value={this.state.targetServerIp}
-                           onChange={this.serverIpChanged}/>
-              </Grid>
-
-              <Grid item={true} lg={4}>
-                <TextField id="ns_port" label="Port" size={"small"} fullWidth={true}
-                           variant="outlined" value={this.state.targetServerPort}
-                           onChange={this.serverPortChanged}/>
-              </Grid>
-              <Grid item={true} log={4}>
-                <TextField select size={"small"} fullWidth={true}
-                           value={this.state.mliType} variant={"outlined"} label={"MLI"}
-                           onChange={this.mliTypeChanged}>
-                  <MenuItem value={"2i"}>2I</MenuItem>
-                  <MenuItem value={"2e"}>2E</MenuItem>
-                  <MenuItem value={"4i"}>4I</MenuItem>
-                  <MenuItem value={"4e"}>4E</MenuItem>
-                </TextField>
-
-              </Grid>
+                        </Grid>
 
 
-            </Grid>
-          </div>
-        </Box>);
-  }
+                    </Grid>
+                </div>
+            </Box>);
+    }
 }
 
 export default NetworkSettings

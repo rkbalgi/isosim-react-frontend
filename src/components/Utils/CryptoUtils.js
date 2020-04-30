@@ -11,129 +11,129 @@ import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
 export default class CryptoUtilsBox extends React.Component {
-  pinField = {
-    PinGenProps: {
-      PANFieldId: 0,
-      PANExtractParams: "",
-      PINFormat: "ISO0",
-      PINClear: "1234",
-      PINKey: "1234567890abcd0102030546febce4ee"
-    }, GenType: "pin_gen"
-  };
+    pinField = {
+        PinGenProps: {
+            PANFieldId: 0,
+            PANExtractParams: "",
+            PINFormat: "ISO0",
+            PINClear: "1234",
+            PINKey: "1234567890abcd0102030546febce4ee"
+        }, GenType: "pin_gen"
+    };
 
-  macField = {
-    MacGenProps: {
-      MacAlgo: "ANSIX9_19", MacKey: "1234567890abcd0102030546febce4ee"
-    }, GenType: "mac_gen"
-  };
+    macField = {
+        MacGenProps: {
+            MacAlgo: "ANSIX9_19", MacKey: "1234567890abcd0102030546febce4ee"
+        }, GenType: "mac_gen"
+    };
 
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.state = {pinBlock: "", mac: "", macData: "", error: ""}
+        this.state = {pinBlock: "", mac: "", macData: "", error: ""}
 
-    this.setPinValue = this.setPinValue.bind(this);
-    this.setMacValue = this.setMacValue.bind(this);
-    this.macDataChanged = this.macDataChanged.bind(this);
-  }
-
-  setPinValue(value) {
-    this.setState({pinBlock: value})
-  }
-
-  setMacValue(value) {
-    this.setState({mac: value})
-  }
-
-  macDataChanged(event) {
-    if (event.target.value.trim().length === 0 || event.target.value.trim().length % 2 !== 0) {
-      this.setState({error: "MacData should be hex/even-digits", macData: event.target.value});
-      return
+        this.setPinValue = this.setPinValue.bind(this);
+        this.setMacValue = this.setMacValue.bind(this);
+        this.macDataChanged = this.macDataChanged.bind(this);
     }
 
-    this.setState({error: "", macData: event.target.value.trim()})
-  }
+    setPinValue(value) {
+        this.setState({pinBlock: value})
+    }
 
-  render() {
-    return (
+    setMacValue(value) {
+        this.setState({mac: value})
+    }
 
-        <div style={{
-          textAlign: "left", marginTop: "5%"
-        }}>
+    macDataChanged(event) {
+        if (event.target.value.trim().length === 0 || event.target.value.trim().length % 2 !== 0) {
+            this.setState({error: "MacData should be hex/even-digits", macData: event.target.value});
+            return
+        }
 
-          <Grid container={true} spacing={1} direction={"column"}>
+        this.setState({error: "", macData: event.target.value.trim()})
+    }
 
-            <Grid item={true} sm={6} justify={"center"}>
+    render() {
+        return (
 
-              <ExpansionPanel>
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
-                >
-                  <Typography>PIN Generator</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
+            <div style={{
+                textAlign: "left", marginTop: "5%"
+            }}>
 
-                  <div style={{
-                    textAlign: "left", marginTop: "5%", width: "100%", height: "100%"
-                  }}>
+                <Grid container={true} spacing={1} direction={"column"}>
 
-                    <PinGenBox field={this.pinField} setPinBlock={this.setPinValue}/>
-                    <TextField size={"small"} label={"PIN Block"} variant={"outlined"}
-                               margin={"dense"}
-                               fullWidth={true}
-                               value={this.state.pinBlock}/>
-                  </div>
+                    <Grid item={true} sm={6} justify={"center"}>
 
+                        <ExpansionPanel>
+                            <ExpansionPanelSummary
+                                expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel1a-content"
+                                id="panel1a-header"
+                            >
+                                <Typography>PIN Generator</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
 
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
+                                <div style={{
+                                    textAlign: "left", marginTop: "5%", width: "100%", height: "100%"
+                                }}>
 
-
-            </Grid>
-
-            <Grid item={true} sm={6}>
-
-
-              <ExpansionPanel>
-                <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon/>}
-                    aria-controls="panel2a-content"
-                    id="panel2a-header"
-                >
-                  <Typography>MAC Generator</Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>
-
-                  <div style={{
-                    textAlign: "left", marginTop: "5%", width: "100%"
-                  }}>
-
-                    <TextField size={"small"} label={"Mac Data"} variant={"outlined"}
-                               margin={"dense"}
-                               fullWidth={true} multiline={true} onChange={this.macDataChanged}
-                               rows={5}
-                               rowsMax={20} error={this.state.error !== ""}
-                               helperText={this.state.error}
-                               value={this.state.macData}/>
-                    <MacGenBox field={this.macField} setMac={this.setMacValue}
-                               macData={this.state.macData}/>
-                    <TextField size={"small"} label={"MAC"} variant={"outlined"} margin={"dense"}
-                               fullWidth={true}
-                               value={this.state.mac}/>
-                  </div>
+                                    <PinGenBox field={this.pinField} setPinBlock={this.setPinValue}/>
+                                    <TextField size={"small"} label={"PIN Block"} variant={"outlined"}
+                                               margin={"dense"}
+                                               fullWidth={true}
+                                               value={this.state.pinBlock}/>
+                                </div>
 
 
-                </ExpansionPanelDetails>
-              </ExpansionPanel>
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
 
 
-            </Grid>
-          </Grid>
+                    </Grid>
+
+                    <Grid item={true} sm={6}>
 
 
-        </div>);
-  }
+                        <ExpansionPanel>
+                            <ExpansionPanelSummary
+                                expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel2a-content"
+                                id="panel2a-header"
+                            >
+                                <Typography>MAC Generator</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
+
+                                <div style={{
+                                    textAlign: "left", marginTop: "5%", width: "100%"
+                                }}>
+
+                                    <TextField size={"small"} label={"Mac Data"} variant={"outlined"}
+                                               margin={"dense"}
+                                               fullWidth={true} multiline={true} onChange={this.macDataChanged}
+                                               rows={5}
+                                               rowsMax={20} error={this.state.error !== ""}
+                                               helperText={this.state.error}
+                                               value={this.state.macData}/>
+                                    <MacGenBox field={this.macField} setMac={this.setMacValue}
+                                               macData={this.state.macData}/>
+                                    <TextField size={"small"} label={"MAC"} variant={"outlined"} margin={"dense"}
+                                               fullWidth={true}
+                                               value={this.state.mac}/>
+                                </div>
+
+
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
+
+
+                    </Grid>
+                </Grid>
+
+
+            </div>);
+    }
 
 }

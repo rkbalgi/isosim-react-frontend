@@ -8,73 +8,73 @@ import appProps from "./Properties";
 
 export default class MsgHistPanel extends React.Component {
 
-  constructor(props) {
+    constructor(props) {
 
-    super(props);
+        super(props);
 
-    console.log("New MsgHist")
-    this.state = {maxItems: props.initialMaxItems, logData: props.initialLogData}
+        console.log("New MsgHist")
+        this.state = {maxItems: props.initialMaxItems, logData: props.initialLogData}
 
-    this.maxItemsChanged = this.maxItemsChanged.bind(this);
-    this.fetchLogs = this.fetchLogs.bind(this);
+        this.maxItemsChanged = this.maxItemsChanged.bind(this);
+        this.fetchLogs = this.fetchLogs.bind(this);
 
-  }
+    }
 
-  maxItemsChanged(event) {
-    this.setState({maxItems: event.target.value})
-  }
+    maxItemsChanged(event) {
+        this.setState({maxItems: event.target.value})
+    }
 
-  fetchLogs() {
+    fetchLogs() {
 
-    axios.get(appProps.logHistUrl
-        + `?spec_id=${this.props.specId}&msg_id=${this.props.msgId}&count=${this.state.maxItems}`).then(
-        res => {
-          console.log(res.data)
-          let displayData = ""
-          res.data.forEach(e => {
-            displayData += e + "\n-----------------------------\n";
-          });
+        axios.get(appProps.logHistUrl
+            + `?spec_id=${this.props.specId}&msg_id=${this.props.msgId}&count=${this.state.maxItems}`).then(
+            res => {
+                console.log(res.data)
+                let displayData = ""
+                res.data.forEach(e => {
+                    displayData += e + "\n-----------------------------\n";
+                });
 
-          this.setState({logData: displayData})
-          this.props.saveState({maxItems: this.state.maxItems, logData: this.state.logData})
+                this.setState({logData: displayData})
+                this.props.saveState({maxItems: this.state.maxItems, logData: this.state.logData})
 
-        }).catch(e => {
-      console.log(e)
-    })
+            }).catch(e => {
+            console.log(e)
+        })
 
-  }
+    }
 
-  render() {
-    return (<div style={{textAlign: "left", marginTop: "5%"}}>
+    render() {
+        return (<div style={{textAlign: "left", marginTop: "5%"}}>
 
-      <Grid container={true} spacing={5} alignItems={"center"}>
-        <Grid item={true} lg={4}>
-          <TextField key={"isim-hist-max-items"} variant={"outlined"} margin={"dense"}
-                     label={"Last 'X' Messages"}
-                     fullWidth={true}
-                     value={this.state.maxItems} select={true}
-                     onChange={this.maxItemsChanged}>
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={25}>25</MenuItem>
-            <MenuItem value={50}>50</MenuItem>
+            <Grid container={true} spacing={5} alignItems={"center"}>
+                <Grid item={true} lg={4}>
+                    <TextField key={"isim-hist-max-items"} variant={"outlined"} margin={"dense"}
+                               label={"Last 'X' Messages"}
+                               fullWidth={true}
+                               value={this.state.maxItems} select={true}
+                               onChange={this.maxItemsChanged}>
+                        <MenuItem value={5}>5</MenuItem>
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={25}>25</MenuItem>
+                        <MenuItem value={50}>50</MenuItem>
 
-          </TextField>
-        </Grid>
-        <Grid item={true} lg={4}>
-          <Button variant={"contained"} color={"primary"} size={"small"}
-                  onClick={this.fetchLogs}>Fetch</Button>
-        </Grid>
-      </Grid>
+                    </TextField>
+                </Grid>
+                <Grid item={true} lg={4}>
+                    <Button variant={"contained"} color={"primary"} size={"small"}
+                            onClick={this.fetchLogs}>Fetch</Button>
+                </Grid>
+            </Grid>
 
-      <div style={{width: "80%"}}>
-        <TextField key={"isim-hist-logs"} margin={"dense"}
-                   label={"Messages"}
-                   fullWidth={true} multiline={true} rowsMax={100} contentEditable={false}
-                   value={this.state.logData}/>
-      </div>
+            <div style={{width: "80%"}}>
+                <TextField key={"isim-hist-logs"} margin={"dense"}
+                           label={"Messages"}
+                           fullWidth={true} multiline={true} rowsMax={100} contentEditable={false}
+                           value={this.state.logData}/>
+            </div>
 
-    </div>);
-  }
+        </div>);
+    }
 
 }
