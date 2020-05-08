@@ -9,6 +9,7 @@ import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import Typography from "@material-ui/core/Typography";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import UIIsoBitmap from "./BitmapFragment";
 
 export default class CryptoUtilsBox extends React.Component {
     pinField = {
@@ -130,6 +131,35 @@ export default class CryptoUtilsBox extends React.Component {
 
 
                     </Grid>
+
+                    <Grid item={true} sm={6}>
+
+
+                        <ExpansionPanel>
+                            <ExpansionPanelSummary
+                                expandIcon={<ExpandMoreIcon/>}
+                                aria-controls="panel3a-content"
+                                id="panel3a-header"
+                            >
+                                <Typography>ISO Bitmap Codec</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
+
+                                <div style={{
+                                    textAlign: "left", marginTop: "5%", width: "100%"
+                                }}>
+                                    <UIIsoBitmap/>
+
+                                </div>
+
+
+                            </ExpansionPanelDetails>
+                        </ExpansionPanel>
+
+
+                    </Grid>
+
+
                 </Grid>
 
 
