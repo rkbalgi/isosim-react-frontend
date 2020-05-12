@@ -20,14 +20,190 @@ export default class UIIsoBitmap extends React.Component {
             v += p;
         })
 
-        this.state = {pos: pos, bitmapstr: v};
+        this.state = {pos: pos, bitmapstr: this.toHexString(v)};
 
+        this.toHexString = this.toHexString.bind(this);
         this.isSet = this.isSet.bind(this);
         this.bitChanged = this.bitChanged.bind(this);
+        this.bitmapChanged = this.bitmapChanged.bind(this);
+    }
+
+    bitmapChanged(event) {
+
+
+        let newValue = event.target.value;
+        newValue = newValue.replace(":", "");
+        newValue = newValue.replace(":", "");
+        let npads = 192 - newValue.length
+        if (npads < 0) {
+            this.setState({errMsg: "bitmap value cannot exceed 192 bits!"})
+            return
+        }
+
+        if (!newValue.match("^[0-9,a-f,A-F]+$")) {
+            this.setState({errMsg: "bitmap value can only contains hex characters"})
+            return
+        }
+
+        for (let i = 0; i < npads; i++) {
+            newValue += "0";
+        }
+
+
+        //now convert the hex coded bitmap to binary
+
+        let pos = Array(192);
+        for (let i = 0, j = 0; i < newValue.length; i++) {
+            let binValue = UIIsoBitmap.toBinary(newValue.substr(i, 1))
+            for (let k = 0; k < 4; k++, j++) {
+                pos[j] = binValue[k];
+            }
+
+        }
+        let v = "";
+        pos.forEach(p => {
+            v += p;
+        })
+        this.setState({pos: pos, bitmapstr: this.toHexString(v), errMsg: null});
+
     }
 
     isSet(pos) {
         return this.state.pos[pos] == '1';
+    }
+
+    toHexString(v) {
+
+        //TODO:: This is lame.., improve this
+        let res = "";
+        for (let i = 0; i < v.length; i += 8) {
+            let frg1 = v.substr(i, 4)
+            let frg2 = v.substr(i + 4, 4)
+
+            res += UIIsoBitmap.toHex(frg1) + UIIsoBitmap.toHex(frg2)
+
+        }
+
+        return res.substr(0, 16) + ":" + res.substr(16, 16) + ":" + res.substr(32, 16);
+
+        //return res;
+
+    }
+
+    static toBinary(frg1) {
+        let res = "";
+        switch (frg1) {
+            case "0":
+                res = "0000";
+                break;
+            case "1":
+                res = "0001";
+                break;
+            case "2":
+                res = "0010";
+                break;
+            case "3":
+                res = "0011";
+                break;
+            case "4":
+                res = "0100";
+                break;
+            case "5":
+                res = "0101";
+                break;
+            case "6":
+                res = "0110";
+                break;
+            case "7":
+                res = "0111";
+                break;
+            case "8":
+                res = "1000";
+                break;
+            case "9":
+                res = "1001";
+                break;
+            case "A":
+                res = "1010";
+                break;
+            case "B":
+                res = "1011";
+                break;
+            case "C":
+                res = "1100";
+                break;
+            case "D":
+                res = "1101";
+                break;
+            case "E":
+                res = "1110";
+                break;
+            case "F":
+                res = "1111";
+                break;
+
+        }
+
+        return res;
+
+    }
+
+    static toHex(frg1) {
+        let res = "";
+        switch (frg1) {
+            case "0000":
+                res = "0";
+                break;
+            case "0001":
+                res = "1";
+                break;
+            case "0010":
+                res = "2";
+                break;
+            case "0011":
+                res = "3";
+                break;
+            case "0100":
+                res = "4";
+                break;
+            case "0101":
+                res = "5";
+                break;
+            case "0110":
+                res = "6";
+                break;
+            case "0111":
+                res = "7";
+                break;
+            case "1000":
+                res = "8";
+                break;
+            case "1001":
+                res = "9";
+                break;
+            case "1010":
+                res = "A";
+                break;
+            case "1011":
+                res = "B";
+                break;
+            case "1100":
+                res = "C";
+                break;
+            case "1101":
+                res = "D";
+                break;
+            case "1110":
+                res = "E";
+                break;
+            case "1111":
+                res = "F";
+                break;
+
+        }
+
+        return res;
+
     }
 
     bitChanged(event, pos) {
@@ -48,9 +224,9 @@ export default class UIIsoBitmap extends React.Component {
         this.state.pos.forEach(p => {
             v += p;
         })
-        console.log(v)
+        //console.log(v)
 
-        this.setState({bitmapstr: v, pos: lpos})
+        this.setState({bitmapstr: this.toHexString(v), pos: lpos})
 
     }
 
@@ -61,7 +237,8 @@ export default class UIIsoBitmap extends React.Component {
 
         let content = [];
         fcontent.push(<TextField key="bmp_str" value={this.state.bitmapstr} fullWidth={true} variant={"outlined"}
-                                 label={"Value"}/>);
+                                 onChange={this.bitmapChanged}
+                                 error={this.state.errMsg != null} helperText={this.state.errMsg} label={"Value"}/>);
 
         let scontent = [];
         //
