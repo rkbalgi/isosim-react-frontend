@@ -69,7 +69,7 @@ export default class UIIsoBitmap extends React.Component {
     }
 
     isSet(pos) {
-        return this.state.pos[pos] == '1';
+        return this.state.pos[pos] === '1';
     }
 
     toHexString(v) {
@@ -248,14 +248,14 @@ export default class UIIsoBitmap extends React.Component {
                                                                                                   key={"lb" + "_" + (i + 1)}
                                                                                                   control={<Checkbox
                                                                                                       key={"cb" + "_" + i}
-                                                                                                      checked={this.state.pos[i] == '1'}
+                                                                                                      checked={this.state.pos[i] === '1'}
                                                                                                       onChange={(event) => this.bitChanged(event, i)}/>}/></Grid>)
 
-            if ((i + 1) >= 8 && (i + 1) % 8 == 0) {
+            if ((i + 1) >= 8 && (i + 1) % 8 === 0) {
                 content.push(<Grid container={true} justify={"space-evenly"}>{scontent}</Grid>);
                 scontent = [];
             }
-            if ((i + 1) >= 64 && (i + 1) % 64 == 0) {
+            if ((i + 1) >= 64 && (i + 1) % 64 === 0) {
                 fcontent.push(<Box style={{marginTop: "2%", marginBottom: "2%"}} border={1}
                                    borderColor={"primary.main"} borderRadius={4}><Grid container={true}
                                                                                        justify={"space-evenly"}>{content}</Grid></Box>);
