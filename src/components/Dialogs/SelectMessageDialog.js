@@ -14,7 +14,7 @@ export default class SelectMessageDialog extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {show: props.show, selectedMsg: ''};
+        this.state = {show: props.show, selectedMsg: '', errorMessage: null};
         this.closeDialogSuccess = this.closeDialogSuccess.bind(this);
         this.closeDialogFail = this.closeDialogFail.bind(this);
         this.selectedMsgChanged = this.selectedMsgChanged.bind(this);
@@ -39,13 +39,17 @@ export default class SelectMessageDialog extends React.Component {
                     {
                         savedMsgs: res.data.saved_messages,
                         selectedMsg: res.data.saved_messages[0],
-                        show: true
+                        show: true,
+                        errorMessage: null
                     });
 
             }).catch(e => {
                     //FIXME
-                    console.log(e);
-                    this.setState({show: true, errorMessage: e.response.data});
+
+                    console.log(e.response.data);
+                    console.log("whoops", e);
+                    this.closeDialogFail("No saved messages/failed to retrieve saved messages");
+                    //this.setState({show: true, errorMessage: e.response.data.error});
                 }
             )
         }
@@ -53,14 +57,14 @@ export default class SelectMessageDialog extends React.Component {
 
     closeDialogSuccess() {
         this.setState({show: false});
-        this.props.closeLoadMsgDialog(this.state.selectedMsg);
+        this.props.closeLoadMsgDialog(this.state.selectedMsg, null);
     }
 
-    closeDialogFail() {
+    closeDialogFail(errMsg) {
         this.setState({show: false});
         //TODO:: also tell the parent that we're done
         //and return the value of the selected saved msg
-        this.props.closeLoadMsgDialog(null);
+        this.props.closeLoadMsgDialog(null, errMsg);
     }
 
     render() {
@@ -94,10 +98,10 @@ export default class SelectMessageDialog extends React.Component {
         return (
 
             <div>
-                <Dialog open={this.state.show} onClose={this.closeDialogFail}
+                <Dialog open={this.state.show} onClose={() => this.closeDialogFail(null)}
                         aria-labelledby="form-dialog-title" fullWidth={true}
                         maxWidth={"sm"}>
-                    <DialogTitle id="form-dialog-title" onClose={this.closeDialogFail}>Select
+                    <DialogTitle id="form-dialog-title" onClose={() => this.closeDialogFail(null)}>Select
                         Message</DialogTitle>
                     <DialogContent>
                         <div>
@@ -115,7 +119,7 @@ export default class SelectMessageDialog extends React.Component {
                         <Button onClick={this.closeDialogSuccess} color="primary">
                             OK
                         </Button>
-                        <Button onClick={this.closeDialogFail} color="primary">
+                        <Button onClick={() => this.closeDialogFail(null)} color="primary">
                             Cancel
                         </Button>
                     </DialogActions>

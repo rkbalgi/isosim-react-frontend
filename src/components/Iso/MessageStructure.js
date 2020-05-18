@@ -170,7 +170,7 @@ export default class MessageStructure extends React.Component {
         })
     }
 
-    closeLoadMsgDialog(selectedMsg) {
+    closeLoadMsgDialog(selectedMsg, errMsg) {
         this.setStateAndPushUp({showLoadMessagesDialog: false, currentDataSet: selectedMsg});
 
         if (selectedMsg != null) {
@@ -188,6 +188,11 @@ export default class MessageStructure extends React.Component {
                 console.log(e);
                 this.processError(e)
             })
+        } else {
+            if (errMsg != null) {
+                this.setState({errDialogVisible: true, errorMessage: errMsg})
+                this.showErrorDialog()
+            }
         }
 
     }
@@ -236,7 +241,7 @@ export default class MessageStructure extends React.Component {
     }
 
     closeErrorDialog() {
-        this.setStateAndPushUp({errDialogVisible: false})
+        this.setStateAndPushUp({errDialogVisible: false, errorMessage: null})
     }
 
     showErrorDialog() {
