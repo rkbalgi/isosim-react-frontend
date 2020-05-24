@@ -21,7 +21,7 @@ class NetworkSettings extends React.Component {
     }
 
     mliTypeChanged(e) {
-        this.setStateAndPushUp({mliType: e.target.value});
+        this.setState({mliType: e.target.value});
         this.props.onChange(this.state.targetServerIp, this.state.targetServerPort, e.target.value)
     }
 
