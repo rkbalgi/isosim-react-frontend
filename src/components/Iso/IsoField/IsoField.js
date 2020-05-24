@@ -7,6 +7,11 @@ import Checkbox from "@material-ui/core/Checkbox";
 import InputLabel from "@material-ui/core/InputLabel";
 import fieldValidator from "../../Utils/FieldValidator";
 import {AppProps} from "../../Utils/Properties";
+import HintHelper from "../../Utils/HintHelper";
+import CountryCodePicker from "../../Utils/CountryCodePicker";
+import Grid from "@material-ui/core/Grid";
+import CurrencyCodePicker from "../../Utils/CurrencyCodePicker";
+import EnumeratedPicker from "../../Utils/EnumeratedPicker";
 
 // IsoField represents a single field from a ISO8583 specification
 export default class IsoField extends React.Component {
@@ -29,6 +34,7 @@ export default class IsoField extends React.Component {
         this.toggleExpanded = this.toggleExpanded.bind(this);
         this.onFocusLost = this.onFocusLost.bind(this);
         this.applyPadding = this.applyPadding.bind(this);
+        this.setValue = this.setValue.bind(this);
 
         //if the field is Message Type, MTI or Bitmap - it should stay selected
         //because they're mandatory fields in ISO
@@ -65,12 +71,14 @@ export default class IsoField extends React.Component {
             let defaultFieldValue = "";
             let selected = false;
 
+            // if there are any hints, process them
+            defaultFieldValue = HintHelper.generateValue(this.props.field)
+
             if (this.props.isoMsg.has(this.props.field.ID)) {
                 let tmpField = this.props.isoMsg.get(this.props.field.ID)
                 defaultFieldValue = tmpField.state.fieldValue;
                 selected = tmpField.state.selected;
             }
-
             if (IsoField.MandatoryFields.includes(this.props.field.Name)) {
 
                 //mandatory fields which cannot be deselected (bitmap is not editable as well)
@@ -144,9 +152,14 @@ export default class IsoField extends React.Component {
 
     setNewValue(newValue) {
 
+        //alert(newValue)
         let val = this.applyPadding(this.state.selected, newValue);
         this.setState({fieldValue: val, showExpanded: false, selected: true});
         this.toggleExpanded()
+    }
+
+    setValue(newValue) {
+        this.setState({fieldValue: newValue, showExpanded: false});
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -239,7 +252,6 @@ export default class IsoField extends React.Component {
         if (selected) {
             let errors = []
             if (fieldValidator.validate(this.props.field, val, errors)) {
-
                 this.setState({fieldValue: val, hasError: true, errMsg: errors[0], selected: selected});
             } else {
                 this.setState({fieldValue: val, hasError: false, errMsg: null, selected: selected});
@@ -387,8 +399,11 @@ export default class IsoField extends React.Component {
 
     fieldValueChanged(event) {
         this.setState({hasError: false, errMsg: null, fieldValue: event.target.value});
-
     }
+
+    /*setNewValue(value) {
+        this.setState({hasError: false, errMsg: null, fieldValue: value});
+    }*/
 
     appendFieldContent(content, field, parentField, id2Value, level) {
 
@@ -408,18 +423,20 @@ export default class IsoField extends React.Component {
         let selectionColumnContent;
 
         if (this.selectable) {
-            selectionColumnContent = <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
-                                                                    color={"primary"}
-                                                                    checked={this.state.selected}
-                                                                    onChange={this.fieldSelectionChanged}/>
-            </td>
+            selectionColumnContent =
+                <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
+                                               color={"primary"}
+                                               checked={this.state.selected}
+                                               onChange={this.fieldSelectionChanged}/>
+                </td>
         } else {
-            selectionColumnContent = <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
-                                                                    color={"primary"}
-                                                                    disabled={true}
-                                                                    checked={this.state.selected}
-                                                                    onChange={this.fieldSelectionChanged}/>
-            </td>
+            selectionColumnContent =
+                <td align={"center"}><Checkbox type={"checkbox"} size={"small"}
+                                               color={"primary"}
+                                               disabled={true}
+                                               checked={this.state.selected}
+                                               onChange={this.fieldSelectionChanged}/>
+                </td>
         }
         let positionInParent = "";
         if (this.props.field.ParentId > 0) {
@@ -448,6 +465,52 @@ export default class IsoField extends React.Component {
             levelIndicator += '\u2193';
         }
 
+        let inpComponent = null;
+
+
+        if (this.props.field.Hint.Type == "enumerated") {
+
+            let disabled = false;
+            if (this.props.readOnly) {
+                disabled = true;
+            }
+
+            inpComponent = <EnumeratedPicker key={"fld_value_" + this.state.field.ID} valueChanged={this.setValue}
+                                              disabled={disabled} values={this.props.field.Hint.Values}
+                                              value={this.state.fieldValue}/>
+        }
+        else if (this.props.field.Hint.Type == "country_code") {
+
+            let disabled = false;
+            if (this.props.readOnly) {
+                disabled = true;
+            }
+
+            inpComponent = <CountryCodePicker key={"fld_value_" + this.state.field.ID} valueChanged={this.setValue}
+                                              disabled={disabled}
+                                              value={this.state.fieldValue}/>
+        } else if (this.props.field.Hint.Type == "currency_code") {
+            let disabled = false;
+            if (this.props.readOnly) {
+                disabled = true;
+            }
+
+            inpComponent = <CurrencyCodePicker key={"fld_value_" + this.state.field.ID} valueChanged={this.setValue}
+                                               disabled={disabled}
+                                               value={this.state.fieldValue}/>
+        } else {
+            inpComponent = <TextField margin={"dense"} size={"small"} variant={"standard"}
+                                      value={this.state.fieldValue}
+                                      error={this.state.hasError}
+                                      helperText={this.state.errMsg}
+                                      onChange={this.fieldValueChanged}
+                                      style={{width: "70%"}}
+                                      disabled={this.props.readOnly || !this.state.fieldEditable}
+                                      key={"fld_value_" + this.state.field.ID}
+                                      onBlur={this.onFocusLost}
+            />;
+        }
+
         return (<React.Fragment>
                 <tr>
                     {/* selection column */}
@@ -472,23 +535,18 @@ export default class IsoField extends React.Component {
                     {/* field value column */}
                     <td>
 
-                        <TextField margin={"dense"} size={"small"} variant={"standard"}
-                                   value={this.state.fieldValue}
-                                   error={this.state.hasError}
-                                   helperText={this.state.errMsg}
-                                   onChange={this.fieldValueChanged}
-                                   style={{width: "70%"}}
-                                   disabled={this.props.readOnly || !this.state.fieldEditable}
-                                   key={"fld_value_" + this.state.field.ID}
-                                   onBlur={this.onFocusLost}
-                        />
+                        <Grid container={true}>
+                            <Grid item={true} sm={8}>{inpComponent}</Grid>
+                            <Grid item={true} sm={2}>
+                                <Button size={"small"} variant={"contained"} style={{
+                                    float: 'right', fontSize: '14px', marginRight: '2%', marginLeft: "2%"
+                                }}
+                                        onClick={this.toggleExpanded}> {this.state.expandBtnLabel}
+                                </Button>
 
-                        <Button size={"small"} variant={"contained"} style={{
-                            float: 'right', fontSize: '14px', marginRight: '2%', marginLeft: "2%"
-                        }}
-                                onClick={this.toggleExpanded}> {this.state.expandBtnLabel}
-                        </Button>
+                            </Grid>
 
+                        </Grid>
                     </td>
 
                 </tr>
