@@ -6,20 +6,43 @@ export default function EnumeratedPicker(props) {
 
     const [value, setValue] = React.useState(props.values[0]);
 
+
     React.useEffect(() => {
+
         if (props.disabled == false) {
-            props.valueChanged(value.Value);
+
+            //if there is already a value supplied, use that
+            if (props.value) {
+                props.values.forEach((v) => {
+                    if (v.Value == props.value) {
+                        setValue(v);
+                    }
+                })
+
+            } else {
+                props.valueChanged(value.Value);
+            }
+
+
         }
+
+
     }, [])
 
-    React.useEffect(() => {
+    /*React.useEffect(() => {
         if (props.disabled == false) {
             props.valueChanged(value.Value);
         }
 
-    }, [value])
+    }, [value])*/
 
     React.useEffect(() => {
+
+        //console.log("fired...",props.value,value.Value);
+
+        /*if (value.Value && props.value == value.Value) {
+            return
+        }*/
 
         props.values.forEach((v) => {
             if (v.Value == props.value) {

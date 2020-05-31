@@ -7,6 +7,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogActions from "@material-ui/core/DialogActions";
 import {Button} from "@material-ui/core";
 import Draggable from "react-draggable";
+import appProps, {AppProps} from "../Utils/Properties";
+import TestCaseEvalResultDialog from "../Dialogs/TestCaseEvalResultDialog";
 
 // ResponseSegment displays the response to an ISO message
 export default class ResponseSegment extends React.Component {
@@ -14,12 +16,98 @@ export default class ResponseSegment extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            show: props.show, data: this.props.data, msgTemplate: this.props.msgTemplate
+            show: props.show,
+            data: this.props.data,
+            msgTemplate: this.props.msgTemplate,
+            evalResults: null,
+            showEvalResultsDialog: false
         }
         this.hideResponseSegment = this.hideResponseSegment.bind(this);
         this.copyToClipboard = this.copyToClipboard.bind(this);
+        this.evalTestCase = this.evalTestCase.bind(this);
+        this.showEvalResults = this.showEvalResults.bind(this);
 
         this.textAreaRef = React.createRef();
+    }
+
+
+    evalTestCase() {
+
+        console.log("comparing ", this.props.data, " with ", this.props.testCase)
+        let evalResults = []
+
+        let respBmp = "";
+        this.props.data.forEach(f => {
+            if (f.Name == "Bitmap") {
+                respBmp = f.Value;
+            }
+        });
+
+        this.props.data.forEach(f => {
+            this.props.testCase.resp_data.forEach(tf => {
+                    if (f.ID == tf.ID) {
+
+                        if (f.Name === "Bitmap") {
+                            //compare bitmaps and see if any fields are missing or additional fields are present
+                            let actualBmp = f.Value;
+                            let tcBmp = tf.Value;
+
+                            for (let i = 0; i < tcBmp.length; i++) {
+
+                                if (i < actualBmp.length) {
+                                    if (tcBmp.charAt(i) != actualBmp.charAt(i)) {
+                                        if (tcBmp.charAt(i) == '1') {
+                                            evalResults.push(`Field "${i + 1}" is missing in response`);
+                                        } else {
+                                            evalResults.push(`Additional Field "${i + 1}" is present in response`);
+                                        }
+                                    }
+                                } else {
+                                    if (tcBmp.charAt(i) == '1') {
+                                        evalResults.push(`Field "${i + 1}" is missing in response`);
+                                    }
+
+                                }
+                            }
+                            //TODO:: if response bmp has additional bits
+                        }
+                        switch (tf.CompareOp) {
+                            case "Exclude": {
+                                break;
+                            }
+                            case "Equals": {
+                                if (f.Value != tf.Value) {
+                                    evalResults.push(`${f.Name} failed on ${tf.CompareOp} condition. Expected: ${tf.Value}, Actual: ${f.Value}`);
+                                }
+                                break;
+                            }
+                            case "StartsWith": {
+                                if (!f.Value.startsWith(tf.Value)) {
+                                    evalResults.push(`${f.Name} failed on ${tf.CompareOp} condition. Expected: ${tf.Value}, Actual: ${f.Value}`);
+                                }
+                                break;
+                            }
+                            case "EndsWith": {
+                                if (!f.Value.endsWith(tf.Value)) {
+                                    evalResults.push(`${f.Name} failed on ${tf.CompareOp} condition. Expected: ${tf.Value}, Actual: ${f.Value}`);
+                                }
+                                break;
+                            }
+                            default: {
+                                evalResults.push(`${tf.Name} uses a yet to supported compare-op - ${tf.CompareOp}`)
+                            }
+
+                        }
+                    }
+                }
+            )
+
+
+        });
+        console.log("er: ", evalResults);
+        this.setState({evalResults: evalResults, showEvalResultsDialog: true});
+
+
     }
 
     appendFieldContent(content, field, idToField, level) {
@@ -64,6 +152,11 @@ export default class ResponseSegment extends React.Component {
         }
     }
 
+    showEvalResults(show) {
+        this.setState({showEvalResultsDialog: show})
+    }
+
+
     render() {
 
         let content = [];
@@ -103,11 +196,15 @@ export default class ResponseSegment extends React.Component {
                                            onClose={this.hideResponseSegment} scroll={"paper"}
                                            PaperComponent={PaperComponent}
                                            aria-labelledby="draggable-dialog-title"
-                                           maxWidth={"sm"} fullWidth={true}
+                                           maxWidth={"md"} fullWidth={true}
                                            disableBackdropClick={true}>
                     <DialogTitle style={{cursor: 'move'}}
                                  id="draggable-dialog-title">{this.props.dialogTitle}</DialogTitle>
                     <DialogContent dividers={true}>
+
+                        <TestCaseEvalResultDialog show={this.state.showEvalResultsDialog}
+                                                  results={this.state.evalResults}
+                                                  onClose={() => this.showEvalResults(false)}/>
 
                         <Paper>
           <textarea ref={this.textAreaRef}
@@ -145,6 +242,11 @@ export default class ResponseSegment extends React.Component {
                         </Paper>
                     </DialogContent>
                     <DialogActions>
+                        {this.props.testCase.resp_data != null ? <Button onClick={this.evalTestCase} size="small"
+                                                                         color="primary"
+                                                                         variant={"contained"}>
+                            Evaluate Test Case
+                        </Button> : null}
                         <Button onClick={this.copyToClipboard} size="small"
                                 color="primary"
                                 variant={"contained"}>

@@ -476,10 +476,9 @@ export default class IsoField extends React.Component {
             }
 
             inpComponent = <EnumeratedPicker key={"fld_value_" + this.state.field.ID} valueChanged={this.setValue}
-                                              disabled={disabled} values={this.props.field.Hint.Values}
-                                              value={this.state.fieldValue}/>
-        }
-        else if (this.props.field.Hint.Type == "country_code") {
+                                             disabled={disabled} values={this.props.field.Hint.Values}
+                                             value={this.state.fieldValue}/>
+        } else if (this.props.field.Hint.Type == "country_code") {
 
             let disabled = false;
             if (this.props.readOnly) {

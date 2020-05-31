@@ -7,17 +7,33 @@ export default function CountryCodePicker(props) {
     const [value, setValue] = React.useState(countryCodes[102]);
 
     React.useEffect(() => {
-        if(props.disabled==false){
-            props.valueChanged(value.code);
+
+        if (props.disabled == false) {
+
+            //if there is already a value supplied, use that
+            if (props.value) {
+               countryCodes.forEach((v) => {
+                    if (v.code == props.value) {
+                        setValue(v);
+                    }
+                })
+
+            } else {
+                props.valueChanged(value.code);
+            }
+
+
         }
+
+
     }, [])
 
-    React.useEffect(() => {
+    /*React.useEffect(() => {
         if(props.disabled==false){
             props.valueChanged(value.code);
         }
 
-    }, [value])
+    }, [value])*/
 
     React.useEffect(() => {
 
@@ -39,7 +55,7 @@ export default function CountryCodePicker(props) {
             disabled={props.disabled}
             value={value}
             onChange={(event, newValue) => {
-                if(newValue==null){
+                if (newValue == null) {
                     return
                 }
                 setValue(newValue);

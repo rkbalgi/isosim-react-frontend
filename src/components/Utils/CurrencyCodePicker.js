@@ -8,18 +8,33 @@ export default function CountryCodePicker(props) {
 
 
     React.useEffect(() => {
-        if(props.disabled==false){
-            props.valueChanged(value.numericCode);
+
+        if (props.disabled == false) {
+
+            //if there is already a value supplied, use that
+            if (props.value) {
+                currencyCodes.forEach((v) => {
+                    if (v.numericCode == props.value) {
+                        setValue(v);
+                    }
+                })
+
+            } else {
+                props.valueChanged(value.numericCode);
+            }
+
+
         }
+
+
     }, [])
 
-    React.useEffect(() => {
+    /*React.useEffect(() => {
         if(props.disabled==false){
             props.valueChanged(value.numericCode);
         }
 
-    }, [value])
-
+    }, [value])*/
 
 
     React.useEffect(() => {
@@ -42,7 +57,7 @@ export default function CountryCodePicker(props) {
             options={currencyCodes}
             value={value}
             onChange={(event, newValue) => {
-                if(newValue==null){
+                if (newValue == null) {
                     return
                 }
                 setValue(newValue);

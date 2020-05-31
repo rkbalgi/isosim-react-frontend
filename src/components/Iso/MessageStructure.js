@@ -21,6 +21,7 @@ import Tab from "@material-ui/core/Tab";
 import CryptoUtilsBox from "../Utils/CryptoUtils";
 import * as PropTypes from "prop-types";
 import MsgUtils from "../Utils/MsgUtils";
+import TCOptionsDialog from "../Dialogs/TCOptionsDialog";
 
 // MessageStructure is the central component that encompasses the Request and
 // the response segments along with NetworkSettings etc
@@ -50,8 +51,10 @@ export default class MessageStructure extends React.Component {
             responseData: null,
             reqMenuVisible: false,
             selectedReqMenuItem: null,
+            testCase: null,
             reqClipboardData: null,
             selectedTab: 0,
+            showEditTCDialog: false,
             msgHist: {maxItems: 5, logData: ''}
         };
 
@@ -86,6 +89,7 @@ export default class MessageStructure extends React.Component {
         this.saveHistState = this.saveHistState.bind(this);
 
         this.setStateAndPushUp = this.setStateAndPushUp.bind(this);
+        this.showEditTCDialog = this.showEditTCDialog.bind(this);
 
     }
 
@@ -121,6 +125,10 @@ export default class MessageStructure extends React.Component {
     hideMenu() {
         this.setStateAndPushUp({reqMenuVisible: false})
         this.setStateAndPushUp({selectedReqMenuItem: null})
+    }
+
+    showEditTCDialog(show) {
+        this.setState({showEditTCDialog: show});
     }
 
     showResponseDialog() {
@@ -180,10 +188,11 @@ export default class MessageStructure extends React.Component {
                 }
             }).then(res => {
                 console.log("saved msg = ", res.data.saved_message);
-                res.data.saved_message.forEach(fd => {
+                res.data.saved_message.req_data.forEach(fd => {
                     let fieldComponent = this.state.isoMsg.get(fd.ID);
                     fieldComponent.setState({selected: true, fieldValue: fd.Value});
                 });
+                this.setState({testCase: res.data.saved_message})
             }).catch(e => {
                 console.log(e);
                 this.processError(e)
@@ -244,8 +253,8 @@ export default class MessageStructure extends React.Component {
         this.setStateAndPushUp({errDialogVisible: false, errorMessage: null})
     }
 
-    showErrorDialog() {
-        this.setStateAndPushUp({errDialogVisible: true});
+    showErrorDialog(msg) {
+        this.setStateAndPushUp({errorMessage: msg, errDialogVisible: true});
     }
 
     //sends the message (as JSON) to the API server to be sent to the ISO host
@@ -320,8 +329,7 @@ export default class MessageStructure extends React.Component {
     }
 
     getTemplateLabel() {
-        //alert(this.state.spec + "// " + this.state.msg)
-        return this.state.spec.Name + " // " + this.state.msg.Name;
+        return `Spec/Msg: ${this.state.spec.Name}// ${this.state.msg.Name}`;
     }
 
     onFieldUpdate(e) {
@@ -404,10 +412,23 @@ export default class MessageStructure extends React.Component {
                                    initialMessage={this.state.currentDataSet}
                                    specId={this.state.spec.ID}
                                    data={this.state.saveData}
+                                   responseData={this.state.responseData}
                                    msgName={this.state.currentDataSet}
                                    msgSaveSuccess={this.msgSaveSuccess}
                                    msgSaveFailed={this.msgSaveFailed}
                                    msgSaveCancelled={this.msgSaveCancelled}/>
+
+                <TCOptionsDialog show={this.state.showEditTCDialog} msgId={this.state.msg.ID}
+                                 specId={this.state.spec.ID} msgName={this.state.currentDataSet}
+                                 responseData={this.state.testCase?.resp_data}
+                                 onCancel={() => {
+                                     this.showEditTCDialog(false);
+                                 }}
+                                 onClose={() => {
+                                     //this.showEditTCDialog(false);
+                                     this.showErrorDialog("TC config updated successfully.");
+
+                                 }}/>
 
 
                 <AppBar position="static" variant={"elevation"} style={{width: "80%", float: "left"}}>
@@ -435,6 +456,9 @@ export default class MessageStructure extends React.Component {
                                 <Button onClick={this.showTraceInputsDialog}>Parse</Button>
                                 <Button onClick={this.showLoadMessagesDialog}>Load</Button>
                                 <Button onClick={this.showSaveMsgDialog}>Save</Button>
+                                <Button onClick={() => this.showEditTCDialog(true)}
+                                        disabled={this.state.testCase == null || this.state.testCase.resp_data == null}>Edit
+                                    TC</Button>
                                 <Button onClick={this.sendToHost}>Send</Button>
                                 <Button onClick={this.showResponseDialog} disabled={this.state.responseData == null}>Show
                                     Response</Button>
@@ -461,6 +485,19 @@ export default class MessageStructure extends React.Component {
                                     </td>
                                 </tr>
                                 <tr style={{
+                                    fontFamily: "lato-regular",
+                                    backgroundColor: "#c4876e",
+                                    fontSize: "15px",
+                                    borderBottom: 'solid',
+                                    borderColor: 'blue'
+                                }}>
+                                    <td colSpan="3" align={"center"}>
+
+                                        <div
+                                            style={{display: "inline-block"}}>{`Msg/TestCase: ${this.state.currentDataSet}`}</div>
+                                    </td>
+                                </tr>
+                                <tr style={{
                                     fontFamily: "lato-regular", backgroundColor: "#ff8f5b", fontSize: "14px",
                                 }}>
                                     <td align={"center"}>Selection</td>
@@ -479,6 +516,7 @@ export default class MessageStructure extends React.Component {
                         <ResponseSegment show={this.state.showResponse}
                                          reqData={this.state.reqClipboardData}
                                          onClose={this.hideResponse}
+                                         testCase={this.state.testCase}
                                          data={this.state.responseData}
                                          dialogTitle={"Response - [" + this.getTemplateLabel() + "]"}
                                          msgTemplate={this.state.msgTemplate}/>
