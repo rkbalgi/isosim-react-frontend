@@ -208,18 +208,33 @@ export default class UIIsoBitmap extends React.Component {
 
     bitChanged(event, pos) {
 
-        //event.persist()
-
-        //console.log(event,pos)
         let lpos = this.state.pos;
-
-        //console.log(event.target.selected)
 
         if (event.target.checked) {
             lpos[pos] = '1';
         } else {
             lpos[pos] = '0';
         }
+
+
+        // recompute the bits representing presence/absence of secondary
+        // bitmap
+        lpos[0] = '0';
+        lpos[64] = '0';
+
+        for (let i = 0; i < 192; i++) {
+            if (lpos[i] == '1') {
+                let act_pos = i + 1;
+                if (act_pos > 64 && act_pos < 129) {
+                    lpos[0] = '1'
+                }
+                if (act_pos > 128) {
+                    lpos[64] = '1'
+                }
+            }
+        }
+
+
         let v = "";
         this.state.pos.forEach(p => {
             v += p;
