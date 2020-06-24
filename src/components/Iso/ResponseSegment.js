@@ -242,7 +242,7 @@ export default class ResponseSegment extends React.Component {
                         </Paper>
                     </DialogContent>
                     <DialogActions>
-                        {this.props.testCase.resp_data != null ? <Button onClick={this.evalTestCase} size="small"
+                        {this.props.testCase?.resp_data != null ? <Button onClick={this.evalTestCase} size="small"
                                                                          color="primary"
                                                                          variant={"contained"}>
                             Evaluate Test Case

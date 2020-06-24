@@ -295,7 +295,7 @@ export default class MessageStructure extends React.Component {
         let postData = 'host=' + this.state.targetServerIp + "&port=" + this.state.targetServerPort
             + '&mli=' + this.state.mliType + '&specId=' + this.state.spec.ID + '&msgId='
             + this.state.msg.ID + "&msg=" + JSON.stringify(content);
-        //console.log(postData)
+
         axios.post(appProps.sendMsgUrl, postData).then(res => {
             console.log("Response from server", res.data.response_fields);
             this.setStateAndPushUp({showResponse: true, responseData: res.data.response_fields});

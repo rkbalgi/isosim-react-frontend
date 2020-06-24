@@ -89,6 +89,7 @@ export default class IsoField extends React.Component {
                     defaultFieldValue = Array(128).fill('0').reduce((p = "", c) => p + c);
                 }
 
+
                 if (this.props.field.Name === "Bitmap") {
                     fieldEditable = false;
                 }
@@ -178,8 +179,15 @@ export default class IsoField extends React.Component {
 
                 if (f.Name === event.fieldName) {
                     let currentVal = this.state.fieldValue;
+                    if (f.Position > 64 && currentVal.length == 64) {
+                        // if we're dealing with a secondary bitmap and there is only
+                        // a primary bitmap available, first extend it
+                        Array(64).fill('0').forEach(p => currentVal += p);
+                    }
+
+
                     let bits = Array.from(currentVal);
-                    //console.log("Changing bit " + f.Position);
+
                     if (event.ChangeType === 'FieldSelected') {
                         bits[f.Position - 1] = '1';
                         if (f.Position > 64) {
