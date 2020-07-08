@@ -86,7 +86,7 @@ export default class IsoField extends React.Component {
                 this.selectable = false;
                 let fieldEditable = true;
                 if (defaultFieldValue === "" && this.props.field.Name === "Bitmap") {
-                    defaultFieldValue = Array(128).fill('0').reduce((p = "", c) => p + c);
+                    defaultFieldValue = Array(192).fill('0').reduce((p = "", c) => p + c);
                 }
 
 
@@ -184,6 +184,15 @@ export default class IsoField extends React.Component {
                         // a primary bitmap available, first extend it
                         Array(64).fill('0').forEach(p => currentVal += p);
                     }
+                    if (f.Position > 128) {
+                        // if we're dealing with a tertiary bitmap and there is only
+                        // a primary+secondary bitmap available, first extend it
+                        if (currentVal.length == 64) {
+                            Array(128).fill('0').forEach(p => currentVal += p);
+                        } else if (currentVal.length == 128) {
+                            Array(64).fill('0').forEach(p => currentVal += p);
+                        }
+                    }
 
 
                     let bits = Array.from(currentVal);
@@ -193,6 +202,10 @@ export default class IsoField extends React.Component {
                         if (f.Position > 64) {
                             bits[0] = '1';
                         }
+                        if (f.Position > 128) {
+                            bits[64] = '1';
+                        }
+
                     } else if (event.ChangeType === 'FieldDeselected') {
                         bits[f.Position - 1] = '0';
 
@@ -206,6 +219,18 @@ export default class IsoField extends React.Component {
                         }
                         if (turnOff) {
                             bits[0] = '0';
+                        }
+
+                        //if all bits from 129 to 192 are off then turn bit 65 off
+                        turnOff = true;
+                        for (let i = 129; i <= 192; i++) {
+                            if (bits[i - 1] === '1') {
+                                turnOff = false;
+                                break;
+                            }
+                        }
+                        if (turnOff) {
+                            bits[64] = '0';
                         }
 
                     }
